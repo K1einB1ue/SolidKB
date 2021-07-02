@@ -13,7 +13,6 @@
 
 #if __Enable_Uart
     #include<HardWare/Uart.h>
-    #include<HardWare/Usart.h>
     #ifdef __Enable_SystemClock
         #include<HardWare/ESP8266.h>
         #include<HardWare/SYN6288.h>

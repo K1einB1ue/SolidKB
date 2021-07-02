@@ -37,7 +37,6 @@
 
 #if __Enable_Uart
 
-    class Usart;
     class Uart;
 
     namespace Override{
@@ -48,18 +47,21 @@
         extern std::vector<std::pair<u_char*,std::function<void(char*,int)>&>> UartOccupation;
 
         
-        extern void Usartx_PreEnable(Usart* Usart);
+        //extern void Usartx_PreEnable(Usart* Usart);
         extern void Uartx_PreEnable(Uart* Uart);
        
-        extern void Usartx_PreDisable(Usart* Usart);
+        //extern void Usartx_PreDisable(Usart* Usart);
         extern void Uartx_PreDisable(Uart* Uart);
         
-        extern void Usart_Send(Usart* Usart,std::string Info);
+        //extern void Usart_Send(Usart* Usart,std::string Info);
         extern void Uart_Send(Uart* Uart,std::string Info);
 
+        extern void Uart_Close(Uart* Uart);
         
-        extern void Usart_Close(Usart* Usart);
-        extern void Usart_Open(Usart* Usart);
+        extern void Uart_Open(Uart* Uart);
+        
+        // extern void Usart_Close(Usart* Usart);
+        // extern void Usart_Open (Usart* Usart);
         
     }
 

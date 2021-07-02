@@ -3,7 +3,7 @@
 
 namespace HardWare{
 
-    ESP8266::ESP8266(uint32_t Usartx):Usart(Usartx,115200){
+    ESP8266::ESP8266(uint32_t Uartx):Uart(Uartx,115200){
         this->Enable();
 
         this->NonReciveSend("AT+RST\r\n");

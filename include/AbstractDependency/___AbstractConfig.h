@@ -12,7 +12,7 @@
         #define __Enable_PIN 1
     #endif
 
-    #if __Enable_PIN&&(CFG_Uart_Size||CFG_Usart_Size)
+    #if __Enable_PIN&&(CFG_Uart_Size)
         #define __Enable_Uart 1
     #endif
 

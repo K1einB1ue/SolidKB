@@ -1,13 +1,13 @@
 #pragma once
-#include<HardWare/Usart.h>
+#include<HardWare/Uart.h>
 #include<SoftHardWare/SystemClock.h>
 
 namespace HardWare{
     //WIFI模块
     //Type:[X]
-    class ESP8266:public Usart{
+    class ESP8266:public Uart{
         public:
-        ESP8266(uint32_t Usartx);
+        ESP8266(uint32_t Uartx);
     };
 
 }

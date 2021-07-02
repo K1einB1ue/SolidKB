@@ -13,8 +13,7 @@
 
 #define CFG_PIN_Size 16
 #define CFG_GPIO_Size 9
-#define CFG_Usart_Size 2
-#define CFG_Uart_Size 3
+#define CFG_Uart_Size 5
 #define CFG_Uart_Buf_Size 100
 
 
