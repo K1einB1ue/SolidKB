@@ -3,10 +3,12 @@
 #include<AbstractDependency/_AbstractHardWare.h>
 
 
-SCCB_Component::SCCB_Component(uint32_t SDA_GPIOx,uint32_t SDA_PINx,uint32_t SCL_GPIOx,uint32_t SCL_PINx):SCL(SCL_GPIOx,SCL_PINx,PIN_Mode::Fast),SDA(SDA_GPIOx,SDA_PINx,PIN_Mode::Fast){
+SCCB_Component::SCCB_Component(uint32_t SDA_GPIOx,uint32_t SDA_PINx,uint32_t SCL_GPIOx,uint32_t SCL_PINx):SDA(SDA_GPIOx,SDA_PINx,PIN_Mode::Fast),SCL(SCL_GPIOx,SCL_PINx,PIN_Mode::Fast){
+    SDA.F_WriteMode();
+    SCL.F_WriteMode();
     SDA=1;
     SCL=1;
-    SDA.F_WriteMode();
+    
 }
 
 SCCB_Component::~SCCB_Component(){}
@@ -44,10 +46,11 @@ bool    SCCB_Component::Send_Byte(u_char txd){
 	SystemClock::Delay(50);
 	SCL=1;			//接收第九位,以判断是否发送成功
 	SystemClock::Delay(50);
-	if(SDA)res=true;  //SDA=1发送失败，返回1
+	if(SDA)res=true;//SDA=1发送失败，返回1
     else res=false;
 	SCL=0;		 
 	SDA.F_WriteMode();		//设置SDA为输出    
+    return res;
 }
 
 u_char  SCCB_Component::Read_Byte(){

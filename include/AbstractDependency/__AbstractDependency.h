@@ -12,14 +12,11 @@
 #include<stdlib.h>
 #include<stdarg.h>
 
-enum class DebugLevel{
-    Warn,
-    Error,
-    Log,
+
+namespace Debug{
+    extern std::function<void(std::string)> DebugCallback;
+    extern void Error(std::string Info);
+    extern void Warning(std::string Info);
+    extern void Info(std::string Info);
 };
-
-extern std::function<void(std::string,DebugLevel)> DebugCallback;
-
-extern void Debug(std::string DebugInfo,DebugLevel Level=DebugLevel::Error);
-
 

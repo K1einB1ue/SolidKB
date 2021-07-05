@@ -6,6 +6,8 @@
 
 namespace HardWare{
     class OV7725:public SCCB_Component,public Peripheral_DCMI{
+        private:
+        PIN SGM,RST;
         public:
         enum class Light_Mode{
             Auto,
@@ -15,7 +17,6 @@ namespace HardWare{
             Home,
             Night,
         };
-        PIN SGM,RST;
         OV7725(uint32_t SDA_GPIOx,uint32_t SDA_PINx,uint32_t SCL_GPIOx,uint32_t SCL_PINx,uint32_t SGM_GPIOx,uint32_t SGM_PINx,uint32_t RST_GPIOx,uint32_t RST_PINx);
 
         bool Send_Reg_WithDefaultAdress(u_char reg,u_char txd);

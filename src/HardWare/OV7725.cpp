@@ -268,8 +268,7 @@ OV7725::OV7725(
     Peripheral_DCMI(),
     SGM(SGM_GPIOx,SGM_PINx,PIN_Mode::Fast),
     RST(RST_GPIOx,RST_PINx,PIN_Mode::Fast){
-    u_short i=0;
-    u_char reg=0;
+    u_short i=0,reg=0;
 	
 	SGM=1;		//拉高，使用OV7725模块板载12M晶振，拉低使用单片机PA8输出时钟
 	
@@ -284,13 +283,13 @@ OV7725::OV7725(
 	reg<<=8;
 	reg|=Read_Reg_WithDefaultAdress(0X1d);		//读取厂家ID 低八位
 	if(reg!=OV7725_MID){
-        Debug("Reg!=OV7725_MID");
+        Debug::Warning("Reg!=OV7725_MID");
 	}
 	reg=Read_Reg_WithDefaultAdress(0X0a);		//读取厂家ID 高八位
 	reg<<=8;
 	reg|=Read_Reg_WithDefaultAdress(0X0b);		//读取厂家ID 低八位
 	if(reg!=OV7725_PID){
-        Debug("Reg!=OV7725_PID");
+        Debug::Warning("Reg!=OV7725_PID");
 	}  
  	//初始化 OV7725,采用QVGA分辨率(320*240)  
 	for(i=0;i<sizeof(ov7725_init_reg_tb1)/sizeof(ov7725_init_reg_tb1[0]);i++){								
@@ -357,7 +356,7 @@ void OV7725::Set_Color_Saturation(int8_t sat){
 //亮度设置
 //bright：-4~+4
 void OV7725::Set_Brightness(int8_t bright){
-	u_char bright_value,sign;
+	u_char bright_value=0,sign=0;
   	switch(bright){
 		case 4:
 			bright_value = 0x48;
