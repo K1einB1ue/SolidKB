@@ -11,6 +11,7 @@ enum class PIN_Status{
 enum class PIN_Mode{
     Fast,
     FastPullUp,
+    AF_DCMI,
 };
 
 

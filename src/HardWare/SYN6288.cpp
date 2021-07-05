@@ -44,13 +44,11 @@ std::string& SYNDataFrame(const std::string Data)
 
 
 namespace HardWare{
-    SYN6288::SYN6288(uint32_t Uartx):Uart(Uartx,9600){
-        this->Enable();
-    }
+    SYN6288::SYN6288(uint32_t Uartx):Uart(Uartx,9600){}
     //已经内置了UTF-8到Unicode编码的转换.
     void SYN6288::Send(std::string Info){
         this->Close();
-        Override::Uart_Send(this,SYNDataFrame(convertUTF8ToUnicode(Info)));
+        this->DefaultSend(SYNDataFrame(convertUTF8ToUnicode(Info)));
         this->Open();
     }
 
@@ -58,17 +56,17 @@ namespace HardWare{
     //已经内置了UTF-8到Unicode编码的转换.
     void SYN6288::NonReciveSend(std::string Info){
         this->Close();
-        Override::Uart_Send(this,SYNDataFrame(convertUTF8ToUnicode(Info)));
+        this->DefaultSend(SYNDataFrame(convertUTF8ToUnicode(Info)));
     }
 
 
     void SYN6288::NoUTF8_Send(std::string Info){
         this->Close();
-        Override::Uart_Send(this,Info);
+        this->DefaultSend(Info);
         this->Open();
     }
     void SYN6288::NoUTF8_NonReciveSend(std::string Info){
         this->Close();
-        Override::Uart_Send(this,Info);
+        this->DefaultSend(Info);
     }
 }

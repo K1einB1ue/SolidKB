@@ -1,32 +1,51 @@
 #include<Abstract/IOAbstract.h>
 
-std::function<void(int chr)> PUT=nullptr;
-std::function<void(u_char*)> GET=nullptr;
 
 
-void IOAbstract::SetIO(){
-    this->SetIO_GET();
-    this->SetIO_PUT();
+IOAbstract::IOAbstract(){}
+IOAbstract::~IOAbstract(){}
+void IOAbstract::Pre_Send(){}
+void IOAbstract::Pre_Recv(){}
+void IOAbstract::Send_char(u_char chr){}
+void IOAbstract::Recv_char(u_char* chr_ptr){}
+
+int IOAbstract::Printf(const char *fmt,...){
+    va_list args;
+    unsigned int n;
+    char buffer[1024];
+    Pre_Send();
+    va_start(args,fmt);
+    n = vsprintf(buffer,fmt,args);
+    va_end(args);
+
+    for(uint i = 0;i < n;i ++){
+        Send_char(buffer[i]);
+    }
+
+    return n;
 }
 
-void IOAbstract::SetIO_PUT(){}
+int IOAbstract::Scanf(const char *fmt,...){
+    int i = 0;
+    u_char c;
+    va_list args;
+    char buffer[1024];
+        
+    Pre_Recv();
 
-void IOAbstract::SetIO_GET(){}
-
-int fputc(int ch,FILE *f){
-    if(PUT){
-        PUT(ch);
-        return ch;
+    while(1){
+        Recv_char(&c);
+        if((c == 0x0d) || (c == 0x0a)){
+            buffer[i] ='\0';
+            break;
+        }else{
+            buffer[i++] = c;
+        }
     }
-    return -1;
-}
 
-int fgetc(FILE *f)
-{
-    u_char ch;
-    if(GET){
-        GET(&ch);
-        return ch;
-    }
-    return -1;
+    va_start(args,fmt);
+    i = vsscanf(buffer,fmt,args);
+    va_end(args);
+
+    return i;
 }

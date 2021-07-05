@@ -16,4 +16,7 @@ class I2C_Component{
         void    Fast_Ack();
         void    Ack();
         void    NAck();       
+        bool    Send_Reg(u_char add,u_char reg,u_char txd);
+        bool    Read_Len(u_char add,u_char reg,u_char len,u_char *buf);
+        u_char  Read_Reg(u_char add,u_char reg);
 };

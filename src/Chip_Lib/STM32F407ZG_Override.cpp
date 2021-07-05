@@ -23,6 +23,18 @@
         GPIO_TypeDef* GPIO_Mapping[]={GPIOA,GPIOB,GPIOC,GPIOD,GPIOE,GPIOF,GPIOG,GPIOH,GPIOI};
         GPIO_InitTypeDef FastPullUp_Type;
         GPIO_InitTypeDef FastNoPull_Type;
+        GPIO_InitTypeDef AF_Type;
+
+        void GPIO_AF_Set(uint32_t GPIOx,uint32_t PINx,uint32_t AFx){   
+            AF_Type.Pin=1<<PINx;
+            AF_Type.Mode=GPIO_MODE_AF_PP;
+            AF_Type.Pull=GPIO_PULLUP;
+            AF_Type.Speed=GPIO_SPEED_FAST;
+            HAL_GPIO_Init(GPIO_Mapping[GPIOx],&AF_Type);
+
+            GPIO_Mapping[GPIOx] ->AFR[PINx>>3]&=~(0X0F<<((PINx&0X07)*4));
+            GPIO_Mapping[GPIOx] ->AFR[PINx>>3]|=(u_int32_t)AFx<<((PINx&0X07)*4);
+        } 
 
         void PullUpInit(uint32_t GPIOx,uint32_t PINx){
             FastPullUp_Type.Pin=1<<PINx;
@@ -63,6 +75,10 @@
             }},
             {PIN_Mode::FastPullUp,[](PIN* PIN){               
                 PullUpInit(PIN->GetGPIO(),PIN->GetPIN());
+                PIN_Default(PIN);
+            }},
+            {PIN_Mode::AF_DCMI,[](PIN* PIN){
+                GPIO_AF_Set(PIN->GetGPIO(),PIN->GetPIN(),13);
                 PIN_Default(PIN);
             }},
         };
@@ -232,12 +248,6 @@
 
         }
 
-        void Override::Uart_Send(Uart* Uart,std::string Info){
-            for(unsigned int i=0;i<Info.size();i++){
-                while((UART_Mapping[Uart->Uartx]->SR&0x40)==0);
-                UART_Mapping[Uart->Uartx]->DR=(u_char)Info[i];
-            }
-        }
         
         
 
@@ -355,9 +365,9 @@
 
 
         
-
-        
-
+        //数据锁
+        bool EnableGet[CFG_Uart_Size]={false};
+        bool Got[CFG_Uart_Size]={false};
 
         //数据位
         u_char Res[CFG_Uart_Size];
@@ -378,7 +388,22 @@
         void Override::Uart_Open(Uart* Uart){
             ReciveFlag[Uart->Uartx]=false;
         }
-        
+        void Override::Uart_Send(Uart* Uart,u_char* chr_ptr,unsigned int size){
+            for(unsigned int i=0;i<size;i++){
+                while((UART_Mapping[Uart->Uartx]->SR&0x40)==0);
+                UART_Mapping[Uart->Uartx]->DR=chr_ptr[i];
+            }
+        }
+
+        void Override::Uart_Recv(Uart* Uart,u_char* chr_ptr,unsigned int size){
+            EnableGet[Uart->Uartx]=true;
+            for(unsigned int cnt=0;cnt<size;cnt++){
+                while(!Got[Uart->Uartx]);
+                chr_ptr[cnt]=Res[Uart->Uartx];
+                Got[Uart->Uartx]=false;
+            }
+            EnableGet[Uart->Uartx]=false;
+        }
         //串口1中断服务程序
         extern "C" void USART1_IRQHandler(void)                	
         { 
@@ -388,11 +413,13 @@
             else if(USART1->SR&(1<<5)) {  
                 Res[0]=USART1->DR;                     
                 Override::UartOccupation[0].first[Len[0]++]=Res[0];
-                
+                if(EnableGet[0]){
+                    Got[0]=true;
+                }
                 if(EndCheck(0,Res[0])&&Override::UartOccupation[0].second){
                     Override::UartOccupation[0].second((char*)Override::UartOccupation[0].first,Len[0]-2);
                     Len[0]=0;                  
-                }		 
+                }	 
             }
         } 
 
@@ -403,6 +430,9 @@
             else if(USART2->SR&(1<<5)) {  
                 Res[1]=USART2->DR;   
                 Override::UartOccupation[1].first[Len[1]++]=Res[1];
+                if(EnableGet[1]){
+                    Got[1]=true;
+                }
                 if(EndCheck(1,Res[1])&&Override::UartOccupation[1].second){
                     Override::UartOccupation[1].second((char*)Override::UartOccupation[1].first,Len[1]-2);
                     Len[1]=0;
@@ -417,6 +447,9 @@
             else if(USART3->SR&(1<<5)) {  
                 Res[2]=USART3->DR;   
                 Override::UartOccupation[2].first[Len[2]++]=Res[2];
+                if(EnableGet[2]){
+                    Got[2]=true;
+                }
                 if(EndCheck(2,Res[2])&&Override::UartOccupation[2].second){
                     Override::UartOccupation[2].second((char*)Override::UartOccupation[2].first,Len[2]-2);
                     Len[2]=0;
@@ -431,6 +464,9 @@
             else if(UART4->SR&(1<<5)) {  
                 Res[3]=UART4->DR;   
                 Override::UartOccupation[2].first[Len[3]++]=Res[3];
+                if(EnableGet[3]){
+                    Got[3]=true;
+                }
                 if(EndCheck(3,Res[3])&&Override::UartOccupation[3].second){
                     Override::UartOccupation[3].second((char*)Override::UartOccupation[3].first,Len[3]-2);
                     Len[3]=0;
@@ -445,6 +481,9 @@
             else if(USART3->SR&(1<<5)) {  
                 Res[4]=UART5->DR;   
                 Override::UartOccupation[4].first[Len[4]++]=Res[4];
+                if(EnableGet[4]){
+                    Got[4]=true;
+                }
                 if(EndCheck(4,Res[4])&&Override::UartOccupation[4].second){
                     Override::UartOccupation[4].second((char*)Override::UartOccupation[4].first,Len[4]-2);
                     Len[4]=0;
@@ -454,4 +493,50 @@
 
         
     #endif
+
+
+    #ifdef __Enable_DCMI
+
+    void Override::DCMIx_PreEnable(){
+        __HAL_RCC_DCMI_CLK_ENABLE();
+
+        DCMI->CR=0x0;	
+        DCMI->IER=0x0;
+        DCMI->ICR=0x1F;
+        DCMI->ESCR=0x0;
+        DCMI->ESUR=0x0;
+        DCMI->CWSTRTR=0x0;
+        DCMI->CWSIZER=0x0;
+        
+        DCMI->CR|=0<<1;		//连续模式
+        DCMI->CR|=0<<2;		//全帧捕获
+        DCMI->CR|=0<<4;		//硬件同步HSYNC,VSYNC
+        DCMI->CR|=1<<5;		//PCLK 上升沿有效
+        DCMI->CR|=0<<6;		//HSYNC 低电平有效
+        DCMI->CR|=0<<7;		//VSYNC 低电平有效
+        DCMI->CR|=0<<8;		//捕获所有的帧
+        DCMI->CR|=0<<10; 	//8位数据格式  
+        DCMI->IER|=1<<0; 	//开启帧中断 
+        DCMI->CR|=1<<14; 	//DCMI使能
+
+
+        HAL_NVIC_EnableIRQ(DCMI_IRQn);				//使能USART2中断通道
+        HAL_NVIC_SetPriority(DCMI_IRQn,2,2);			//抢占优先级3，子优先级3
+    }
+    void Override::DCMIx_PreDisable(){
+        
+    }
+
+
+    extern "C" void DCMI_IRQHandler(void){  
+        if(DCMI->MISR&0X01){
+            if(HardWare::Peripheral_DCMI::DCMI_Callback){
+                HardWare::Peripheral_DCMI::DCMI_Callback();
+            }
+            DCMI->ICR|=1<<0;	//清除帧中断
+        }										 
+    } 
+    
+    #endif
+    
 #endif

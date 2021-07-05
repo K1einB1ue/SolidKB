@@ -18,6 +18,11 @@
 
     #if __Enable_PIN&&__Enable_SystemClock
         #define __Enable_I2C_Component 1
+        #define __Enable_SCCB_Component 1
+    #endif
+
+    #if __Enable_SCCB_Component&&(CFG_DCMI_Size)
+        #define __Enable_DCMI 1
     #endif
 
 #else
