@@ -259,40 +259,30 @@ u_char OV7725::Read_Reg_WithDefaultAdress(u_char reg){
     return this->Read_Reg(OV7725_ADDR,reg);
 }
 
-OV7725::OV7725(
-    uint32_t SDA_GPIOx,uint32_t SDA_PINx,
-    uint32_t SCL_GPIOx,uint32_t SCL_PINx,
-    uint32_t SGM_GPIOx,uint32_t SGM_PINx,
-    uint32_t RST_GPIOx,uint32_t RST_PINx):
-    SCCB_Component(SDA_GPIOx,SDA_PINx,SCL_GPIOx,SCL_PINx),
-    Peripheral_DCMI(),
-    SGM(SGM_GPIOx,SGM_PINx,PIN_Mode::Fast),
-    RST(RST_GPIOx,RST_PINx,PIN_Mode::Fast){
-    u_short i=0,reg=0;
-	
-	SGM=1;		//拉高，使用OV7725模块板载12M晶振，拉低使用单片机PA8输出时钟
-	
-	SystemClock::Delay(10);	
-	RST=0;	//复位OV7725
-	SystemClock::Delay(10);
-	RST=1;	//结束复位
-	SystemClock::Delay(10);
- 	Send_Reg_WithDefaultAdress(0x12,0x80);	//软复位OV7725
-	SystemClock::Delay(10); 
-	reg=Read_Reg_WithDefaultAdress(0X1c);		//读取厂家ID 高八位
+OV7725::OV7725(uint32_t SDA_GPIOx,uint32_t SDA_PINx,uint32_t SCL_GPIOx,uint32_t SCL_PINx,uint32_t SGM_GPIOx,uint32_t SGM_PINx,uint32_t RST_GPIOx,uint32_t RST_PINx):SCCB_Component(SDA_GPIOx,SDA_PINx,SCL_GPIOx,SCL_PINx),Peripheral_DCMI(),SGM(SGM_GPIOx,SGM_PINx,PIN_Mode::Fast),RST(RST_GPIOx,RST_PINx,PIN_Mode::Fast){
+    u_short i=0;
+	u_int reg=0;
+	SGM=1;																					//拉高，使用OV7725模块板载12M晶振，拉低使用单片机PA8输出时钟
+	SystemClock::Delay(100000);	
+	RST=0;																					//复位OV7725
+	SystemClock::Delay(100000);
+	RST=1;																					//结束复位
+	SystemClock::Delay(100000);
+ 	Send_Reg_WithDefaultAdress(0x12,0x80);													//软复位OV7725
+	SystemClock::Delay(100000); 
+	reg=Read_Reg_WithDefaultAdress(0X1c);													//读取厂家ID 高八位
 	reg<<=8;
-	reg|=Read_Reg_WithDefaultAdress(0X1d);		//读取厂家ID 低八位
+	reg|=Read_Reg_WithDefaultAdress(0X1d);													//读取厂家ID 低八位
 	if(reg!=OV7725_MID){
-        Debug::Warning("Reg!=OV7725_MID");
+		Debug::Warning("Reg="+std::to_string(reg)+" Normal=32674");
 	}
-	reg=Read_Reg_WithDefaultAdress(0X0a);		//读取厂家ID 高八位
+	reg=Read_Reg_WithDefaultAdress(0X0a);													//读取厂家ID 高八位
 	reg<<=8;
-	reg|=Read_Reg_WithDefaultAdress(0X0b);		//读取厂家ID 低八位
+	reg|=Read_Reg_WithDefaultAdress(0X0b);													//读取厂家ID 低八位
 	if(reg!=OV7725_PID){
-        Debug::Warning("Reg!=OV7725_PID");
-	}  
- 	//初始化 OV7725,采用QVGA分辨率(320*240)  
-	for(i=0;i<sizeof(ov7725_init_reg_tb1)/sizeof(ov7725_init_reg_tb1[0]);i++){								
+        Debug::Warning("Reg="+std::to_string(reg)+" Normal=30497");
+	}  																
+	for(i=0;i<sizeof(ov7725_init_reg_tb1)/sizeof(ov7725_init_reg_tb1[0]);i++){				//初始化 OV7725,采用QVGA分辨率(320*240)  			
 	   	Send_Reg_WithDefaultAdress(ov7725_init_reg_tb1[i][0],ov7725_init_reg_tb1[i][1]);
  	} 
 }

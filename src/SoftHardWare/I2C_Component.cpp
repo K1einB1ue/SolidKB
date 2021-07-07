@@ -81,7 +81,8 @@ bool    I2C_Component::Wait_Ack(){
 
 void    I2C_Component::Ack(){  
     SCL=0;
-	SDA.F_WriteMode();  
+	SDA.F_WriteMode(); 
+	SystemClock::Delay(2); 
 	SDA=0;
 	SystemClock::Delay(2);
 	SCL=1;
@@ -92,6 +93,7 @@ void    I2C_Component::Ack(){
 void    I2C_Component::NAck(){
     SCL=0;
 	SDA.F_WriteMode();  
+	SystemClock::Delay(2);
 	SDA=1;
 	SystemClock::Delay(2);
 	SCL=1;

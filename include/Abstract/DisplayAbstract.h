@@ -28,7 +28,7 @@ class DisplayBITAbstract
         void DrawCircle(unsigned int x, unsigned int y, unsigned int radius);
         void DrawChar(unsigned int x, unsigned int y,const char chr, u_char fontSize=12);
         void DrawString(unsigned int x, unsigned int y,const std::string &str, u_char fontSize=12);
-
+        void DrawMemory(unsigned int x, unsigned int y, u_char* Memory, unsigned int height, unsigned int width);
         virtual void Refresh();
         void Clear();
         
