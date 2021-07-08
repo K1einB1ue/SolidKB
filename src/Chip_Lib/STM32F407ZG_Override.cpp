@@ -231,7 +231,7 @@
 
 
         
-        void Override::Uartx_PreEnable(Uart* Uart){
+        void Override::Uartx_PreEnable(Peripheral_UART* Uart){
             USART_Handler[Uart->Uartx].Instance=                                      UART_Mapping[Uart->Uartx];
             USART_Handler[Uart->Uartx].Init.BaudRate=                                 Uart->Bound*3.125376;
             USART_Handler[Uart->Uartx].Init.WordLength=                               UART_WORDLENGTH_8B;     //字长为8位数据格式.
@@ -244,7 +244,7 @@
             HAL_UART_Receive_IT(&USART_Handler[Uart->Uartx],UartOccupation[Uart->Uartx].first,1);
         }
 
-        void Override::Uartx_PreDisable(Uart* Uart){
+        void Override::Uartx_PreDisable(Peripheral_UART* Uart){
 
         }
 
@@ -382,20 +382,20 @@
         bool ReciveFlag[CFG_Uart_Size]={false};
 
 
-        void Override::Uart_Close(Uart* Uart){
+        void Override::Uart_Close(Peripheral_UART* Uart){
             ReciveFlag[Uart->Uartx]=true;
         }
-        void Override::Uart_Open(Uart* Uart){
+        void Override::Uart_Open(Peripheral_UART* Uart){
             ReciveFlag[Uart->Uartx]=false;
         }
-        void Override::Uart_Send(Uart* Uart,u_char* chr_ptr,unsigned int size){
+        void Override::Uart_Send(Peripheral_UART* Uart,u_char* chr_ptr,unsigned int size){
             for(unsigned int i=0;i<size;i++){
                 while((UART_Mapping[Uart->Uartx]->SR&0x40)==0);
                 UART_Mapping[Uart->Uartx]->DR=chr_ptr[i];
             }
         }
 
-        void Override::Uart_Recv(Uart* Uart,u_char* chr_ptr,unsigned int size){
+        void Override::Uart_Recv(Peripheral_UART* Uart,u_char* chr_ptr,unsigned int size){
             EnableGet[Uart->Uartx]=true;
             for(unsigned int cnt=0;cnt<size;cnt++){
                 while(!Got[Uart->Uartx]);

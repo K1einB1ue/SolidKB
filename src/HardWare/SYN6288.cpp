@@ -44,7 +44,7 @@ std::string& SYNDataFrame(const std::string Data)
 
 
 namespace HardWare{
-    SYN6288::SYN6288(uint32_t Uartx):Uart(Uartx,9600){}
+    SYN6288::SYN6288(uint32_t Uartx):Peripheral_UART(Uartx,9600){}
     //已经内置了UTF-8到Unicode编码的转换.
     void SYN6288::Send(std::string Info){
         this->Close();

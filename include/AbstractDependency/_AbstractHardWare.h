@@ -37,23 +37,23 @@
 
 #if __Enable_Uart
 
-    class Uart;
+    class Peripheral_UART;
 
     namespace Override{
         //映射Uart回调函数
         extern std::vector<std::pair<u_char*,std::function<void(char*,int)>&>> UartOccupation;
 
-        extern void Uartx_PreEnable(Uart* Uart);
+        extern void Uartx_PreEnable(Peripheral_UART* Uart);
 
-        extern void Uartx_PreDisable(Uart* Uart);
+        extern void Uartx_PreDisable(Peripheral_UART* Uart);
 
-        extern void Uart_Send(Uart* Uart,u_char* chr_ptr,unsigned int size);
+        extern void Uart_Send(Peripheral_UART* Uart,u_char* chr_ptr,unsigned int size);
         
-        extern void Uart_Recv(Uart* Uart,u_char* chr_ptr,unsigned int size);
+        extern void Uart_Recv(Peripheral_UART* Uart,u_char* chr_ptr,unsigned int size);
 
-        extern void Uart_Close(Uart* Uart);
+        extern void Uart_Close(Peripheral_UART* Uart);
 
-        extern void Uart_Open(Uart* Uart);
+        extern void Uart_Open(Peripheral_UART* Uart);
     }
 
 #endif

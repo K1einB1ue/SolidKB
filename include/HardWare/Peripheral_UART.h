@@ -2,7 +2,7 @@
 #include<AbstractDependency/__AbstractDependency.h>
 #include<Abstract/IOAbstract.h>
 
-class Uart{
+class Peripheral_UART{
     private:
     std::function<void(char*,int)>* Callback=nullptr;
     public:
@@ -10,8 +10,8 @@ class Uart{
     uint32_t Bound;
     uint32_t Uartx;
 
-    Uart(uint32_t Uartx,uint32_t Bound);
-    virtual ~Uart();
+    Peripheral_UART(uint32_t Uartx,uint32_t Bound);
+    virtual ~Peripheral_UART();
     void BindCallback(std::function<void(char*,int)> Callback);
 
     //用于提前绑定函数
@@ -31,7 +31,7 @@ class Uart{
 };
 
 
-class IO_Uart:public Uart,public IOAbstract{
+class IO_Uart:public Peripheral_UART,public IOAbstract{
     public:
     IO_Uart(uint32_t Uartx,uint32_t Bound);
     virtual ~IO_Uart();

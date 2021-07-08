@@ -1,5 +1,5 @@
 #pragma once
-#include<HardWare/Uart.h>
+#include<HardWare/Peripheral_UART.h>
 #include<SoftHardWare/SystemClock.h>
 
 
@@ -7,7 +7,7 @@
 namespace HardWare{
     //声音合成模块(有点小拉跨说实话)
     //Type:[X]
-    class SYN6288:public Uart{
+    class SYN6288:public Peripheral_UART{
         public:
         SYN6288(uint32_t Uartx);
         virtual void Send(std::string Info);

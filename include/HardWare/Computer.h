@@ -1,5 +1,5 @@
 #pragma once
-#include<HardWare/Uart.h>
+#include<HardWare/Peripheral_UART.h>
 #include<SoftHardWare/SystemClock.h>
 
 namespace HardWare{
