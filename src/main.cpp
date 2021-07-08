@@ -10,7 +10,7 @@ u_char th[4][3]={{0xFE,0xFF,0xFF},{0xFF,0x00,0xFF},{0xFF,0xFF,0xFF},{0xFF,0xFF,0
 void HardWareInit(){
     SystemClock::Clock(Clock_Speed::HighSpeed);         //配置为高速的系统时钟(目前也只实现了高速).
 
-    COM = new HardWare::Computer(1,115200);             //使用串口1,115200波特率作为电脑端口.
+    COM = new HardWare::Computer(1,115200);             //使用串口2,115200波特率作为电脑端口.
     Debug::DebugCallback=[&](std::string Info){         //使用电脑端口的输出作为Debug信息的回调方式.
         COM->Send(Info);
     };
@@ -49,7 +49,6 @@ int main(){
             SSD1306_M->Refresh();
         }  
         
-       //SystemClock::Delay(1000000);
     }
     
     return 0;
