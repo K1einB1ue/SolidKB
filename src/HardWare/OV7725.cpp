@@ -274,13 +274,13 @@ OV7725::OV7725(uint32_t SDA_GPIOx,uint32_t SDA_PINx,uint32_t SCL_GPIOx,uint32_t 
 	reg<<=8;
 	reg|=Read_Reg_WithDefaultAdress(0X1d);													//读取厂家ID 低八位
 	if(reg!=OV7725_MID){
-		Debug::Warning("Reg="+std::to_string(reg)+" Normal=32674");
+		Debug::Warning("OV7725: Reg="+std::to_string(reg)+" Normal=32674");
 	}
 	reg=Read_Reg_WithDefaultAdress(0X0a);													//读取厂家ID 高八位
 	reg<<=8;
 	reg|=Read_Reg_WithDefaultAdress(0X0b);													//读取厂家ID 低八位
 	if(reg!=OV7725_PID){
-        Debug::Warning("Reg="+std::to_string(reg)+" Normal=30497");
+        Debug::Warning("OV7725: Reg="+std::to_string(reg)+" Normal=30497");
 	}  																
 	for(i=0;i<sizeof(ov7725_init_reg_tb1)/sizeof(ov7725_init_reg_tb1[0]);i++){				//初始化 OV7725,采用QVGA分辨率(320*240)  			
 	   	Send_Reg_WithDefaultAdress(ov7725_init_reg_tb1[i][0],ov7725_init_reg_tb1[i][1]);

@@ -10,6 +10,8 @@ namespace HardWare{
         static std::function<void(void)> DCMI_Callback;
         Peripheral_DCMI();
         ~Peripheral_DCMI();
+        void Enable();
+        void Disable();
         void EnableDMA();
         void DisableDMA();
     };

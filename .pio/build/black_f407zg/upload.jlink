@@ -1,4 +1,0 @@
-h
-loadbin .pio\build\black_f407zg\firmware.bin, 0x08000000
-r
-q

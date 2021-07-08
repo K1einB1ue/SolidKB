@@ -103,9 +103,9 @@ void    I2C_Component::NAck(){
 
 
 
-bool    I2C_Component::Send_Reg(u_char add,u_char reg,u_char txd){
+bool    I2C_Component::Send_Reg(u_char reg,u_char txd){
     this->Start(); 
-	this->Send_Byte(add<<1|0);  //发送器件地址+写命令	
+	this->Send_Byte(this->address<<1|0);  //发送器件地址+写命令	
 	if(this->Wait_Ack()){
 		this->Stop();
         return false;	 	
@@ -121,9 +121,9 @@ bool    I2C_Component::Send_Reg(u_char add,u_char reg,u_char txd){
 	return false;
 }
 
-bool    I2C_Component::Read_Len(u_char add,u_char reg,u_char len,u_char *buf){
+bool    I2C_Component::Read_Len(u_char reg,u_char len,u_char *buf){
     this->Start(); 
-	this->Send_Byte(add<<1|0);//发送器件地址+写命令	
+	this->Send_Byte(this->address<<1|0);//发送器件地址+写命令	
 	if(this->Wait_Ack())	//等待应答
 	{
 		this->Stop();	 
@@ -132,7 +132,7 @@ bool    I2C_Component::Read_Len(u_char add,u_char reg,u_char len,u_char *buf){
     this->Send_Byte(reg);	//写寄存器地址
     this->Wait_Ack();		//等待应答
     this->Start(); 
-	this->Send_Byte(add<<1|1);//发送器件地址+读命令	
+	this->Send_Byte(this->address<<1|1);//发送器件地址+读命令	
     this->Wait_Ack();		//等待应答 
 	while(len)
 	{
@@ -145,15 +145,15 @@ bool    I2C_Component::Read_Len(u_char add,u_char reg,u_char len,u_char *buf){
 	return false;	
 }
 
-u_char  I2C_Component::Read_Reg(u_char add,u_char reg){
+u_char  I2C_Component::Read_Reg(u_char reg){
     u_char res;
     this->Start();
-	this->Send_Byte(add<<1|0);  //发送器件地址+写命令	
+	this->Send_Byte(this->address<<1|0);  //发送器件地址+写命令	
 	this->Wait_Ack(); 	        //等待应答 
     this->Send_Byte(reg);	    //写寄存器地址
     this->Wait_Ack(); 		    //等待应答
     this->Start();
-	this->Send_Byte(add<<1|1);  //发送器件地址+读命令	
+	this->Send_Byte(this->address<<1|1);  //发送器件地址+读命令	
     this->Wait_Ack();		    //等待应答 
 	res=this->Read_Byte(false); //读取数据,发送nACK 
     this->Stop();			    //产生一个停止条件 

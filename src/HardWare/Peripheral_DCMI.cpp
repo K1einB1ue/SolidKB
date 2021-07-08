@@ -17,10 +17,18 @@ namespace HardWare{
     VSYNC(4, 6,PIN_Mode::AF_DCMI),
     HREF (4, 5,PIN_Mode::AF_DCMI),
     PCLK (1, 6,PIN_Mode::AF_DCMI){
-        Override::DCMIx_PreEnable();
+    Override::DCMI_Init();
+    Override::DCMI_Enable();
     }
     Peripheral_DCMI::~Peripheral_DCMI(){
-        Override::DCMIx_PreDisable();
+        Override::DCMI_Disable();
+    }
+
+    void Peripheral_DCMI::Enable(){
+        Override::DCMI_Enable();
+    }
+    void Peripheral_DCMI::Disable(){
+        Override::DCMI_Disable();
     }
     void Peripheral_DCMI::EnableDMA(){
 

@@ -17,7 +17,7 @@ namespace HardWare{
         };
 
         public:
-        u_char address=0;
+        
         struct Gyroscope{
             short gx=0,gy=0,gz=0;
         }Gyroscope_Pack;
@@ -28,7 +28,8 @@ namespace HardWare{
 
         short Temperature=0;
 
-        MPU6050(uint32_t SDA_GPIOx,uint32_t SDA_PINx,uint32_t SCL_GPIOx,uint32_t SCL_PINx,u_char address);
+        MPU6050(uint32_t SDA_GPIOx,uint32_t SDA_PINx,uint32_t SCL_GPIOx,uint32_t SCL_PINx);
+
         //设置MPU6050陀螺仪传感器满量程范围
         bool Set_Gyro_Fsr(Gyro_Fsr Fsr);
         //设置MPU6050加速度传感器满量程范围

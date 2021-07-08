@@ -1,7 +1,7 @@
 #include<HardWare/MPU6050.h>
 #include<AbstractDependency/_AbstractHardWare.h>
 #include<SoftHardWare/SystemClock.h>
-
+#define MPU_ADDR				0X68
 #define MPU_SELF_TESTX_REG		0X0D	//自检寄存器X
 #define MPU_SELF_TESTY_REG		0X0E	//自检寄存器Y
 #define MPU_SELF_TESTZ_REG		0X0F	//自检寄存器Z
@@ -72,25 +72,26 @@
 
 namespace HardWare{
 
-    MPU6050::MPU6050(uint32_t SDA_GPIOx,uint32_t SDA_PINx,uint32_t SCL_GPIOx,uint32_t SCL_PINx,u_char address):I2C_Component(SDA_GPIOx,SDA_PINx,SCL_GPIOx,SCL_PINx){
-        u_char res;
-        this->address=address;
-        this->Send_Reg(this->address,MPU_PWR_MGMT1_REG,0x80);       //复位MPU6050
+    MPU6050::MPU6050(uint32_t SDA_GPIOx,uint32_t SDA_PINx,uint32_t SCL_GPIOx,uint32_t SCL_PINx):I2C_Component(SDA_GPIOx,SDA_PINx,SCL_GPIOx,SCL_PINx){
+        this->address=MPU_ADDR;
+        this->Send_Reg(MPU_PWR_MGMT1_REG,0x80);         //复位MPU6050
         SystemClock::Delay(100000);
-        this->Send_Reg(this->address,MPU_PWR_MGMT1_REG,0x00);       //唤醒MPU6050
+        this->Send_Reg(MPU_PWR_MGMT1_REG,0x00);         //唤醒MPU6050
         this->Set_Gyro_Fsr(Gyro_Fsr::Fsr_2000dps);
         this->Set_Accel_Fsr(Accel_Fsr::Fsr_2g);
         this->Set_Rate(200);
-        this->Send_Reg(this->address,MPU_INT_EN_REG,0X00);	        //关闭所有中断
-        this->Send_Reg(this->address,MPU_USER_CTRL_REG,0X00);	    //I2C主模式关闭
-        this->Send_Reg(this->address,MPU_FIFO_EN_REG,0X00);	        //关闭FIFO
-        this->Send_Reg(this->address,MPU_INTBP_CFG_REG,0X80);	    //INT引脚低电平有效
-        res=this->Read_Reg(this->address,MPU_DEVICE_ID_REG); 
+        this->Send_Reg(MPU_INT_EN_REG,0X00);	        //关闭所有中断
+        this->Send_Reg(MPU_USER_CTRL_REG,0X00);	        //I2C主模式关闭
+        this->Send_Reg(MPU_FIFO_EN_REG,0X00);	        //关闭FIFO
+        this->Send_Reg(MPU_INTBP_CFG_REG,0X80);	        //INT引脚低电平有效
+        u_char res=this->Read_Reg(MPU_DEVICE_ID_REG); 
         if(res==this->address)//器件ID正确
         {
-            this->Send_Reg(this->address,MPU_PWR_MGMT1_REG,0X01);	//设置CLKSEL,PLL X轴为参考
-            this->Send_Reg(this->address,MPU_PWR_MGMT2_REG,0X00);	//加速度与陀螺仪都工作
-            this->Set_Rate(100);						            //设置采样率为100Hz,周期为10ms
+            this->Send_Reg(MPU_PWR_MGMT1_REG,0X01);	    //设置CLKSEL,PLL X轴为参考
+            this->Send_Reg(MPU_PWR_MGMT2_REG,0X00);	    //加速度与陀螺仪都工作
+            this->Set_Rate(100);						//设置采样率为100Hz,周期为10ms
+        }else{
+            Debug::Warning("MPU6050: res="+std::to_string(res)+" Normal=104");
         }
     }
 
@@ -111,7 +112,7 @@ namespace HardWare{
         else if(Lpf>=20)data=4;
         else if(Lpf>=10)data=5;
         else data=6; 
-        return this->Send_Reg(this->address,MPU_CFG_REG,data);          //设置数字低通滤波器
+        return this->Send_Reg(MPU_CFG_REG,data);          //设置数字低通滤波器
     }
 
     //设置MPU6050的采样率(4~1000)
@@ -120,14 +121,14 @@ namespace HardWare{
         if(Rate>1000)Rate=1000;
         if(Rate<4)Rate=4;
         data=1000/Rate-1;
-        data=this->Send_Reg(this->address,MPU_SAMPLE_RATE_REG,data);	//设置数字低通滤波器
+        data=this->Send_Reg(MPU_SAMPLE_RATE_REG,data);	//设置数字低通滤波器
         return this->Set_LPF(Rate/2);	                                //自动设置LPF为采样率的一半
     }
 
     bool MPU6050::Refresh_Temperature(){
         u_char buf[2]; 
         short raw;
-        this->Read_Len(this->address,MPU_TEMP_OUTH_REG,2,buf); 
+        this->Read_Len(MPU_TEMP_OUTH_REG,2,buf); 
         raw=((u_short)buf[0]<<8)|buf[1];  
         this->Temperature=(36.53+((double)raw)/340)*100;  
         return true;
@@ -135,7 +136,7 @@ namespace HardWare{
 
     bool MPU6050::Refresh_Gyroscope(){
         u_char buf[6],res;  
-        res=this->Read_Len(this->address,MPU_GYRO_XOUTH_REG,6,buf);
+        res=this->Read_Len(MPU_GYRO_XOUTH_REG,6,buf);
         if(res==0){
             this->Gyroscope_Pack.gx=((u_short)buf[0]<<8)|buf[1];  
             this->Gyroscope_Pack.gy=((u_short)buf[2]<<8)|buf[3];  
@@ -146,7 +147,7 @@ namespace HardWare{
 
     bool MPU6050::Refresh_Accelerometer(){
         u_char buf[6],res;  
-        res=this->Read_Len(this->address,MPU_ACCEL_XOUTH_REG,6,buf);
+        res=this->Read_Len(MPU_ACCEL_XOUTH_REG,6,buf);
         if(res==0){
             this->Accelerometer_Pack.ax=((u_short)buf[0]<<8)|buf[1];  
             this->Accelerometer_Pack.ay=((u_short)buf[2]<<8)|buf[3]; 
@@ -154,5 +155,4 @@ namespace HardWare{
         } 	
         return res;
     }
-
 }

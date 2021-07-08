@@ -65,9 +65,11 @@
 
     namespace Override{
 
-        extern void DCMIx_PreEnable();
+        extern void DCMI_Init();
 
-        extern void DCMIx_PreDisable();
+        extern void DCMI_Enable();
+
+        extern void DCMI_Disable();
     }
 
 #endif

@@ -497,7 +497,7 @@
 
     #ifdef __Enable_DCMI
 
-    void Override::DCMIx_PreEnable(){
+    void Override::DCMI_Init(){
         __HAL_RCC_DCMI_CLK_ENABLE();
 
         DCMI->CR=0x0;	
@@ -523,10 +523,17 @@
         HAL_NVIC_EnableIRQ(DCMI_IRQn);				//使能USART2中断通道
         HAL_NVIC_SetPriority(DCMI_IRQn,2,2);			//抢占优先级3，子优先级3
     }
-    void Override::DCMIx_PreDisable(){
-        
+
+    void Override::DCMI_Enable(){
+        DMA2_Stream1->CR|=1<<0;		//开启DMA2,Stream1 
+	    DCMI->CR|=1<<0; 			//DCMI捕获使能  
     }
 
+    void Override::DCMI_Disable(){
+        DCMI->CR&=~(1<<0); 			//DCMI捕获关闭   
+        while(DCMI->CR&0X01);		//等待传输结束 
+        DMA2_Stream1->CR&=~(1<<0);	//关闭DMA2,Stream1 
+    }
 
     extern "C" void DCMI_IRQHandler(void){  
         if(DCMI->MISR&0X01){
