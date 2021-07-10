@@ -160,6 +160,23 @@ u_char  I2C_Component::Read_Reg(u_char reg){
 	return res;	
 }
 
+u_char  I2C_Component::Read_Byte(){
+	u_char receive=0;
+	SDA.F_ReadMode();
+	for (u_char i = 0; i < 8; i++)
+	{
+		SCL=0;
+		SystemClock::Delay(1);		
+		receive<<=1;
+		if (SDA){
+			receive++;
+		}
+		SCL=1;		
+		SystemClock::Delay(1);
+	}
+	return receive;
+}
+
 void    I2C_Component::Fast_Ack(){
     SCL=1;SystemClock::Delay(1);
     SCL=0;SystemClock::Delay(1);

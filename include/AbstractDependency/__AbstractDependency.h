@@ -15,8 +15,13 @@
 
 namespace Debug{
     extern std::function<void(std::string)> DebugCallback;
+    extern void InterruptSend(std::string Info);
     extern void Error(std::string Info);
     extern void Warning(std::string Info);
     extern void Info(std::string Info);
+    extern void StartDebug(std::string Title);
+    extern void EndDebug();
+    extern void StartBlock(std::string Title);
+    extern void EndBlock(std::string Title);
 };
 

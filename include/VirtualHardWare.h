@@ -10,6 +10,7 @@
     #include<SoftHardWare/I2C_Component.h>
     #include<HardWare/SSD1306.h>
     #include<HardWare/MPU6050.h>
+    #include<HardWare/AD7705.h>
     #if __Enable_DCMI
         #include<HardWare/Peripheral_DCMI.h>
         #include<HardWare/OV7725.h>

@@ -14,6 +14,10 @@ enum class PIN_Mode{
     AF_DCMI,
 };
 
+namespace std{
+    string& to_string(PIN_Mode mode);
+}
+
 
 class PIN
 {

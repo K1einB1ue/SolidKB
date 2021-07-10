@@ -10,7 +10,10 @@ namespace HardWare{
     //Type:[I2C][SPI]
     class SSD1306:public I2C_Component,public DisplayBITAbstract{
         protected:
-        SSD1306(uint32_t SDA_GPIOx,uint32_t SDA_PINx,uint32_t SCL_GPIOx,uint32_t SCL_PINx);
+        SSD1306(
+            uint32_t SDA_GPIOx,uint32_t SDA_PINx,
+            uint32_t SCL_GPIOx,uint32_t SCL_PINx
+        );
         std::stack<CMD> CMDs;
         public:
         volatile const bool ON=false;
@@ -25,10 +28,8 @@ namespace I2C{
     class SSD1306:public HardWare::SSD1306{ 
         public:
             SSD1306(
-                uint32_t SDA_GPIOx,
-                uint32_t SDA_PINx,
-                uint32_t SCL_GPIOx,
-                uint32_t SCL_PINx
+                uint32_t SDA_GPIOx,uint32_t SDA_PINx,
+                uint32_t SCL_GPIOx,uint32_t SCL_PINx
             );
             virtual ~SSD1306();
             virtual void Refresh();
@@ -46,16 +47,11 @@ namespace SPI{
             void SSD1306_Cmd(u_char txd);
         public:
             SSD1306(
-                uint32_t SDA_GPIOx,
-                uint32_t SDA_PINx,
-                uint32_t SCL_GPIOx,
-                uint32_t SCL_PINx,
-                uint32_t RES_GPIOx,
-                uint32_t RES_PINx,
-                uint32_t DC_GPIOx,
-                uint32_t DC_PINx,
-                uint32_t CS_GPIOx,
-                uint32_t CS_PINx
+                uint32_t SDA_GPIOx,uint32_t SDA_PINx,
+                uint32_t SCL_GPIOx,uint32_t SCL_PINx,
+                uint32_t RES_GPIOx,uint32_t RES_PINx,
+                uint32_t DC_GPIOx,uint32_t DC_PINx,
+                uint32_t CS_GPIOx,uint32_t CS_PINx
             );
             virtual ~SSD1306();
             virtual void Refresh();
