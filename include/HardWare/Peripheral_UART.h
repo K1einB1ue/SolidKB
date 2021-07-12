@@ -20,7 +20,6 @@ class Peripheral_UART{
     void Close();
 
     void DefaultSend(std::string Info);
-    u_char RX_Buffer[20];
     virtual void NonReciveSend(std::string Info);
     virtual void Send(std::string Info);
 

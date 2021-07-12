@@ -11,6 +11,7 @@
     #include<HardWare/SSD1306.h>
     #include<HardWare/MPU6050.h>
     #include<HardWare/AD7705.h>
+    #include<HardWare/TOF10120.h>
     #if __Enable_DCMI
         #include<HardWare/Peripheral_DCMI.h>
         #include<HardWare/OV7725.h>
@@ -19,6 +20,7 @@
 
 #if __Enable_Uart
     #include<HardWare/Peripheral_UART.h>
+    #include<HardWare/TOF10120.h>
     #include<HardWare/Computer.h>
     #ifdef __Enable_SystemClock
         #include<HardWare/ESP8266.h>
@@ -29,3 +31,6 @@
 #if __Enable_SystemClock
     #include<SoftHardWare/SystemClock.h>
 #endif
+
+
+

@@ -22,6 +22,6 @@ namespace Debug{
     extern void StartDebug(std::string Title);
     extern void EndDebug();
     extern void StartBlock(std::string Title);
-    extern void EndBlock(std::string Title);
+    extern void EndBlock();
 };
 

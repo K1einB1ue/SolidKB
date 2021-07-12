@@ -119,10 +119,13 @@ namespace HardWare{
         this->WriteByte(REG_CLOCK | WRITE | CH_1);              /* 先写通信寄存器，下一步是写时钟寄存器 */
         this->WriteByte(CLKDIS_0 | CLK_4_9152M | FS_50HZ);      /* 刷新速率50Hz */
         //this->WriteByte(CLKDIS_0 | CLK_4_9152M | FS_500HZ);	/* 刷新速率500Hz */
-
+        Debug::StartBlock("CH1_CalibSelf");
         this->CalibSelf(ADC_Channel::Ch1);
+        Debug::EndBlock();
         SystemClock::Delay(50000);
+        Debug::StartBlock("CH2_CalibSelf");
         this->CalibSelf(ADC_Channel::Ch2);
+        Debug::EndBlock();
         SystemClock::Delay(50000);
     }
 
@@ -309,13 +312,13 @@ namespace HardWare{
 
     void AD7705::WaitDRDY(){    
         uint32_t i;
-        for(i=0;i<4000000;i++){
+        for(i=0;i<4000000ul;i++){
             if(!DRDY){
                 break;
             }
         }
-        if(i>=4000000){
-            Debug::Warning("AD7705 WaitDRDY TimeOut!");
+        if(i>=4000000ul){
+            Debug::Warning("WaitDRDY TimeOut!");
         }
     }
 

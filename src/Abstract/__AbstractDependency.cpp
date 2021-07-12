@@ -4,7 +4,7 @@ std::function<void(std::string)> Debug::DebugCallback=nullptr;
 std::stack<std::string> IndentStack;
 
 static u_char Indent=0;
-static std::string IndentStr,InterruptIndentStr;
+static std::string IndentStr="",InterruptIndentStr="";
 void RefreshIndent(){
     IndentStr.resize(Indent*2);
     InterruptIndentStr.resize(Indent*2);
@@ -61,7 +61,7 @@ void Debug::StartBlock(std::string Title){
     }
 }
 
-void Debug::EndBlock(std::string Title){
+void Debug::EndBlock(){
     if(DebugCallback&&Indent){
         Indent--;
         RefreshIndent();
