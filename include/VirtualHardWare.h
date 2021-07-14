@@ -8,6 +8,8 @@
 
 #if __Enable_I2C_Component
     #include<SoftHardWare/I2C_Component.h>
+    #include<SoftHardWare/SPI_Component.h>
+    #include<SoftHardWare/SCCB_Component.h>
     #include<HardWare/SSD1306.h>
     #include<HardWare/MPU6050.h>
     #include<HardWare/AD7705.h>

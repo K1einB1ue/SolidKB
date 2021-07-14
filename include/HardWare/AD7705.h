@@ -1,11 +1,12 @@
 #pragma once
 #include<SoftHardWare/I2C_Component.h>
+#include<SoftHardWare/SPI_Component.h>
 #include<Abstract/DisplayAbstract.h>
 
 namespace HardWare{
-    class AD7705:protected I2C_Component{
+    class AD7705:protected SPI_Component{
         private:
-        PIN CS,RST,DRDY;
+        PIN RST,DRDY;
         void WriteByte(u_char data);
         void Write3Byte(u_int data);
         void WriteReg(u_char regID,u_int regValue);
@@ -21,8 +22,9 @@ namespace HardWare{
             Ch2
         };
         AD7705(
+            uint32_t DIN_GPIOx  ,uint32_t DIN_PINx, 
             uint32_t DOUT_GPIOx ,uint32_t DOUT_PINx,
-            uint32_t SCL_GPIOx  ,uint32_t SCL_PINx,
+            uint32_t SCK_GPIOx  ,uint32_t SCK_PINx,
             uint32_t CS_GPIOx   ,uint32_t CS_PINx,
             uint32_t RST_GPIOx  ,uint32_t RST_PINx,
             uint32_t DRDY_GPIOx ,uint32_t DRDY_PINx

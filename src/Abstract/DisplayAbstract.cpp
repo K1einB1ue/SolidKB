@@ -23,6 +23,12 @@ void DisplayBITAbstract::__GraphicInit(unsigned int width, unsigned int height){
         this->GRAM[i]=new u_char[this->height];
     }
     this->Clear();
+
+    Debug::StartBlock("DisplayAbstract");
+        Debug::Info("PixelWidth:"+std::to_string(width));
+        Debug::Info("PixelHeight:"+std::to_string(height));
+    Debug::EndBlock();
+    
 }
 
 

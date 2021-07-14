@@ -7,24 +7,24 @@
 enum
 {
 	/* 寄存器选择  RS2 RS1 RS0  */
-	REG_COMM	    = 0x00,	/* 通信寄存器 */
-	REG_SETUP	    = 0x10,	/* 设置寄存器 */
-	REG_CLOCK	    = 0x20,	/* 时钟寄存器 */
-	REG_DATA	    = 0x30,	/* 数据寄存器 */
-	REG_ZERO_CH1	= 0x60,	/* CH1 偏移寄存器 */
-	REG_FULL_CH1	= 0x70,	/* CH1 满量程寄存器 */
-	REG_ZERO_CH2	= 0x61,	/* CH2 偏移寄存器 */
-	REG_FULL_CH2	= 0x71,	/* CH2 满量程寄存器 */
+	REG_COMM	    = 0x00,	    /* 通信寄存器 */
+	REG_SETUP	    = 0x10,	    /* 设置寄存器 */
+	REG_CLOCK	    = 0x20,	    /* 时钟寄存器 */
+	REG_DATA	    = 0x30,	    /* 数据寄存器 */
+	REG_ZERO_CH1	= 0x60,	    /* CH1 偏移寄存器 */
+	REG_FULL_CH1	= 0x70,	    /* CH1 满量程寄存器 */
+	REG_ZERO_CH2	= 0x61,	    /* CH2 偏移寄存器 */
+	REG_FULL_CH2	= 0x71,	    /* CH2 满量程寄存器 */
 
 	/* 读写操作 */
-	WRITE 		    = 0x00,	/* 写操作 */
-	READ 		    = 0x08,	/* 读操作 */
+	WRITE 		    = 0x00,	    /* 写操作 */
+	READ 		    = 0x08,	    /* 读操作 */
 
 	/* 通道 */
-	CH_1		    = 0,	/* AIN1+  AIN1- */
-	CH_2		    = 1,	/* AIN2+  AIN2- */
-	CH_3		    = 2,	/* AIN1-  AIN1- */
-	CH_4		    = 3		/* AIN1-  AIN2- */
+	CH_1		    = 0,	    /* AIN1+  AIN1- */
+	CH_2		    = 1,	    /* AIN2+  AIN2- */
+	CH_3		    = 2,	    /* AIN1-  AIN1- */
+	CH_4		    = 3		    /* AIN1-  AIN2- */
 };
 
 /* 设置寄存器bit定义 */
@@ -77,8 +77,8 @@ enum
 
 	/*
 		四十九、电子秤应用中提高TM7705 精度的方法
-			当使用主时钟为 2.4576MHz 时，强烈建议将时钟寄存器设为 84H,此时数据输出更新率为10Hz,即每0.1S 输出一个新数据。
-			当使用主时钟为 1MHz 时，强烈建议将时钟寄存器设为80H, 此时数据输出更新率为4Hz, 即每0.25S 输出一个新数据
+        当使用主时钟为 2.4576MHz 时，强烈建议将时钟寄存器设为 84H,此时数据输出更新率为10Hz,即每0.1S 输出一个新数据。
+        当使用主时钟为 1MHz 时，强烈建议将时钟寄存器设为80H, 此时数据输出更新率为4Hz, 即每0.25S 输出一个新数据
 	*/
 	ZERO_0		    = 0x00,
 	ZERO_1		    = 0x80
@@ -87,18 +87,19 @@ enum
 
 namespace HardWare{
     AD7705::AD7705(
+        uint32_t DIN_GPIOx  ,uint32_t DIN_PINx, 
         uint32_t DOUT_GPIOx ,uint32_t DOUT_PINx,
-        uint32_t SCL_GPIOx  ,uint32_t SCL_PINx,
+        uint32_t SCK_GPIOx  ,uint32_t SCK_PINx,
         uint32_t CS_GPIOx   ,uint32_t CS_PINx,
         uint32_t RST_GPIOx  ,uint32_t RST_PINx,
         uint32_t DRDY_GPIOx ,uint32_t DRDY_PINx
-    ):I2C_Component(DOUT_GPIOx,DOUT_PINx,SCL_GPIOx,SCL_PINx),
-    CS(CS_GPIOx,CS_PINx,PIN_Mode::Fast),
+    ):SPI_Component(DIN_GPIOx,DIN_PINx,DOUT_GPIOx,DOUT_PINx,SCK_GPIOx,SCK_PINx,CS_GPIOx,CS_PINx),
     RST(RST_GPIOx,RST_PINx,PIN_Mode::Fast),
     DRDY(DRDY_GPIOx,DRDY_PINx,PIN_Mode::Fast){
         RST.F_WriteMode();
-        CS.F_WriteMode();
         DRDY.F_ReadMode();
+        this->__SPI_CS_Active(0);
+        this->__SPI_Mode(0,0);
         SystemClock::Delay(10000);
 
         /* 硬件复位 */
@@ -139,12 +140,12 @@ namespace HardWare{
     }
 
     void AD7705::Sync(){
-        CS=0;
+        this->Start();
         this->Send_Byte(0xFF);
         this->Send_Byte(0xFF);
         this->Send_Byte(0xFF);
         this->Send_Byte(0xFF);
-        CS=1;
+        this->End();
     }
     //启动自校准.内部自动短接AIN+ AIN-校准0位,内部短接到Vref 校准满位.此函数执行过程较长,实测约180ms
     void AD7705::CalibSelf(ADC_Channel channel){
@@ -202,16 +203,16 @@ namespace HardWare{
     }
 
     void AD7705::WriteByte(u_char data){
-        this->CS=0;
+        this->Start();
         this->Send_Byte(data);
-        this->CS=1;
+        this->End();
     }
     void AD7705::Write3Byte(u_int data){
-        this->CS=0;
+        this->Start();
         this->Send_Byte((data>>16)&0xFF);
         this->Send_Byte((data>>8)&0xFF);
         this->Send_Byte((data)&0xFF);
-        this->CS=1;
+        this->End();
     }
     void AD7705::WriteReg(u_char regID,u_int regValue){
         u_char bits=0;
@@ -241,31 +242,31 @@ namespace HardWare{
 
     u_char AD7705::ReadByte(){
         u_char read=0;
-        CS=0;
+        this->Start();
         read=this->Read_Byte();
-        CS=1;
+        this->End();
         return read;
     }
 
     u_short AD7705::Read2Byte(){
         u_short read=0;
-        CS=0;
+        this->Start();
         read=this->Read_Byte();
         read<<=8;
         read+=this->Read_Byte();
-        CS=1;
+        this->End();
         return read;
     }
 
     u_int AD7705::Read3Byte(){
         u_int read=0;
-        CS=0;
+        this->Start();
         read=this->Read_Byte();
         read<<=8;
         read+=this->Read_Byte();
         read<<=8;
         read+=this->Read_Byte();
-        CS=1;
+        this->End();
         return read;
     }
 
@@ -275,25 +276,25 @@ namespace HardWare{
 
         switch (regID)
         {
-            case REG_COMM:		/* 通信寄存器 */
-            case REG_SETUP:		/* 设置寄存器 8bit */
-            case REG_CLOCK:		/* 时钟寄存器 8bit */
+            case REG_COMM:		        /* 通信寄存器              */
+            case REG_SETUP:		        /* 设置寄存器         8bit */
+            case REG_CLOCK:		        /* 时钟寄存器         8bit */
                 bits = 8;
                 break;
 
-            case REG_ZERO_CH1:	/* CH1 偏移寄存器 24bit */
-            case REG_FULL_CH1:	/* CH1 满量程寄存器 24bit */
-            case REG_ZERO_CH2:	/* CH2 偏移寄存器 24bit */
-            case REG_FULL_CH2:	/* CH2 满量程寄存器 24bit*/
+            case REG_ZERO_CH1:	        /* CH1 偏移寄存器     24bit */
+            case REG_FULL_CH1:	        /* CH1 满量程寄存器   24bit */
+            case REG_ZERO_CH2:	        /* CH2 偏移寄存器     24bit */
+            case REG_FULL_CH2:	        /* CH2 满量程寄存器   24bit */
                 bits = 24;
                 break;
 
-            case REG_DATA:		/* 数据寄存器 16bit */
+            case REG_DATA:		        /* 数据寄存器         16bit */
             default:
                 return 0xFFFFFFFF;
         }
 
-        this->WriteByte(regID | READ);	/* 写通信寄存器, 指定下一步是写操作，并指定写哪个寄存器 */
+        this->WriteByte(regID | READ);	/* 写通信寄存器,指定下一步是写操作,并指定写哪个寄存器 */
 
         if (bits == 16)
         {
@@ -303,7 +304,7 @@ namespace HardWare{
         {
             read = this->ReadByte();
         }
-        else	/* 24bit */
+        else	                        /* 24bit */
         {
             read = this->Read3Byte();
         }
@@ -312,12 +313,13 @@ namespace HardWare{
 
     void AD7705::WaitDRDY(){    
         uint32_t i;
-        for(i=0;i<4000000ul;i++){
+        for(i=0;i<40000000ul;i++){
             if(!DRDY){
+                Debug::Info("OK");
                 break;
             }
         }
-        if(i>=4000000ul){
+        if(i>=40000000ul){
             Debug::Warning("WaitDRDY TimeOut!");
         }
     }
@@ -328,7 +330,7 @@ namespace HardWare{
         /* 为了避免通道切换造成读数失效，读2次 */
         for (uint8_t i = 0; i < 2; i++)
         {
-            this->WaitDRDY();		/* 等待DRDY口线为0 */		
+            this->WaitDRDY();		/* 等待DRDY口线为0 */
             this->WriteByte(0x38);
             read = this->Read2Byte();
         }
@@ -340,7 +342,7 @@ namespace HardWare{
         /* 为了避免通道切换造成读数失效，读2次 */
         for (uint8_t i = 0; i < 2; i++)
         {
-            this->WaitDRDY();		/* 等待DRDY口线为0 */		
+            this->WaitDRDY();		/* 等待DRDY口线为0 */
             this->WriteByte(0x39);
             read = this->Read2Byte();
         }

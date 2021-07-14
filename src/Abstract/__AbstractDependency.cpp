@@ -71,6 +71,6 @@ void Debug::EndBlock(){
 }
 void Debug::InterruptSend(std::string Info){
     if(DebugCallback){
-        DebugCallback("\n|"+InterruptIndentStr+"<Interrupt>"+Info);
+        DebugCallback("\n-"+InterruptIndentStr+"<Interrupt>"+Info);
     }
 }

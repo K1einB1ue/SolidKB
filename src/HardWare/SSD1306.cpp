@@ -160,6 +160,8 @@ namespace I2C{
 
         bool* on = const_cast<bool*>(&ON);
         *on=true;
+
+        __GraphicInit(128,64);
     }
 
     void SSD1306::Refresh(){
@@ -245,6 +247,8 @@ namespace SPI{
 
         bool* on = const_cast<bool*>(&ON);
         *on=true;
+        
+        __GraphicInit(128,64);
     }
 
     void SSD1306::Refresh(){

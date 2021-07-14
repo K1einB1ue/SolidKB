@@ -315,7 +315,7 @@
                 HAL_GPIO_Init(GPIOB,&GPIO_Initure);	   	        //初始化PB11
                 
                 HAL_NVIC_EnableIRQ(USART3_IRQn);				//使能USART3中断通道
-                HAL_NVIC_SetPriority(USART3_IRQn,3,4);			//抢占优先级3，子优先级4
+                HAL_NVIC_SetPriority(USART3_IRQn,3,3);			//抢占优先级3，子优先级4
             }
 
             else if(huart->Instance==UART4){
@@ -336,7 +336,7 @@
                 HAL_GPIO_Init(GPIOA,&GPIO_Initure);	   	        //PA1
                 
                 HAL_NVIC_EnableIRQ(UART4_IRQn);				    //使能USART3中断通道
-                HAL_NVIC_SetPriority(UART4_IRQn,3,5);			//抢占优先级3，子优先级4
+                HAL_NVIC_SetPriority(UART4_IRQn,3,3);			//抢占优先级3，子优先级4
             }
 
             else if(huart->Instance==UART5){
@@ -357,7 +357,7 @@
                 HAL_GPIO_Init(GPIOD,&GPIO_Initure);	   	        //初始化PD2
                 
                 HAL_NVIC_EnableIRQ(UART5_IRQn);				//使能USART3中断通道
-                HAL_NVIC_SetPriority(UART5_IRQn,3,6);			//抢占优先级3，子优先级4
+                HAL_NVIC_SetPriority(UART5_IRQn,3,3);			//抢占优先级3，子优先级4
             }
 
         }

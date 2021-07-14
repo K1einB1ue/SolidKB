@@ -73,6 +73,17 @@ namespace I2C{
             uint32_t SCL_GPIOx,uint32_t SCL_PINx
         );
         virtual uint Get_Distance_mm();
+        virtual void SetReciveMode(InfoMode mode);
+        virtual int  GetOffset_mm();
+        virtual void SetOffset_mm(int offset);
+        virtual uint GetInterval_ms();
+        virtual void SetInterval_ms(uint interval);
+        virtual bool GetFilter_en();
+        virtual void SetFilter_en(bool enable);
+        virtual uint GetMaxRange_mm();
+        virtual void SetMaxRange_mm(uint maxrange);
+        virtual u_char GetI2C_Address();
+        virtual void SetI2C_Address(u_char Address);
     };
 }
 
@@ -88,6 +99,17 @@ namespace UART_I2C{
             uint32_t SCL_GPIOx,uint32_t SCL_PINx
         );
         virtual uint Get_Distance_mm();
+        virtual void SetReciveMode(InfoMode mode);
+        virtual int  GetOffset_mm();
+        virtual void SetOffset_mm(int offset);
+        virtual uint GetInterval_ms();
+        virtual void SetInterval_ms(uint interval);
+        virtual bool GetFilter_en();
+        virtual void SetFilter_en(bool enable);
+        virtual uint GetMaxRange_mm();
+        virtual void SetMaxRange_mm(uint maxrange);
+        virtual u_char GetI2C_Address();
+        virtual void SetI2C_Address(u_char Address);
     };
 }
 

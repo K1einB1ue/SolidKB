@@ -1,7 +1,5 @@
 #pragma once
 #include<AbstractDependency/__AbstractDependency.h>
-
-
 //注意!只可生成 extern
 //1.std::map<enum,std::function<void<ptr>>>
 //2.void func(Object obj)
