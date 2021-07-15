@@ -8,56 +8,56 @@ namespace HardWare{
     //测距模块 
     //量程:/5cm~180cm(非常吃反射材料,在最坏情况下为5cm~10cm)
     //Type:[I2C][UART][UART_I2C]
-    class TOF10120{
+    class TOF10120:protected DecoderContainer<char,20>{
         protected:
         TOF10120();
-        public:
+        public:  
         enum class InfoMode{
+            None,
             UART,
             UART_I2C,
         };
-        virtual uint Get_Distance_mm();
+        uint            distance=0;
+        int             offset=0;
+        uint            interval=0;
+        bool            enable=0;
+        uint            maxrange=0;
+        u_char          Address=0;
+        InfoMode        mode=InfoMode::None;
+        std::function<void(uint)> DistanceCallBack=nullptr;
+        virtual void RefDistance_mm();
+        virtual void RefReciveMode();
         virtual void SetReciveMode(InfoMode mode);
-        virtual int  GetOffset_mm();
+        virtual void RefOffset_mm();
         virtual void SetOffset_mm(int offset);
-        virtual uint GetInterval_ms();
+        virtual void RefInterval_ms();
         virtual void SetInterval_ms(uint interval);
-        virtual bool GetFilter_en();
+        virtual void RefFilter_en();
         virtual void SetFilter_en(bool enable);
-        virtual uint GetMaxRange_mm();
+        virtual void RefMaxRange_mm();
         virtual void SetMaxRange_mm(uint maxrange);
-        virtual u_char GetI2C_Address();
+        virtual void RefI2C_Address();
         virtual void SetI2C_Address(u_char Address);
     };
 }
 #if __Enable_Uart
 namespace UART{
     class TOF10120:public Peripheral_UART,public HardWare::TOF10120{
-        private:
-        enum class RecvCMD{
-            Offset,
-            Interval,
-            Filter,
-            MaxRange,
-            I2C_Address,
-        }RecvCMDs;
-        bool Recvflag=false;
-        int NumBuffer=0;
-
         public:
-        std::function<void(uint)> DistanceCallBack=nullptr;
+        
         TOF10120(uint32_t Uartx);
-        virtual uint Get_Distance_mm();
+        virtual void RefDistance_mm();
+        virtual void RefReciveMode();
         virtual void SetReciveMode(InfoMode mode);
-        virtual int  GetOffset_mm();
+        virtual void RefOffset_mm();
         virtual void SetOffset_mm(int offset);
-        virtual uint GetInterval_ms();
+        virtual void RefInterval_ms();
         virtual void SetInterval_ms(uint interval);
-        virtual bool GetFilter_en();
+        virtual void RefFilter_en();
         virtual void SetFilter_en(bool enable);
-        virtual uint GetMaxRange_mm();
+        virtual void RefMaxRange_mm();
         virtual void SetMaxRange_mm(uint maxrange);
-        virtual u_char GetI2C_Address();
+        virtual void RefI2C_Address();
         virtual void SetI2C_Address(u_char Address);
     };
 }
@@ -72,17 +72,18 @@ namespace I2C{
             uint32_t SDA_GPIOx,uint32_t SDA_PINx,
             uint32_t SCL_GPIOx,uint32_t SCL_PINx
         );
-        virtual uint Get_Distance_mm();
+        virtual void RefDistance_mm();
+        virtual void RefReciveMode();
         virtual void SetReciveMode(InfoMode mode);
-        virtual int  GetOffset_mm();
+        virtual void RefOffset_mm();
         virtual void SetOffset_mm(int offset);
-        virtual uint GetInterval_ms();
+        virtual void RefInterval_ms();
         virtual void SetInterval_ms(uint interval);
-        virtual bool GetFilter_en();
+        virtual void RefFilter_en();
         virtual void SetFilter_en(bool enable);
-        virtual uint GetMaxRange_mm();
+        virtual void RefMaxRange_mm();
         virtual void SetMaxRange_mm(uint maxrange);
-        virtual u_char GetI2C_Address();
+        virtual void RefI2C_Address();
         virtual void SetI2C_Address(u_char Address);
     };
 }
@@ -98,17 +99,18 @@ namespace UART_I2C{
             uint32_t SDA_GPIOx,uint32_t SDA_PINx,
             uint32_t SCL_GPIOx,uint32_t SCL_PINx
         );
-        virtual uint Get_Distance_mm();
+        virtual void RefDistance_mm();
+        virtual void RefReciveMode();
         virtual void SetReciveMode(InfoMode mode);
-        virtual int  GetOffset_mm();
+        virtual void RefOffset_mm();
         virtual void SetOffset_mm(int offset);
-        virtual uint GetInterval_ms();
+        virtual void RefInterval_ms();
         virtual void SetInterval_ms(uint interval);
-        virtual bool GetFilter_en();
+        virtual void RefFilter_en();
         virtual void SetFilter_en(bool enable);
-        virtual uint GetMaxRange_mm();
+        virtual void RefMaxRange_mm();
         virtual void SetMaxRange_mm(uint maxrange);
-        virtual u_char GetI2C_Address();
+        virtual void RefI2C_Address();
         virtual void SetI2C_Address(u_char Address);
     };
 }

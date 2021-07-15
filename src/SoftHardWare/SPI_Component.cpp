@@ -265,7 +265,7 @@ u_char    SPI_Component::Fast_SPI_R_Type1(){
     }
 }
 
-void    SPI_Component::End(){
+void      SPI_Component::End(){
     CS = !CS_Acitve;
 }
 

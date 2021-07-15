@@ -30,3 +30,4 @@ namespace HardWare{
         void Set_Window(u_short width,u_short height,u_char mode);
     };
 }
+

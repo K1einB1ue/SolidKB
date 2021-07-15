@@ -1,8 +1,7 @@
 #include<AbstractDependency/_AbstractHardWare.h>
 #include<VirtualHardWare.h>
 
-#ifdef STM32F407ZG
-    __attribute__((optimize("O0"))) void nop(){}
+#ifdef STM32F407ZG 
     extern "C" void SysTick_Handler(void){
         HAL_IncTick();
     }
@@ -196,28 +195,6 @@
 
         std::function<void(char*,int)> Uart_Callback[CFG_Uart_Size];
         u_char Uart_RxBuffer[CFG_Uart_Size][CFG_Uart_Buf_Size];
-
-        std::vector<std::pair<unsigned int,std::string>> EndFlags{
-            {0,"\r\n"},{0,"\r\n"},{0,"\r\n"},{0,"\r\n"},{0,"\r\n"}
-        };
-
-        bool EndCheck(unsigned int AllUartx,char Res){
-            if(EndFlags[AllUartx].second[EndFlags[AllUartx].first++]==Res){
-                if(EndFlags[AllUartx].first==EndFlags[AllUartx].second.size()){
-                    EndFlags[AllUartx].first=0;
-                    return true;
-                }
-            }else{
-                EndFlags[AllUartx].first=0;
-            }
-            return false;
-        }
-
-
-        std::vector<std::pair<u_char*,std::function<void(char*,int)>&>> Override::UartOccupation{
-            {Uart_RxBuffer[0],Uart_Callback[0]},{Uart_RxBuffer[1],Uart_Callback[1]},{Uart_RxBuffer[2],Uart_Callback[2]},{Uart_RxBuffer[3],Uart_Callback[3]},{Uart_RxBuffer[4],Uart_Callback[4]}
-        };
-
         UART_HandleTypeDef USART_Handler[CFG_Uart_Size];
 
         USART_TypeDef* UART_Mapping[]{
@@ -227,9 +204,6 @@
             UART4,
             UART5,
         };
-
-
-
         
         void Override::Uartx_PreEnable(Peripheral_UART* Uart){
             USART_Handler[Uart->Uartx].Instance=                                      UART_Mapping[Uart->Uartx];
@@ -241,14 +215,12 @@
             USART_Handler[Uart->Uartx].Init.Mode=                                     UART_MODE_TX_RX;		//收发模式.
             HAL_UART_Init(&USART_Handler[Uart->Uartx]);	                            				        //HAL_UART_Init()会使能UART1.
             //该函数会开启接收中断:标志位UART_IT_RXNE,并且设置接收缓冲以及接收缓冲接收最大数据量.
-            HAL_UART_Receive_IT(&USART_Handler[Uart->Uartx],UartOccupation[Uart->Uartx].first,1);
+            HAL_UART_Receive_IT(&USART_Handler[Uart->Uartx],Uart_RxBuffer[Uart->Uartx],1);
         }
 
         void Override::Uartx_PreDisable(Peripheral_UART* Uart){
 
         }
-
-        
         
 
         extern "C" void HAL_UART_MspInit(UART_HandleTypeDef *huart){
@@ -365,21 +337,18 @@
 
 
         
-        //数据锁
-        bool EnableGet[CFG_Uart_Size]={false};
-        bool Got[CFG_Uart_Size]={false};
-
-        //数据位
-        u_char Res[CFG_Uart_Size];
-
+        std::vector<std::function<void(char)>> Override::UartCallback(CFG_Uart_Size);
         //状态位
         uint16_t USART_RX_STA[CFG_Uart_Size];
+        
+        //数据位
+        u_char Res[CFG_Uart_Size];
 
         //位长
         uint16_t Len[CFG_Uart_Size];
 
         //接收标志位
-        bool ReciveFlag[CFG_Uart_Size]={false};
+        bool ReciveFlag[CFG_Uart_Size];
 
 
         void Override::Uart_Close(Peripheral_UART* Uart){
@@ -388,22 +357,14 @@
         void Override::Uart_Open(Peripheral_UART* Uart){
             ReciveFlag[Uart->Uartx]=false;
         }
-        void Override::Uart_Send(Peripheral_UART* Uart,u_char* chr_ptr,unsigned int size){
-            for(unsigned int i=0;i<size;i++){
+        void Override::Uart_Send(Peripheral_UART* Uart,u_char* chr_ptr,unsigned int size,unsigned int *ptr){
+            for((*ptr)=0;(*ptr)<size;(*ptr)++){
                 while((UART_Mapping[Uart->Uartx]->SR&0x40)==0);
-                UART_Mapping[Uart->Uartx]->DR=chr_ptr[i];
+                UART_Mapping[Uart->Uartx]->DR=chr_ptr[*ptr];
             }
         }
+        
 
-        void Override::Uart_Recv(Peripheral_UART* Uart,u_char* chr_ptr,unsigned int size){
-            EnableGet[Uart->Uartx]=true;
-            for(unsigned int cnt=0;cnt<size;cnt++){
-                while(!Got[Uart->Uartx]);
-                chr_ptr[cnt]=Res[Uart->Uartx];
-                Got[Uart->Uartx]=false;
-            }
-            EnableGet[Uart->Uartx]=false;
-        }
         //串口1中断服务程序
         extern "C" void USART1_IRQHandler(void)                	
         { 
@@ -412,14 +373,7 @@
             }
             else if(USART1->SR&(1<<5)) {  
                 Res[0]=USART1->DR;                     
-                Override::UartOccupation[0].first[Len[0]++]=Res[0];
-                if(EnableGet[0]){
-                    Got[0]=true;
-                }
-                if(EndCheck(0,Res[0])&&Override::UartOccupation[0].second){
-                    Override::UartOccupation[0].second((char*)Override::UartOccupation[0].first,Len[0]-2);
-                    Len[0]=0;                  
-                }	 
+                if(Override::UartCallback[0])Override::UartCallback[0](Res[0]); 
             }
         } 
 
@@ -429,14 +383,7 @@
             }
             else if(USART2->SR&(1<<5)) {  
                 Res[1]=USART2->DR;   
-                Override::UartOccupation[1].first[Len[1]++]=Res[1];
-                if(EnableGet[1]){
-                    Got[1]=true;
-                }
-                if(EndCheck(1,Res[1])&&Override::UartOccupation[1].second){
-                    Override::UartOccupation[1].second((char*)Override::UartOccupation[1].first,Len[1]-2);
-                    Len[1]=0;
-                }		 
+                if(Override::UartCallback[1])Override::UartCallback[1](Res[1]); 
             }
         }
 
@@ -446,14 +393,7 @@
             }
             else if(USART3->SR&(1<<5)) {  
                 Res[2]=USART3->DR;   
-                Override::UartOccupation[2].first[Len[2]++]=Res[2];
-                if(EnableGet[2]){
-                    Got[2]=true;
-                }
-                if(EndCheck(2,Res[2])&&Override::UartOccupation[2].second){
-                    Override::UartOccupation[2].second((char*)Override::UartOccupation[2].first,Len[2]-2);
-                    Len[2]=0;
-                }
+                if(Override::UartCallback[2])Override::UartCallback[2](Res[2]); 
             }
         }
 
@@ -463,14 +403,7 @@
             }
             else if(UART4->SR&(1<<5)) {  
                 Res[3]=UART4->DR;   
-                Override::UartOccupation[2].first[Len[3]++]=Res[3];
-                if(EnableGet[3]){
-                    Got[3]=true;
-                }
-                if(EndCheck(3,Res[3])&&Override::UartOccupation[3].second){
-                    Override::UartOccupation[3].second((char*)Override::UartOccupation[3].first,Len[3]-2);
-                    Len[3]=0;
-                }
+                if(Override::UartCallback[3])Override::UartCallback[3](Res[3]); 
             }
         }
 
@@ -480,14 +413,7 @@
             }
             else if(USART3->SR&(1<<5)) {  
                 Res[4]=UART5->DR;   
-                Override::UartOccupation[4].first[Len[4]++]=Res[4];
-                if(EnableGet[4]){
-                    Got[4]=true;
-                }
-                if(EndCheck(4,Res[4])&&Override::UartOccupation[4].second){
-                    Override::UartOccupation[4].second((char*)Override::UartOccupation[4].first,Len[4]-2);
-                    Len[4]=0;
-                }
+                if(Override::UartCallback[4])Override::UartCallback[4](Res[4]); 
             }
         }
 
