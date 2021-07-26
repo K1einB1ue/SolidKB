@@ -26,13 +26,10 @@ private:
     PIN_Status PINStatus=PIN_Status::PIN_NULL;
     PIN_Mode PINmode;
     uint32_t GPIOx,PINx;
-    static unsigned int GPIO_Enable_Map  [CFG_GPIO_Size];
-    static bool PIN_Enable_Map           [CFG_GPIO_Size][CFG_PIN_Size];
     
 
 public:
-
-    PIN(uint32_t GPIOx,uint32_t PINx,PIN_Mode PINmode);
+    PIN(uint32_t GPIOx,uint32_t PINx,PIN_Mode PINmode,std::string Info="Nor");
 
     volatile unsigned long* IN=nullptr;
     volatile unsigned long* OUT=nullptr;
@@ -45,9 +42,6 @@ public:
 
     void ReMode(PIN_Mode PINmode);
     ~PIN();
-
-    static bool CoverPIN(uint32_t GPIOx,uint32_t PINx);
-    static bool UncoverPIN(uint32_t GPIOx,uint32_t PINx);
     
     operator bool() {
 		return *IN;

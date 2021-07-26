@@ -3,7 +3,15 @@
 
 
 #if __Enable_PIN
-    #include<SoftHardWare/PIN.h>
+    #include<HardWare/Peripheral_PIN.h>
+#endif
+
+#if __Enable_PWM
+    #include<HardWare/Peripheral_PWM.h>
+#endif
+
+#if __Enable_TIM
+    #include<HardWare/Peripheral_TIM.h>
 #endif
 
 #if __Enable_I2C_Component

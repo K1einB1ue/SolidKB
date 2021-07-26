@@ -219,7 +219,8 @@
         }
 
         void Override::Uartx_PreDisable(Peripheral_UART* Uart){
-
+            HAL_UART_DeInit(&USART_Handler[Uart->Uartx]);
+            HAL_UART_AbortReceive_IT(&USART_Handler[Uart->Uartx]);
         }
         
 
@@ -228,10 +229,13 @@
             GPIO_InitTypeDef GPIO_Initure;
 
             if(huart->Instance==USART1){
-                if(!PIN::CoverPIN(0,9)||!PIN::CoverPIN(0,10)){
-                    return;
-                }
-
+                if(Resource::UART_Resource::Check(0)
+                ||Resource::PIN_Resource::Check(0,9)
+                ||Resource::PIN_Resource::Check(0,10))
+                return;
+                Resource::PIN_Resource::Cover(0,9,"TX");
+                Resource::PIN_Resource::Cover(0,10,"RX");
+                Resource::UART_Resource::Cover(0,"USART1");
                 __HAL_RCC_USART1_CLK_ENABLE();			        //使能USART1时钟
 
                 GPIO_Initure.Pin=GPIO_PIN_9;			        //PA9 TX
@@ -249,10 +253,13 @@
             }
 
             else if(huart->Instance==USART2){
-                if(!PIN::CoverPIN(0,2)||!PIN::CoverPIN(0,3)){
-                    return;
-                }
-
+                if(Resource::UART_Resource::Check(1)
+                ||Resource::PIN_Resource::Check(0,2)
+                ||Resource::PIN_Resource::Check(0,3))
+                return;
+                Resource::PIN_Resource::Cover(0,2,"TX");
+                Resource::PIN_Resource::Cover(0,3,"RX");
+                Resource::UART_Resource::Cover(1,"USART2");
                 __HAL_RCC_USART2_CLK_ENABLE();			        //使能USART2时钟
 
                 GPIO_Initure.Pin=GPIO_PIN_2;			        //PA2 TX
@@ -270,10 +277,14 @@
             }
 
             else if(huart->Instance==USART3){
-                if(!PIN::CoverPIN(1,10)||!PIN::CoverPIN(1,11)){
-                    return;
-                }
-
+                if(Resource::UART_Resource::Check(2)
+                ||Resource::PIN_Resource::Check(1,10)
+                ||Resource::PIN_Resource::Check(1,11))
+                return;
+                Resource::PIN_Resource::Cover(1,10,"TX");
+                Resource::PIN_Resource::Cover(1,11,"RX");
+                Resource::UART_Resource::Cover(2,"USART3");
+                
                 __HAL_RCC_USART3_CLK_ENABLE();			        //使能USART3时钟
 
                 GPIO_Initure.Pin=GPIO_PIN_10;			        //PB10
@@ -291,9 +302,13 @@
             }
 
             else if(huart->Instance==UART4){
-                if(!PIN::CoverPIN(0,0)||!PIN::CoverPIN(0,1)){
-                    return;
-                }
+                if(Resource::UART_Resource::Check(3)
+                ||Resource::PIN_Resource::Check(0,0)
+                ||Resource::PIN_Resource::Check(0,1))
+                return;
+                Resource::PIN_Resource::Cover(0,0,"TX");
+                Resource::PIN_Resource::Cover(0,1,"RX");
+                Resource::UART_Resource::Cover(3,"UART4");
 
                 __HAL_RCC_UART4_CLK_ENABLE();			        //使能USART3时钟
 
@@ -312,10 +327,13 @@
             }
 
             else if(huart->Instance==UART5){
-                if(!PIN::CoverPIN(2,12)||!PIN::CoverPIN(3,2)){
-                    return;
-                }
-
+                if(Resource::UART_Resource::Check(4)
+                ||Resource::PIN_Resource::Check(2,12)
+                ||Resource::PIN_Resource::Check(3,2))
+                return;
+                Resource::PIN_Resource::Cover(2,12,"TX");
+                Resource::PIN_Resource::Cover(3,2,"RX");
+                Resource::UART_Resource::Cover(4,"UART5");
                 __HAL_RCC_UART5_CLK_ENABLE();			        //使能USART3时钟
 
                 GPIO_Initure.Pin=GPIO_PIN_12;			        //PC12
@@ -472,4 +490,119 @@
     
     #endif
     
+
+    #ifdef __Enable_TIM
+        std::vector<std::function<void(void)>> Override::TIMCallback(CFG_TIM_Size);
+        TIM_TypeDef* TIM_Mapping[]{
+            TIM1,TIM2,TIM3,TIM4,TIM5,TIM6,TIM7,TIM8,TIM9,TIM10,TIM11,TIM12,TIM13,TIM14
+        };
+
+        void Override::TIMx_PreEnable(Peripheral_TIM* TIM){
+            TIM_TypeDef* tim=TIM_Mapping[TIM->GetTIM()];
+            switch (TIM->GetTIM())
+            {
+            case 0:
+                break;
+            case 1:
+                break;
+            case 2:
+                __HAL_RCC_TIM3_CLK_ENABLE();
+                tim->ARR=TIM->GetAutoReload();  	//设定计数器自动重装值 
+                tim->PSC=TIM->GetPrescale();  	    //预分频器	  
+                tim->DIER|=1<<0;                    //允许更新中断	  
+                tim->CR1|=0x01;                     //使能定时器3
+                HAL_NVIC_EnableIRQ(TIM3_IRQn);
+                HAL_NVIC_SetPriority(TIM3_IRQn,3,3);
+                break;
+            case 3:
+                break;
+            case 4:
+                break;
+            case 5:
+                break;
+            case 6:
+                break;
+            case 7:
+                break;
+            default:
+                break;
+            }
+        }
+
+        void Override::TIMx_PreDisable(Peripheral_TIM* TIM){
+
+        }
+
+
+        extern "C" void TIM1_BRK_TIM9_IRQHandler(void){
+
+        }   
+        
+        extern "C" void TIM1_UP_TIM10_IRQHandler(void){
+
+        }   
+          
+        extern "C" void TIM1_TRG_COM_TIM11_IRQHandler(void){
+
+        }
+        
+        extern "C" void TIM1_CC_IRQHandler(void){
+
+        }   
+               
+
+
+        extern "C" void TIM8_BRK_TIM12_IRQHandler(void){
+
+        }   
+         
+        extern "C" void TIM8_UP_TIM13_IRQHandler(void){
+
+        }   
+          
+        extern "C" void TIM8_TRG_COM_TIM14_IRQHandler(void){
+
+        }
+        
+        extern "C" void TIM8_CC_IRQHandler(void){
+
+        }   
+             
+
+          
+        //可以用于PWM,支持定位用增量(正交)编码器和霍尔传感器电路
+        extern "C" void TIM2_IRQHandler(void){
+            
+        }
+        //可以用于PWM,支持定位用增量(正交)编码器和霍尔传感器电路
+        extern "C" void TIM3_IRQHandler(void){
+            
+        }
+        //可以用于PWM,支持定位用增量(正交)编码器和霍尔传感器电路
+        extern "C" void TIM4_IRQHandler(void){
+            
+        }
+        //可以用于PWM,支持定位用增量(正交)编码器和霍尔传感器电路
+        extern "C" void TIM5_IRQHandler(void){
+            
+        }
+        //此类定时器不仅可用作通用定时器以生成时基,还可以专门用于驱动数模转换器(DAC).实际上,此类定时器内部连接到DAC并能够通过其触发输出驱动 DAC.
+        extern "C" void TIM6_DAC_IRQHandler(void){
+
+        }
+        //此类定时器不仅可用作通用定时器以生成时基,还可以专门用于驱动数模转换器(DAC).实际上,此类定时器内部连接到DAC并能够通过其触发输出驱动 DAC.
+        extern "C" void TIM7_IRQHandler(void){
+            
+        }
+
+
+    #endif
+
+    #ifdef __Enable_PWM
+
+        void Override::PWMx_PreEnable(PWM* PWM);
+
+        void Override::PWMx_PreDisable(PWM* PWM);
+
+    #endif
 #endif

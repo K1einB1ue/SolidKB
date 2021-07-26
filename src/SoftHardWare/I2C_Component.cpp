@@ -6,8 +6,8 @@
 I2C_Component::I2C_Component(
 	uint32_t SDA_GPIOx,uint32_t SDA_PINx,
 	uint32_t SCL_GPIOx,uint32_t SCL_PINx
-	):SDA(SDA_GPIOx,SDA_PINx,PIN_Mode::FastPullUp),
-	SCL(SCL_GPIOx,SCL_PINx,PIN_Mode::FastPullUp){
+	):SDA(SDA_GPIOx,SDA_PINx,PIN_Mode::FastPullUp,"SDA"),
+	SCL(SCL_GPIOx,SCL_PINx,PIN_Mode::FastPullUp,"SCL"){
     SDA.F_WriteMode();
     SCL.F_WriteMode();
     SDA=1;

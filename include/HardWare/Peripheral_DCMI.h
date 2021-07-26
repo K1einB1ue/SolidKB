@@ -1,6 +1,6 @@
 #pragma once
 #include<AbstractDependency/__AbstractDependency.h>
-#include<SoftHardWare/PIN.h>
+#include<HardWare/Peripheral_PIN.h>
 
 namespace HardWare{
     class Peripheral_DCMI{

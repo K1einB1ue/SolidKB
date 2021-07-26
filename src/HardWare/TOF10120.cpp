@@ -26,18 +26,10 @@ namespace UART{
     TOF10120::TOF10120(uint32_t Uartx):Peripheral_UART(Uartx,9600){
         this->End("\r\n",2);
         this->End_Clear(true);
-        this->End_Decoder([&](char* Data,unsigned int Size){          
-            std::string Num;
-            if(Data[0]>='0'&&Data[0]<='9'){
-                Num+=Data[0];
-                for(unsigned int i=1;i<Size;i++){
-                    if(Data[0]>='0'&&Data[0]<='9'){
-                        Num+=Data[i];
-                    }else{
-                        break;
-                    }
-                }
-                this->distance=std::stoi(Num);
+        this->End_Decoder([&](char* Data,unsigned int Size){  
+            unsigned int ptr=0;        
+            if(Data[0]>='0'&&Data[0]<='9'){   
+                this->distance=std::Getint(Data,&ptr);
                 if(this->DistanceCallBack){
                     this->DistanceCallBack(this->distance);
                 }
@@ -53,45 +45,33 @@ namespace UART{
                 return;
             }
             
-            bool EqualFlag=false;     
-            for(unsigned int i=0;i<Size;i++){
-                if(EqualFlag&&Data[i]<='9'&&Data[i]>='0'){
-                    Num+=Data[i];
-                }else if(Data[i]=='='){
-                    EqualFlag=true;
-                }
-                if(Data[i]=='#'){
-                    break;
-                }
+            int Num=std::Getint(Data,&ptr); 
+                     
+            switch (Data[0]){
+                case 'D':this->offset=Num;return;
+
+                case 'T':this->interval=Num;return;
+
+                case 'M':if(Data[1]=='a'){this->maxrange=Num;return;}
+                else{this->enable=Num;return;}
+
+
+                case 'S':if(Num==0){
+                    this->mode=InfoMode::UART;
+                }else{this->mode=InfoMode::UART_I2C;}
+                return;
+
+                case 'L':this->distance=Num;return;
+
+                case 'I':this->Address=Num;return;
             }
-            if(EqualFlag){
-                switch (Data[0]){
-                    case 'D':this->offset=std::stoi(Num);return;
-
-                    case 'T':this->interval=std::stoi(Num);return;
-
-                    case 'M':if(Data[1]=='a'){this->maxrange=std::stoi(Num);return;}
-                    else{this->enable=std::stoi(Num);return;}
-
-
-                    case 'S':if(std::stoi(Num)==0){
-                        this->mode=InfoMode::UART;
-                    }else{this->mode=InfoMode::UART_I2C;}
-                    return;
-
-                    case 'L':this->distance=std::stoi(Num);return;
-
-                    case 'I':this->Address=std::stoi(Num);return;
-
-                    default:Debug::InterruptSend("[TOF10120]Error Call!");return;
-                }
-            }
+            
         });
 
         this->BindCallback([&](char chr){
             this->StreamIn(chr);
         });
-        
+        SystemClock::Delay(100000);
         this->SetReciveMode(InfoMode::UART);
     }
 

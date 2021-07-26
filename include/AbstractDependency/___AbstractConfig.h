@@ -25,6 +25,12 @@
         #define __Enable_DCMI 1
     #endif
 
+    #define __Enable_TIM 1
+
+    #define __Enable_PWM 1
+
+    
+
 #else
     #error The chip has not been selected
 #endif

@@ -1,5 +1,5 @@
 #pragma once
-#include<AbstractDependency/__AbstractDependency.h>
+#include<AbstractDependency/Resource.h>
 //注意!只可生成 extern
 //1.std::map<enum,std::function<void<ptr>>>
 //2.void func(Object obj)
@@ -11,8 +11,10 @@
     
     namespace Override{
         extern std::map<PIN_Mode,std::function<void(PIN*)>> PINPrototypes;
-        extern void GPIOx_PreEnable(uint32_t GPIOx);
-        extern void GPIOx_PreDisable(uint32_t GPIOx);
+
+        void GPIOx_PreEnable(uint32_t GPIOx);
+        
+        void GPIOx_PreDisable(uint32_t GPIOx);
     }
 #endif
 
@@ -25,7 +27,7 @@
         //实现Clock映射初始化
         extern std::map<Clock_Speed,std::function<void(void)>> ClockPrototypes;
 
-        extern void Delay_Prototype(uint32_t us);
+        void Delay_Prototype(uint32_t us);
     }
 
     
@@ -41,15 +43,15 @@
         //映射Uart回调函数
         extern std::vector<std::function<void(char)>> UartCallback;
 
-        extern void Uartx_PreEnable(Peripheral_UART* Uart);
+        void Uartx_PreEnable(Peripheral_UART* Uart);
 
-        extern void Uartx_PreDisable(Peripheral_UART* Uart);
+        void Uartx_PreDisable(Peripheral_UART* Uart);
 
-        extern void Uart_Send(Peripheral_UART* Uart,u_char* chr_ptr,unsigned int size,unsigned int *ptr);
-        
-        extern void Uart_Close(Peripheral_UART* Uart);
+        void Uart_Send(Peripheral_UART* Uart,u_char* chr_ptr,unsigned int size,unsigned int *ptr);
+    
+        void Uart_Close(Peripheral_UART* Uart);
 
-        extern void Uart_Open(Peripheral_UART* Uart);
+        void Uart_Open(Peripheral_UART* Uart);
     }
 
 #endif
@@ -61,11 +63,39 @@
 
     namespace Override{
 
-        extern void DCMI_Init();
+        void DCMI_Init();
 
-        extern void DCMI_Enable();
+        void DCMI_Enable();
 
-        extern void DCMI_Disable();
+        void DCMI_Disable();
+    }
+
+#endif
+
+#if __Enable_TIM
+
+    class Peripheral_TIM;
+
+    namespace Override{
+
+        extern std::vector<std::function<void(void)>> TIMCallback;
+
+        void TIMx_PreEnable(Peripheral_TIM* TIM);
+
+        void TIMx_PreDisable(Peripheral_TIM* TIM);
+    }
+
+#endif
+
+#if __Enable_PWM
+
+    class PWM;
+
+    namespace Override{
+
+        void PWMx_PreEnable(PWM* PWM);
+
+        void PWMx_PreDisable(PWM* PWM);
     }
 
 #endif

@@ -1,5 +1,5 @@
 #pragma once
-#include<SoftHardWare/PIN.h>
+#include<HardWare/Peripheral_PIN.h>
 
 
 class I2C_Component{
