@@ -118,14 +118,14 @@ namespace HardWare{
 
         /* 配置时钟寄存器 */
         this->WriteByte(REG_CLOCK | WRITE | CH_1);              /* 先写通信寄存器，下一步是写时钟寄存器 */
-        this->WriteByte(CLKDIS_0 | CLK_4_9152M | FS_50HZ);      /* 刷新速率50Hz */
-        //this->WriteByte(CLKDIS_0 | CLK_4_9152M | FS_500HZ);	/* 刷新速率500Hz */
+        //this->WriteByte(CLKDIS_0 | CLK_4_9152M | FS_50HZ);      /* 刷新速率50Hz */
+        this->WriteByte(CLKDIS_0 | CLK_4_9152M | FS_500HZ);	/* 刷新速率500Hz */
         Debug::StartBlock("CH1_CalibSelf");
-        this->CalibSelf(ADC_Channel::Ch1);
+        this->CalibSelf(Channel::Ch1);
         Debug::EndBlock();
         SystemClock::Delay(50000);
         Debug::StartBlock("CH2_CalibSelf");
-        this->CalibSelf(ADC_Channel::Ch2);
+        this->CalibSelf(Channel::Ch2);
         Debug::EndBlock();
         SystemClock::Delay(50000);
     }
@@ -148,16 +148,16 @@ namespace HardWare{
         this->End();
     }
     //启动自校准.内部自动短接AIN+ AIN-校准0位,内部短接到Vref 校准满位.此函数执行过程较长,实测约180ms
-    void AD7705::CalibSelf(ADC_Channel channel){
+    void AD7705::CalibSelf(Channel channel){
         switch (channel)
         {
-        case ADC_Channel::Ch1:
+        case Channel::Ch1:
             /* 自校准CH1 */
             this->WriteByte(REG_SETUP | WRITE | CH_1);	/* 写通信寄存器，下一步是写设置寄存器，通道1 */		
             this->WriteByte(MD_CAL_SELF | __CH1_GAIN_BIPOLAR_BUF | FSYNC_0);    /* 启动自校准 */
             this->WaitDRDY();	/* 等待内部操作完成 --- 时间较长，约180ms */
             break;
-        case ADC_Channel::Ch2:
+        case Channel::Ch2:
             /* 自校准CH2 */
             this->WriteByte(REG_SETUP | WRITE | CH_2);	/* 写通信寄存器，下一步是写设置寄存器，通道2 */
             this->WriteByte(MD_CAL_SELF | __CH2_GAIN_BIPOLAR_BUF | FSYNC_0);	/* 启动自校准 */
@@ -166,16 +166,16 @@ namespace HardWare{
         }
     }
     //启动系统校准零位.请将AIN+ AIN-短接后,执行该函数.校准应该由主程序控制并保存校准参数.执行完毕后.可以通过ReadReg(REG_ZERO_CH1)和ReadReg(REG_ZERO_CH2)读取校准参数.
-    void AD7705::SystemCalibZero(ADC_Channel channel){
+    void AD7705::SystemCalibZero(Channel channel){
         switch (channel)
         {
-        case ADC_Channel::Ch1:
+        case Channel::Ch1:
             /* 校准CH1 */
             this->WriteByte(REG_SETUP | WRITE | CH_1);	/* 写通信寄存器，下一步是写设置寄存器，通道1 */
             this->WriteByte(MD_CAL_ZERO | __CH1_GAIN_BIPOLAR_BUF | FSYNC_0);    /* 启动自校准 */
             this->WaitDRDY();	/* 等待内部操作完成 */
             break;
-        case ADC_Channel::Ch2:
+        case Channel::Ch2:
             /* 校准CH2 */
             this->WriteByte(REG_SETUP | WRITE | CH_2);	/* 写通信寄存器，下一步是写设置寄存器，通道1 */
             this->WriteByte(MD_CAL_ZERO | __CH2_GAIN_BIPOLAR_BUF | FSYNC_0);	/* 启动自校准 */
@@ -184,16 +184,16 @@ namespace HardWare{
         }
     }
     //启动系统校准满位.请将AIN+ AIN-接最大输入电压源,执行该函数.校准应该由主程序控制并保存校准参数.执行完毕后.可以通过ReadReg(REG_FULL_CH1)和ReadReg(REG_FULL_CH2)读取校准参数.
-    void AD7705::SystemCalibFull(ADC_Channel channel){
+    void AD7705::SystemCalibFull(Channel channel){
         switch (channel)
         {
-        case ADC_Channel::Ch1:
+        case Channel::Ch1:
             /* 校准CH1 */
             this->WriteByte(REG_SETUP | WRITE | CH_1);	/* 写通信寄存器，下一步是写设置寄存器，通道1 */
             this->WriteByte(MD_CAL_FULL | __CH1_GAIN_BIPOLAR_BUF | FSYNC_0);/* 启动自校准 */
             this->WaitDRDY();	/* 等待内部操作完成 */
             break;
-        case ADC_Channel::Ch2:
+        case Channel::Ch2:
             /* 校准CH2 */
             this->WriteByte(REG_SETUP | WRITE | CH_2);	/* 写通信寄存器，下一步是写设置寄存器，通道1 */
             this->WriteByte(MD_CAL_FULL | __CH2_GAIN_BIPOLAR_BUF | FSYNC_0);	/* 启动自校准 */

@@ -1,7 +1,6 @@
 #pragma once
-#include<SoftHardWare/I2C_Component.h>
 #include<SoftHardWare/SPI_Component.h>
-#include<Abstract/DisplayAbstract.h>
+
 
 namespace HardWare{
     class AD7705:protected SPI_Component{
@@ -17,10 +16,11 @@ namespace HardWare{
         void WaitDRDY();
 
         public:     
-        enum class ADC_Channel{
+        enum class Channel{
             Ch1,
             Ch2
         };
+
         AD7705(
             uint32_t DIN_GPIOx  ,uint32_t DIN_PINx, 
             uint32_t DOUT_GPIOx ,uint32_t DOUT_PINx,
@@ -32,9 +32,9 @@ namespace HardWare{
 
         void Reset();
         void Sync();
-        void CalibSelf(ADC_Channel channel);
-        void SystemCalibZero(ADC_Channel channel);
-        void SystemCalibFull(ADC_Channel channel);
+        void CalibSelf(Channel channel);
+        void SystemCalibZero(Channel channel);
+        void SystemCalibFull(Channel channel);
         u_short ReadChannel1();
         u_short ReadChannel2();
         int Get_Channel1_mV();

@@ -2,32 +2,56 @@
 
 HardWare::SSD1306 *SSD1306_M;
 //HardWare::AD7705 *AD7705_M;
-HardWare::TOF10120 *TOF10120_M;
+//HardWare::TOF10120 *TOF10120_M;
+HardWare::ADXL345 *ADXL345_M;
 HardWare::Computer *COM;
+HardWare::ESP8266 *ESP8266_M;
 
 void HardWareInit(){
-    SystemClock::Clock(Clock_Speed::HighSpeed);                     //配置为高速的系统时钟(目前也只实现了高速).
+    SystemClock::Clock(Clock_Speed::HighSpeed);                                                 //配置为高速的系统时钟(目前也只实现了高速).
 
-    COM = new HardWare::Computer(0,115200);                         //使用串口2,115200波特率作为电脑端口.
-    Debug::DebugCallback=[&](std::string Info,unsigned int *InterruptCnt){                     //使用电脑端口的输出作为Debug信息的回调方式.
+    COM = new HardWare::Computer(0,115200);                                                     //使用串口2,115200波特率作为电脑端口.
+    Debug::DebugCallback=[&](std::string Info,unsigned int *InterruptCnt){                      //使用电脑端口的输出作为Debug信息的回调方式.
         COM->Send(Info,InterruptCnt);
     };
 
-    Debug::StartDebug("TOF10120_M");
-    TOF10120_M = new UART::TOF10120(1);
-    Debug::EndDebug();
+    //Debug::StartDebug("TOF10120_M");
+    //TOF10120_M = new UART::TOF10120(1);
+    //Debug::EndDebug();
 
     //Debug::StartDebug("AD7705_M");
     //AD7705_M = new HardWare::AD7705(0,0,0,1,0,4,0,5,0,6,0,7);
     //Debug::EndDebug();
+    //Debug::StartDebug("ADXL345_M");
+    //ADXL345_M = new HardWare::ADXL345(0,4,0,5,0,6,0,7);
+    //Debug::EndDebug();
 
-    Debug::StartDebug("SSD1306_M");
     SSD1306_M = new SPI::SSD1306(0,8,0,11,0,12,0,13,0,14);
+
+    Debug::StartDebug("ESP8266_M");
+    ESP8266_M = new HardWare::ESP8266(1);
+    ESP8266_M->Wifi_Reset();
+    ESP8266_M->Set_WIFI_Mode(Wifi::Mode::SoftAP_Station);
+    //ESP8266_M->Set_WIFI_SendMode(Wifi::SendMode::Normal);
+    ESP8266_M->Set_WIFI_Connection(Wifi::Connection::Single);
+    //ESP8266_M->Set_WIFI_Server(true,5000,5);
+    ESP8266_M->Refresh_WIFIList();
+    ESP8266_M->Display_WIFIList();
+    /*
+    ESP8266_M->Socket_Start("10.248.43.89",5000,Socket::Type::TCP);
+    ESP8266_M->Socket_Send("Test");
+    */
+    ESP8266_M->Connect_WIFI("CMCC-ZH12A-519");
+    //ESP8266_M->ping("10.248.43.89");
+    /*
+    ESP8266_M->Socket_Start("10.248.43.89",5000,Socket::Type::TCP);
+    ESP8266_M->Socket_Send("Test");
+    ESP8266_M->Socket_End();
+    */
     Debug::EndDebug();
 
     
-
-
+    
 
 }
 
@@ -38,9 +62,7 @@ int main(){
     while(1){
         if(SSD1306_M->ON){
             SSD1306_M->Clear();
-            SSD1306_M->DrawString(10,10,std::to_string(TOF10120_M->distance));
-            //SSD1306_M->DrawString(10,40,std::to_string(i++));
-            //SSD1306_M->DrawString(10,10,"AD:"+std::to_string(AD7705_M->Get_Channel1_mV())+"mV");
+            SSD1306_M->DrawString(10,10,"Test");
             SSD1306_M->Refresh();
         }  
     }

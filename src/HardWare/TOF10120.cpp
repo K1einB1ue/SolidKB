@@ -43,14 +43,16 @@ namespace UART{
                 }
                 return;
             }
-            if(Data[0]=='o'&&Data[1]=='k'){
+
+
+            if(std::strcmp(Data,Size,"ok",2)){
                 Debug::InterruptSend("[TOF10120]ok!");
                 return;
-            }
-            if(Data[0]=='f'&&Data[1]=='a'&&Data[2]=='i'&&Data[3]=='l'){
+            }else if(std::strcmp(Data,Size,"fail",4)){
                 Debug::InterruptSend("[TOF10120]fail!");
                 return;
             }
+            
             bool EqualFlag=false;     
             for(unsigned int i=0;i<Size;i++){
                 if(EqualFlag&&Data[i]<='9'&&Data[i]>='0'){

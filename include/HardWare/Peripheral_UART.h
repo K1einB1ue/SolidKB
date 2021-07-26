@@ -32,7 +32,7 @@ class Peripheral_UART{
 template<typename DataType, unsigned int Capacity>
 class DecoderContainer{
     private:
-    DataType Data[Capacity];
+    DataType* Data=nullptr;
     unsigned int Size = 0;
     const unsigned int capacity = Capacity;
     bool clear_on_end_enable = true;
@@ -42,7 +42,18 @@ class DecoderContainer{
     const DataType* match_data; unsigned int match_size;
     public:
 
+    DecoderContainer(){
+        Data=new DataType[Capacity];
+    }
+
+    virtual ~DecoderContainer(){
+        delete[] Data;
+    }
+
     void StreamIn(DataType index) {
+        if(Size>capacity){
+            this->Size = 0;
+        }
         this->Data[Size++] = index;
         if(Size<match_size){
             return;
@@ -60,6 +71,14 @@ class DecoderContainer{
             }
         }
     }
+
+    void Set_Container_Size(unsigned int Size){
+        delete[] Data;
+        Data=new DataType[Size];
+        unsigned int* temp = const_cast<unsigned int *>(&capacity);
+        *temp = Size;
+    }
+
 
     void End(const char* str, unsigned int size) {
         this->match_data = str;

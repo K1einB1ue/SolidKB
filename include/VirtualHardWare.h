@@ -14,6 +14,7 @@
     #include<HardWare/MPU6050.h>
     #include<HardWare/AD7705.h>
     #include<HardWare/TOF10120.h>
+    #include<HardWare/ADXL345.h>
     #if __Enable_DCMI
         #include<HardWare/Peripheral_DCMI.h>
         #include<HardWare/OV7725.h>

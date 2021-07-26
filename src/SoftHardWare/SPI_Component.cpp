@@ -253,6 +253,7 @@ u_char    SPI_Component::Fast_SPI_R_Type0(){
         if(MISO) rxd++;
         SCK = 0;
     }
+    return rxd;
 }
 
 u_char    SPI_Component::Fast_SPI_R_Type1(){
@@ -263,6 +264,7 @@ u_char    SPI_Component::Fast_SPI_R_Type1(){
         if(MISO) rxd++;
         SCK = 1;
     }
+    return rxd;
 }
 
 void      SPI_Component::End(){
@@ -272,16 +274,16 @@ void      SPI_Component::End(){
 void      SPI_Component::__SPI_Mode(bool CPOL,bool CPHA){
     if(!CPOL){      
         if(!CPHA){
-            this->SOFT_SPI_R_Func =[&](){return this->SOFT_SPI_R_Mode0();};
-            this->SOFT_SPI_W_Func =[&](u_char txd){this->SOFT_SPI_W_Mode0(txd);};
+            this->SOFT_SPI_R_Func=[&](){return this->SOFT_SPI_R_Mode0();};
+            this->SOFT_SPI_W_Func=[&](u_char txd){this->SOFT_SPI_W_Mode0(txd);};
             this->SOFT_SPI_RW_Func=[&](u_char txd){return this->SOFT_SPI_RW_Mode0(txd);};
             this->Send_Byte=[&](u_char txd){this->Fast_SPI_W_Type0(txd);};
             this->Read_Byte=[&](){return this->Fast_SPI_R_Type0();};
             this->Start=[&](){this->Fast_SPI_Start_Mode0();};
         }
         else{
-            this->SOFT_SPI_R_Func =[&](){return this->SOFT_SPI_R_Mode1();};
-            this->SOFT_SPI_W_Func =[&](u_char txd){this->SOFT_SPI_W_Mode1(txd);};
+            this->SOFT_SPI_R_Func=[&](){return this->SOFT_SPI_R_Mode1();};
+            this->SOFT_SPI_W_Func=[&](u_char txd){this->SOFT_SPI_W_Mode1(txd);};
             this->SOFT_SPI_RW_Func=[&](u_char txd){return this->SOFT_SPI_RW_Mode1(txd);};
             this->Send_Byte=[&](u_char txd){this->Fast_SPI_W_Type1(txd);};
             this->Read_Byte=[&](){return this->Fast_SPI_R_Type1();};
@@ -289,16 +291,16 @@ void      SPI_Component::__SPI_Mode(bool CPOL,bool CPHA){
         }
     }else{
         if(!CPHA){
-            this->SOFT_SPI_R_Func =[&](){return this->SOFT_SPI_R_Mode2();};
-            this->SOFT_SPI_W_Func =[&](u_char txd){this->SOFT_SPI_W_Mode2(txd);};
+            this->SOFT_SPI_R_Func=[&](){return this->SOFT_SPI_R_Mode2();};
+            this->SOFT_SPI_W_Func=[&](u_char txd){this->SOFT_SPI_W_Mode2(txd);};
             this->SOFT_SPI_RW_Func=[&](u_char txd){return this->SOFT_SPI_RW_Mode2(txd);};
             this->Send_Byte=[&](u_char txd){this->Fast_SPI_W_Type1(txd);};
             this->Read_Byte=[&](){return this->Fast_SPI_R_Type1();};
             this->Start=[&](){this->Fast_SPI_Start_Mode2();};
         }
         else{
-            this->SOFT_SPI_R_Func =[&](){return this->SOFT_SPI_R_Mode3();};
-            this->SOFT_SPI_W_Func =[&](u_char txd){this->SOFT_SPI_W_Mode3(txd);};
+            this->SOFT_SPI_R_Func=[&](){return this->SOFT_SPI_R_Mode3();};
+            this->SOFT_SPI_W_Func=[&](u_char txd){this->SOFT_SPI_W_Mode3(txd);};
             this->SOFT_SPI_RW_Func=[&](u_char txd){return this->SOFT_SPI_RW_Mode3(txd);};
             this->Send_Byte=[&](u_char txd){this->Fast_SPI_W_Type0(txd);};
             this->Read_Byte=[&](){return this->Fast_SPI_R_Type0();};
@@ -339,4 +341,32 @@ u_char    SPI_Component::SOFT_SPI_R(){
         __SPI_Mode(0,0);
         return this->SOFT_SPI_R_Func();
     }
+}
+
+u_char    SPI_Component::Read_Reg(u_char reg){
+    this->SOFT_SPI_W(reg);
+    return this->SOFT_SPI_R();
+}
+
+u_char    SPI_Component::Read_Reg(u_char reg,u_char spare){
+    this->SOFT_SPI_RW(reg);
+    return this->SOFT_SPI_RW(spare);
+}
+
+void      SPI_Component::Send_Reg(u_char reg,u_char txd){
+    this->SOFT_SPI_RW(reg);
+    this->SOFT_SPI_RW(txd);
+}
+
+
+void     SPI_Component::PreRead_Reg(u_char reg){
+    this->SOFT_SPI_W(reg);
+}
+
+u_char   SPI_Component::ConRead_Reg(u_char reg){
+    return this->SOFT_SPI_RW(reg);
+}
+
+u_char   SPI_Component::EndRead_Reg(){
+    return this->SOFT_SPI_R();
 }

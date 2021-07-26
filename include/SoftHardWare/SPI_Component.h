@@ -56,11 +56,18 @@ class SPI_Component{
             uint32_t CS_GPIOx,uint32_t CS_PINx);
 
         virtual ~SPI_Component();
-        u_char    SOFT_SPI_RW(u_char txd);
-        void      SOFT_SPI_W(u_char txd);
-        u_char    SOFT_SPI_R();
-        void      __SPI_Mode(bool CPOL,bool CPHA);
-        void      __SPI_CS_Active(bool CS);
+        u_char      SOFT_SPI_RW(u_char txd);
+        void        SOFT_SPI_W(u_char txd);
+        u_char      SOFT_SPI_R();
+        void        __SPI_Mode(bool CPOL,bool CPHA);
+        void        __SPI_CS_Active(bool CS);
+        u_char      Read_Reg(u_char reg);  
+        u_char      Read_Reg(u_char reg,u_char spare);
+        void        Send_Reg(u_char reg,u_char txd);
+
+        void        PreRead_Reg(u_char reg);
+        u_char      ConRead_Reg(u_char reg);
+        u_char      EndRead_Reg();
     
         
 };  //class SPI_Component

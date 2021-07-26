@@ -1,8 +1,5 @@
 #include<AbstractDependency/__AbstractDependency.h>
 
-void Nullfunc(char index){
-    (void*)index;
-}
 
 std::function<void(std::string,unsigned int*)> Debug::DebugCallback=nullptr;
 std::stack<std::string> IndentStack;
@@ -100,6 +97,26 @@ void Debug::EndBlock(){
         IndentStack.pop();
     }
 }
+
+void Debug::EndBlockTitle(std::string Title){
+    if(DebugCallback&&Indent){
+        Indent--;
+        RefreshIndent();
+        DebugQueue.push("\n"+IndentStr+"["+Title+"]");
+        DebugCall();
+        IndentStack.pop();
+    }
+}
+
+
+void Debug::EndOK(){
+    Debug::EndBlockTitle("OK");
+}
+
+void Debug::EndFAIL(){
+    Debug::EndBlockTitle("FAIL");
+}
+
 void Debug::InterruptSend(std::string Info){
     if(DebugCallback){
         DebugQueue.push("\n-"+InterruptIndentStr+"<Interrupt>"+Info);
@@ -115,4 +132,55 @@ void Debug::InterruptSend(char Info){
         DebugQueue.push("\n-"+InterruptIndentStr+"<Interrupt>"+temp);
         DebugCall();
     }
+}
+
+
+bool std::strcmp(const char* INstr,unsigned int IN_size,const char* Match,unsigned int Match_size){
+    if(IN_size<Match_size){
+        return false;
+    }
+    for(unsigned int i=0;i<Match_size;i++){
+        if(INstr[i]!=Match[i]){
+            return false;
+        }
+    }
+    return true;
+}
+
+bool std::strcmp(const char* INstr,unsigned int IN_size,unsigned int StartPos,const char* Match,unsigned int Match_size){
+    if(IN_size+StartPos<Match_size){
+        return false;
+    }
+    for(unsigned int i=0;i<Match_size;i++){
+        if(INstr[i+StartPos]!=Match[i]){
+            return false;
+        }
+    }
+    return true;
+}
+
+int std::Getint(const char* INstr,unsigned int *ptr){
+    std::string temp;
+    while(!(INstr[*ptr]>='0'&&INstr[*ptr]<='9')){
+        if(INstr[*ptr]=='-'){
+            if(INstr[(*ptr)+1]>='0'&&INstr[(*ptr)+1]<='9'){
+                break;
+            }
+        }
+        (*ptr)++;
+    }
+    temp+=INstr[(*ptr)++];
+    while(INstr[*ptr]>='0'&&INstr[*ptr]<='9'){
+        temp+=INstr[(*ptr)++];
+    }
+    return std::stoi(temp);
+}
+
+std::string std::Getstring(const char* INstr,char formatchar,unsigned int *ptr){
+    std::string temp;
+    while(INstr[(*ptr)++]!=formatchar);
+    while(INstr[*ptr]!=formatchar){
+        temp+=INstr[(*ptr)++];
+    }
+    return temp;
 }
