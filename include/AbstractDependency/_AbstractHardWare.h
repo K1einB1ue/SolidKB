@@ -92,6 +92,7 @@
     class PWM;
 
     namespace Override{
+        extern ResourcePack<CFG_PWM_Size> PWMPack;
 
         void PWMx_PreEnable(PWM* PWM);
 

@@ -7,7 +7,6 @@
 
 
 
-
 #define STM32F407ZG
 #define CHIP_SELECT
 
@@ -16,5 +15,6 @@
 #define CFG_Uart_Size           5
 #define CFG_Uart_Buf_Size       100
 #define CFG_DCMI_Size           1
-#define CFG_PWM_Size            8
+#define CFG_PWM_Size            7
 #define CFG_TIM_Size            5
+

@@ -1,12 +1,48 @@
 #pragma once
 #include<AbstractDependency/__AbstractDependency.h>
 
+template<int Size>
+class ResourcePack :public std::vector<u_char>
+{
+    private:
+    const int Sum = Size;
+    public:
+    ResourcePack(const std::initializer_list<u_char> &v):std::vector<u_char>(v){
+        const u_char* ptr = v.begin();
+        int sum = 0;
+        sum += *ptr;
+        while (++ptr != v.end()) {
+            sum += *ptr;
+        }
+        if(sum!=this->Sum){
+            Debug::StaticSend("ResourcePack Size Error!");
+        }
+    }
+
+
+
+    u_char Unpack(u_char Numx) {
+        if (Numx + 1 <= this->Sum) {
+            Numx += 1;
+            u_char ptr = 0;
+            while (Numx > (*this)[ptr]) {
+                Numx -= (*this)[ptr++];
+            }
+            return ptr;
+        }else{
+            Debug::Error("Out of Range!");
+        }
+    }
+
+};
+
 namespace Override{
     extern void GPIOx_PreEnable(uint32_t GPIOx);
     extern void GPIOx_PreDisable(uint32_t GPIOx);
 }
 
 namespace Resource{
+
     #if CFG_GPIO_Size&&CFG_PIN_Size
     namespace PIN_Resource{
         extern bool Cover(uint32_t GPIOx,uint32_t PINx,std::string Info);

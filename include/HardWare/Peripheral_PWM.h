@@ -10,23 +10,30 @@ private:
     
     static bool PWM_Enable_Map           [CFG_PWM_Size];
     
-    uint32_t PWMx;
+    uint32_t PWMx;uint32_t Period;uint32_t Prescaler;
 public:
 
+    volatile unsigned long* Pulse=nullptr;
+
+    PWM(uint32_t PWMx,uint32_t Period,uint32_t Prescaler);
     PWM(uint32_t PWMx);
 
     uint32_t GetPWM();
-    // uint32_t GetPIN();
+    uint32_t GetPeriod();
+    uint32_t GetPrescaler();
 
     // void ReMode(PIN_Mode PINmode);
     virtual ~PWM();
 
-    static bool CoverPWM(uint32_t PWMx);
-    static bool UncoverPWM(uint32_t PWMx);
-
-	// void operator=(float Index) {
-	// 	*OUT = Index;
-	// }
+	void operator=(double Index) {
+        if(Index>=1){
+            *Pulse=this->Period;
+        }else if(Index<0){
+            *Pulse=0;
+        }else{
+            *Pulse=(uint32_t)(Index*this->Period);
+        }
+	}
 
 };
 

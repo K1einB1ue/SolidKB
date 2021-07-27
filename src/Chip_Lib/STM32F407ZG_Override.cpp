@@ -152,6 +152,7 @@
             if (HAL_GetREVID() == 0x1001){
                 __HAL_FLASH_PREFETCH_BUFFER_ENABLE();  //使能flash预取
             }
+            __HAL_RCC_SYSCFG_CLK_ENABLE();
         }
         void Delay_init(uint32_t SYSCLK) {
             HAL_SYSTICK_CLKSourceConfig(SYSTICK_CLKSOURCE_HCLK);//SysTick频率为HCLK
@@ -165,7 +166,9 @@
         
         std::map<Clock_Speed,std::function<void(void)>> Override::ClockPrototypes{
             {Clock_Speed::HighSpeed,[](){
-                HAL_Init();Clock_Init(336,8,2,7);Delay_init(168);
+                HAL_Init();
+                Clock_Init(168,8,2,7);
+                Delay_init(168);
             }},//168Mhz
         };
 
@@ -231,8 +234,8 @@
             if(huart->Instance==USART1){
                 if(Resource::UART_Resource::Check(0)
                 ||Resource::PIN_Resource::Check(0,9)
-                ||Resource::PIN_Resource::Check(0,10))
-                return;
+                ||Resource::PIN_Resource::Check(0,10)
+                )return;
                 Resource::PIN_Resource::Cover(0,9,"TX");
                 Resource::PIN_Resource::Cover(0,10,"RX");
                 Resource::UART_Resource::Cover(0,"USART1");
@@ -255,8 +258,8 @@
             else if(huart->Instance==USART2){
                 if(Resource::UART_Resource::Check(1)
                 ||Resource::PIN_Resource::Check(0,2)
-                ||Resource::PIN_Resource::Check(0,3))
-                return;
+                ||Resource::PIN_Resource::Check(0,3)
+                )return;
                 Resource::PIN_Resource::Cover(0,2,"TX");
                 Resource::PIN_Resource::Cover(0,3,"RX");
                 Resource::UART_Resource::Cover(1,"USART2");
@@ -279,8 +282,8 @@
             else if(huart->Instance==USART3){
                 if(Resource::UART_Resource::Check(2)
                 ||Resource::PIN_Resource::Check(1,10)
-                ||Resource::PIN_Resource::Check(1,11))
-                return;
+                ||Resource::PIN_Resource::Check(1,11)
+                )return;
                 Resource::PIN_Resource::Cover(1,10,"TX");
                 Resource::PIN_Resource::Cover(1,11,"RX");
                 Resource::UART_Resource::Cover(2,"USART3");
@@ -304,8 +307,8 @@
             else if(huart->Instance==UART4){
                 if(Resource::UART_Resource::Check(3)
                 ||Resource::PIN_Resource::Check(0,0)
-                ||Resource::PIN_Resource::Check(0,1))
-                return;
+                ||Resource::PIN_Resource::Check(0,1)
+                )return;
                 Resource::PIN_Resource::Cover(0,0,"TX");
                 Resource::PIN_Resource::Cover(0,1,"RX");
                 Resource::UART_Resource::Cover(3,"UART4");
@@ -329,8 +332,8 @@
             else if(huart->Instance==UART5){
                 if(Resource::UART_Resource::Check(4)
                 ||Resource::PIN_Resource::Check(2,12)
-                ||Resource::PIN_Resource::Check(3,2))
-                return;
+                ||Resource::PIN_Resource::Check(3,2)
+                )return;
                 Resource::PIN_Resource::Cover(2,12,"TX");
                 Resource::PIN_Resource::Cover(3,2,"RX");
                 Resource::UART_Resource::Cover(4,"UART5");
@@ -511,6 +514,7 @@
                 tim->PSC=TIM->GetPrescale();  	    //预分频器	  
                 tim->DIER|=1<<0;                    //允许更新中断	  
                 tim->CR1|=0x01;                     //使能定时器3
+                tim->CR1|=1<<7;                     //自动装填
                 HAL_NVIC_EnableIRQ(TIM3_IRQn);
                 HAL_NVIC_SetPriority(TIM3_IRQn,3,3);
                 break;
@@ -600,9 +604,175 @@
 
     #ifdef __Enable_PWM
 
-        void Override::PWMx_PreEnable(PWM* PWM);
+        ResourcePack<CFG_PWM_Size> Override::PWMPack={2,1,1,1,1,1};
+        TIM_TypeDef* PWM_Mapping[]={
+            TIM9, TIM10, TIM11, TIM12, TIM13, TIM14
+        };
+        TIM_HandleTypeDef TIM_Handle_Mapping[6];
 
-        void Override::PWMx_PreDisable(PWM* PWM);
+        void Override::PWMx_PreEnable(PWM* PWM){
+            GPIO_InitTypeDef GPIO_Initure;
+            u_char Packnum=PWMPack.Unpack(PWM->GetPWM());
+
+            TIM_HandleTypeDef* TIM_Handle=&TIM_Handle_Mapping[Packnum];
+            TIM_OC_InitTypeDef ConfigOC = {0};
+
+            TIM_Handle->Instance=PWM_Mapping[Packnum];
+            TIM_Handle->Init.Prescaler = PWM->GetPrescaler();
+            TIM_Handle->Init.CounterMode = TIM_COUNTERMODE_UP;
+            TIM_Handle->Init.Period = PWM->GetPeriod();
+            TIM_Handle->Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+            TIM_Handle->Init.AutoReloadPreload=TIM_AUTORELOAD_PRELOAD_ENABLE;
+
+            ConfigOC.OCMode = TIM_OCMODE_PWM1;
+            ConfigOC.Pulse = 0;
+            ConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
+            ConfigOC.OCIdleState = TIM_OCIDLESTATE_RESET;
+            ConfigOC.OCFastMode = TIM_OCFAST_ENABLE;
+
+            GPIO_Initure.Pull=GPIO_PULLUP;			        
+            GPIO_Initure.Speed=GPIO_SPEED_FAST;    
+
+
+            if(PWM->GetPWM()==0||PWM->GetPWM()==1){
+                if(!(Resource::PWM_Resource::Check(0)||Resource::PWM_Resource::Check(1))){
+                    TIM_ClockConfigTypeDef ClockSourceConfig = {0};
+                    ClockSourceConfig.ClockSource=TIM_CLOCKSOURCE_INTERNAL;            
+                    HAL_TIM_Base_Init(TIM_Handle);
+                    __HAL_RCC_TIM9_CLK_ENABLE();
+                    HAL_TIM_ConfigClockSource(TIM_Handle,&ClockSourceConfig);
+                    HAL_TIM_PWM_Init(TIM_Handle);
+                }
+            }else{
+                HAL_TIM_Base_Init(TIM_Handle);              
+            }
+
+
+
+            switch (PWM->GetPWM()){
+            case 0:
+            //PE5
+                if(Resource::PIN_Resource::Check(4,5)
+                ||Resource::PWM_Resource::Check(0)
+                )return;
+                Resource::PIN_Resource::Cover(4,5,"PWM");
+                Resource::PWM_Resource::Cover(0,"PWM");
+                PWM->Pulse=&TIM9->CCR1;
+                GPIO_Initure.Pin=GPIO_PIN_5;
+                GPIO_Initure.Mode=GPIO_MODE_AF_PP;	        
+                GPIO_Initure.Alternate=GPIO_AF3_TIM9;
+                HAL_TIM_PWM_ConfigChannel(TIM_Handle, &ConfigOC, TIM_CHANNEL_1);
+                HAL_TIM_PWM_Start(TIM_Handle,TIM_CHANNEL_1);
+                HAL_GPIO_Init(GPIOE,&GPIO_Initure);
+                break;
+            case 1:
+            //PE6
+                if(Resource::PIN_Resource::Check(4,6)
+                ||Resource::PWM_Resource::Check(1)
+                )return;
+                Resource::PIN_Resource::Cover(4,6,"PWM");
+                Resource::PWM_Resource::Cover(1,"PWM");
+                PWM->Pulse=&TIM9->CCR2;
+                GPIO_Initure.Pin=GPIO_PIN_6;
+                GPIO_Initure.Mode=GPIO_MODE_AF_PP;	        
+                GPIO_Initure.Alternate=GPIO_AF3_TIM9;
+                HAL_TIM_PWM_ConfigChannel(TIM_Handle, &ConfigOC, TIM_CHANNEL_2);
+                HAL_TIM_PWM_Start(TIM_Handle,TIM_CHANNEL_2);
+                HAL_GPIO_Init(GPIOE,&GPIO_Initure);   
+                break;
+            case 2:
+            //PF6
+                if(Resource::PIN_Resource::Check(5,6)
+                ||Resource::PWM_Resource::Check(2)
+                )return;
+                Resource::PIN_Resource::Cover(5,6,"PWM");
+                Resource::PWM_Resource::Cover(2,"PWM");
+                __HAL_RCC_TIM10_CLK_ENABLE();
+                HAL_TIM_PWM_Init(TIM_Handle);
+                PWM->Pulse=&TIM10->CCR1;
+                GPIO_Initure.Pin=GPIO_PIN_6;
+                GPIO_Initure.Mode=GPIO_MODE_AF_PP;	        
+                GPIO_Initure.Alternate=GPIO_AF3_TIM10;
+                HAL_TIM_PWM_ConfigChannel(TIM_Handle, &ConfigOC, TIM_CHANNEL_1);
+                HAL_TIM_PWM_Start(TIM_Handle,TIM_CHANNEL_1);
+                HAL_GPIO_Init(GPIOF,&GPIO_Initure);
+                break;
+            case 3:
+            //PF7
+                if(Resource::PIN_Resource::Check(5,7)
+                ||Resource::PWM_Resource::Check(3)
+                )return;
+                Resource::PIN_Resource::Cover(5,7,"PWM");
+                Resource::PWM_Resource::Cover(3,"PWM");
+                __HAL_RCC_TIM11_CLK_ENABLE();
+                HAL_TIM_PWM_Init(TIM_Handle);
+                PWM->Pulse=&TIM11->CCR1;
+                GPIO_Initure.Pin=GPIO_PIN_7;
+                GPIO_Initure.Mode=GPIO_MODE_AF_PP;	        
+                GPIO_Initure.Alternate=GPIO_AF3_TIM11;
+                HAL_TIM_PWM_ConfigChannel(TIM_Handle, &ConfigOC, TIM_CHANNEL_1);
+                HAL_TIM_PWM_Start(TIM_Handle,TIM_CHANNEL_1);
+                HAL_GPIO_Init(GPIOF,&GPIO_Initure);      
+                break;
+            case 4:
+            //PB14
+                if(Resource::PIN_Resource::Check(1,14)
+                ||Resource::PWM_Resource::Check(4)
+                )return;
+                Resource::PIN_Resource::Cover(1,14,"PWM");
+                Resource::PWM_Resource::Cover(4,"PWM");
+                __HAL_RCC_TIM12_CLK_ENABLE();
+                HAL_TIM_PWM_Init(TIM_Handle);
+                PWM->Pulse=&TIM12->CCR1;
+                GPIO_Initure.Pin=GPIO_PIN_14;
+                GPIO_Initure.Mode=GPIO_MODE_AF_PP;	        
+                GPIO_Initure.Alternate=GPIO_AF9_TIM12;
+                HAL_TIM_PWM_ConfigChannel(TIM_Handle, &ConfigOC, TIM_CHANNEL_1);
+                HAL_TIM_PWM_Start(TIM_Handle,TIM_CHANNEL_1);
+                HAL_GPIO_Init(GPIOB,&GPIO_Initure);         
+                break;
+            case 5:
+            //PF8
+                if(Resource::PIN_Resource::Check(5,8)
+                ||Resource::PWM_Resource::Check(5)
+                )return;
+                Resource::PIN_Resource::Cover(5,8,"PWM");
+                Resource::PWM_Resource::Cover(5,"PWM");
+                __HAL_RCC_TIM13_CLK_ENABLE();
+                HAL_TIM_PWM_Init(TIM_Handle);
+                PWM->Pulse=&TIM13->CCR1;
+                GPIO_Initure.Pin=GPIO_PIN_8;
+                GPIO_Initure.Mode=GPIO_MODE_AF_PP;	        
+                GPIO_Initure.Alternate=GPIO_AF9_TIM13;
+                HAL_TIM_PWM_ConfigChannel(TIM_Handle, &ConfigOC, TIM_CHANNEL_1);
+                HAL_TIM_PWM_Start(TIM_Handle,TIM_CHANNEL_1);
+                HAL_GPIO_Init(GPIOF,&GPIO_Initure);        
+                break;
+            case 6:
+            //PF9f
+                if(Resource::PIN_Resource::Check(5,9)
+                ||Resource::PWM_Resource::Check(6)
+                )return;
+                Resource::PIN_Resource::Cover(5,9,"PWM");
+                Resource::PWM_Resource::Cover(6,"PWM");
+                __HAL_RCC_TIM14_CLK_ENABLE();
+                HAL_TIM_PWM_Init(TIM_Handle);
+                PWM->Pulse=&TIM14->CCR1;
+                GPIO_Initure.Pin=GPIO_PIN_9;
+                GPIO_Initure.Mode=GPIO_MODE_AF_PP;	        
+                GPIO_Initure.Alternate=GPIO_AF9_TIM14;
+                HAL_TIM_PWM_ConfigChannel(TIM_Handle, &ConfigOC, TIM_CHANNEL_1);
+                HAL_TIM_PWM_Start(TIM_Handle,TIM_CHANNEL_1);
+                HAL_GPIO_Init(GPIOF,&GPIO_Initure);
+                break;      
+            default:
+                break;
+            }            
+        }
+
+        void Override::PWMx_PreDisable(PWM* PWM){
+
+        }
 
     #endif
 #endif

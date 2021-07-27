@@ -1,13 +1,17 @@
 #include<AbstractDependency/Debug.h>
 
-std::function<void(std::string,unsigned int*)> Debug::DebugCallback=nullptr;
+std::function<void(std::string,unsigned int*)> DebugCallback=nullptr;
 std::stack<std::string> IndentStack;
 
+std::queue<std::string> StaticQueue;
 std::queue<std::string> DebugQueue;
 unsigned int Interruptnum=0;
 
 static u_char Indent=0;
 static std::string IndentStr="",InterruptIndentStr="";
+
+
+
 
 
 void RefreshIndent(){
@@ -23,10 +27,10 @@ void RefreshIndent(){
 
 static void DebugCall(){
     while(!DebugQueue.empty()){
-        if(Debug::DebugCallback){
+        if(DebugCallback){
             if(!Interruptnum){
                 std::string temp = DebugQueue.front();
-                Debug::DebugCallback(temp,&Interruptnum);
+                DebugCallback(temp,&Interruptnum);
                 DebugQueue.pop();
                 Interruptnum=0;
             }else{
@@ -35,6 +39,7 @@ static void DebugCall(){
         }
     }
 }
+
 
 void Debug::Error(std::string Info){
     if(DebugCallback&&Indent){
@@ -130,5 +135,31 @@ void Debug::InterruptSend(char Info){
     if(DebugCallback){
         DebugQueue.push("\n-"+InterruptIndentStr+"<Interrupt>"+temp);
         DebugCall();
+    }
+}
+
+void Debug::StaticSend(std::string Info){
+    #if StaticDebugMode
+
+    if(DebugCallback){
+        DebugQueue.push("\n[Static]"+Info);
+        DebugCall();
+    }else{
+        StaticQueue.push("\n[Static]"+Info);
+    }
+
+    #endif
+}
+
+
+
+void Debug::BindCallback(std::function<void(std::string,unsigned int *ptr)> Callback){
+    DebugCallback=Callback;  
+    while(!StaticQueue.empty()){
+        if(StaticQueue.front().size()>0){
+            DebugQueue.push(StaticQueue.front());
+            DebugCall();
+        }
+        StaticQueue.pop();
     }
 }

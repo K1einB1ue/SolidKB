@@ -6,14 +6,16 @@ HardWare::TOF10120 *TOF10120_M;
 HardWare::ADXL345 *ADXL345_M;
 HardWare::Computer *COM;
 HardWare::ESP8266 *ESP8266_M;
+PWM *PWM0_M,*PWM1_M,*PWM2_M,*PWM3_M;
 
 void HardWareInit(){
     SystemClock::Clock(Clock_Speed::HighSpeed);                                                 //配置为高速的系统时钟(目前也只实现了高速).
 
     COM = new HardWare::Computer(0,115200);
-    Debug::DebugCallback=[&](std::string Info,unsigned int *InterruptCnt){
+    Debug::BindCallback([&](std::string Info,unsigned int *InterruptCnt){
         COM->Send(Info,InterruptCnt);
-    };
+    });
+
     //Debug::StartDebug("AD7705_M");
     //AD7705_M = new HardWare::AD7705(0,0,0,1,0,4,0,5,0,6,0,7);
     //Debug::EndDebug();
@@ -21,11 +23,23 @@ void HardWareInit(){
     SSD1306_M = new SPI::SSD1306(0,8,0,11,0,12,0,13,0,14);
     Debug::EndDebug();
 
+    Debug::StartDebug("PWM0_M");
+    PWM0_M = new PWM(4,168-1,1000-1);
+    PWM1_M = new PWM(5,168-1,1000-1);
+    PWM2_M = new PWM(6,168-1,1000-1);
+    //PWM3_M = new PWM(3,168-1,1000-1);
+    Debug::EndDebug();
+
+    *PWM0_M=0.5;
+    *PWM1_M=0.7;
+    *PWM2_M=0.4;
+    //*PWM3_M=0.3;
 
     Debug::StartDebug("TOF10120_M");
     TOF10120_M = new UART::TOF10120(1);
     Debug::EndDebug();
 
+    //*PWM0_M=300;
 
     // Debug::StartDebug("ESP8266_M");
     // ESP8266_M = new HardWare::ESP8266(1);

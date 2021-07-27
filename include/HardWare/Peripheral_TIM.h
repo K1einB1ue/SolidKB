@@ -21,9 +21,6 @@ public:
     // void ReMode(PIN_Mode PINmode);
     virtual ~Peripheral_TIM();
 
-    static bool CoverTIM(uint32_t TIMx);
-    static bool UncoverTIM(uint32_t TIMx);
-
 	// void operator=(float Index) {
 	// 	*OUT = Index;
 	// }

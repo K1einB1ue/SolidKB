@@ -1,4 +1,8 @@
 #include<AbstractDependency/Resource.h>
+
+
+
+
 namespace Resource{
     #if CFG_GPIO_Size&&CFG_PIN_Size
     unsigned int GPIO_Enable_Map    [CFG_GPIO_Size];

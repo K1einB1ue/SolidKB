@@ -2,7 +2,7 @@
 
 #include<Chip_Lib/STM32F407ZG_Dependency.h>
 
-
+#define StaticDebugMode 1
 
 #ifdef CHIP_SELECT
 
