@@ -19,17 +19,17 @@ class Peripheral_UART{
     void Open();
     void Close();
 
-    void DefaultSend(std::string Info,unsigned int *ptr);
-    void DefaultSend(std::string Info);
-    virtual void NonReciveSend(std::string Info,unsigned int *ptr);
-    virtual void Send(std::string Info,unsigned int *ptr);
-    virtual void NonReciveSend(std::string Info);
-    virtual void Send(std::string Info);
+    void DefaultSend(const std::string &Info,unsigned int *ptr);
+    void DefaultSend(const std::string &Info);
+    virtual void NonReciveSend(const std::string &Info,unsigned int *ptr);
+    virtual void Send(const std::string &Info,unsigned int *ptr);
+    virtual void NonReciveSend(const std::string &Info);
+    virtual void Send(const std::string &Info);
 
     
 };
 
-template<typename DataType, unsigned int Capacity>
+template<typename DataType, unsigned int Capacity=20>
 class DecoderContainer{
     private:
     DataType* Data=nullptr;

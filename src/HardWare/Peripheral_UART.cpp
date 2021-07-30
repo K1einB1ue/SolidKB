@@ -16,19 +16,19 @@ Peripheral_UART::~Peripheral_UART(){
 void Peripheral_UART::Enable(){
     Override::Uartx_PreEnable(this);
 }
-void Peripheral_UART::Send(std::string Info,unsigned int *ptr){
+void Peripheral_UART::Send(const std::string &Info,unsigned int *ptr){
     this->Open();
     this->DefaultSend(Info,ptr);
 }
-void Peripheral_UART::NonReciveSend(std::string Info,unsigned int *ptr){
+void Peripheral_UART::NonReciveSend(const std::string &Info,unsigned int *ptr){
     this->Close();
     this->DefaultSend(Info,ptr);
 }
-void Peripheral_UART::Send(std::string Info){
+void Peripheral_UART::Send(const std::string &Info){
     this->Open();
     this->DefaultSend(Info);
 }
-void Peripheral_UART::NonReciveSend(std::string Info){
+void Peripheral_UART::NonReciveSend(const std::string &Info){
     this->Close();
     this->DefaultSend(Info);
 }
@@ -43,11 +43,11 @@ void Peripheral_UART::BindCallback(std::function<void(char)> Callback){
     *this->Callback=Callback;
 }
 
-void Peripheral_UART::DefaultSend(std::string Info,unsigned int *ptr){
+void Peripheral_UART::DefaultSend(const std::string &Info,unsigned int *ptr){
     Override::Uart_Send(this,(u_char*)Info.c_str(),Info.size(),ptr);
 }
 
-void Peripheral_UART::DefaultSend(std::string Info){
+void Peripheral_UART::DefaultSend(const std::string &Info){
     unsigned int temp=0;
     Override::Uart_Send(this,(u_char*)Info.c_str(),Info.size(),&temp);
 }

@@ -39,6 +39,9 @@
     #include<HardWare/Computer.h>
     #ifdef __Enable_SystemClock
         #include<HardWare/ESP8266.h>
+        #ifdef __Enable_PIN
+            #include<HardWare/HC/HC_Modules.h>
+        #endif
     #endif
     #include<HardWare/SYN6288.h>
 #endif

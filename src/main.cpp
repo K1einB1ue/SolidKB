@@ -17,17 +17,18 @@ void HardWareInit(){
     Debug::BindCallback([&](std::string Info,unsigned int *InterruptCnt){
         COM->Send(Info,InterruptCnt);
     });
-    
+
     
 
     Debug::StartDebug("SSD1306_M");
     SSD1306_M = new SPI::SSD1306(0,8,0,11,0,12,0,13,0,14);
     Debug::EndDebug();
 
+    /*
     Debug::StartDebug("AD7705_M");
     AD7705_M = new HardWare::AD7705(0,0,0,1,0,4,0,5,0,6,0,7);
     Debug::EndDebug();
-
+    */
     /*
     Debug::StartDebug("Encoder_M");
     Encoder0_M = new Peripheral_Encoder(0);
@@ -42,7 +43,7 @@ void HardWareInit(){
     TB6612FNG_M = new HardWare::TB6612FNG(0,7,2,5,0,6,0,4,0,1);
     Debug::EndDebug();
     */
-   
+
     /*
     Debug::StartDebug("ESP8266_M");
     ESP8266_M = new HardWare::ESP8266(2);
@@ -61,7 +62,6 @@ void HardWareInit(){
     */
 
 
-
 }
 
 
@@ -69,16 +69,10 @@ int main(){
     HardWareInit();
     while(1){
         //double temp =TOF10120_M->distance/200.0;
-
-        
         //TB6612FNG_M->Motor_Speed((TOF10120_M->distance/200.0),-(TOF10120_M->distance/200.0));
         if(SSD1306_M->ON){
             SSD1306_M->Clear();
-            //SSD1306_M->DrawString(10,10,std::to_string(TOF10120_M->distance)+"mm");
-            SSD1306_M->DrawString(10,20,std::to_string(AD7705_M->Get_Channel1_mV()));
-            SSD1306_M->DrawString(10,30,std::to_string(AD7705_M->Get_Channel2_mV()));
-            //SSD1306_M->DrawString(10,20,std::to_string(*Encoder0_M));
-            //SSD1306_M->DrawString(10,30,std::to_string(*Encoder2_M));
+            SSD1306_M->DrawString(10,20,"qwq");
             SSD1306_M->Refresh();
         }
         

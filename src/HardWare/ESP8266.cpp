@@ -44,7 +44,9 @@ namespace HardWare{
 
         
     }
-
+    /** @brief  复位Wifi
+     * @retval None.
+     */
     void ESP8266::Wifi_Reset(){
         this->Send("AT+RST\r\n");
         Debug::StartBlock("Wifi Reset");
@@ -80,6 +82,10 @@ namespace HardWare{
         }
     }
 
+    /** @brief  设置Wifi模式
+     * @param  mode Station:作为一个客户端. SoftAP:作为一个服务器. SoftAP_Station:同时.
+     * @retval None.
+     */
     void ESP8266::Set_WIFI_Mode(Wifi::Mode mode){
         Debug::StartBlock("Wifi Mode");
         switch (mode){
@@ -107,6 +113,10 @@ namespace HardWare{
         }
     }
 
+    /** @brief  设置Wifi连接模式
+     * @param  connection Multi:多连接. Single:单连接.
+     * @retval None.
+     */
     void ESP8266::Set_WIFI_Connection(Wifi::Connection connection){
         Debug::StartBlock("Wifi Connection");
         switch (connection){
@@ -131,6 +141,10 @@ namespace HardWare{
         }
     }
 
+    /** @brief  设置Wifi发送模式
+     * @param  sendMode Normal:标准(有包文). PassthroughReciving:透传接受(只有接受模式是透传的). Passthrough:透传.
+     * @retval None.
+     */
     void ESP8266::Set_WIFI_SendMode(Wifi::SendMode sendMode){
         Debug::InterruptSend("Wifi SendMode:"+std::to_string((u_char)SendMode)+" to "+std::to_string((u_char)sendMode));
         switch (sendMode){

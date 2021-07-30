@@ -22,6 +22,10 @@ namespace HardWare{
         BIN2=0;
     }
 
+    /** @brief  设置电机驱动速度(内部函数有限制,可以乱皮)
+     * @param  speed 速度值,应为 -1.0~1.0
+     * @retval None.
+     */
     void TB6612FNG::MotorA_Speed(double speed){
         if(speed>ErrorRange){
             this->AIN1=1;
@@ -38,6 +42,10 @@ namespace HardWare{
         }
     }
 
+    /** @brief  设置电机驱动速度(内部函数有限制,可以乱皮)
+     * @param  speed 速度值,应为 -1.0~1.0
+     * @retval None.
+     */
     void TB6612FNG::MotorB_Speed(double speed){
         if(speed>ErrorRange){
             this->BIN1=1;
@@ -53,7 +61,12 @@ namespace HardWare{
             this->PWMB=-speed;
         }
     }
-
+    
+    /** @brief  设置电机驱动速度(内部函数有限制,可以乱皮)
+     * @param  speedA 电机A速度值,应为 -1.0~1.0
+     * @param  speedB 电机B速度值,应为 -1.0~1.0
+     * @retval None.
+     */
     void TB6612FNG::Motor_Speed(double speedA,double speedB){
         this->MotorA_Speed(speedA);
         this->MotorB_Speed(speedB);

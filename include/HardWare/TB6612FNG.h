@@ -16,7 +16,7 @@ namespace HardWare{
             uint32_t BIN2_GPIOx,uint32_t BIN2_PINx,
             uint32_t PWMA_PWMx ,uint32_t PWMB_PWMx
         );
-
+        
         void MotorA_Speed(double speed);
         void MotorB_Speed(double speed);
         void Motor_Speed(double speedA,double speedB);
