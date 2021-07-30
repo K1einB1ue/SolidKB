@@ -100,3 +100,17 @@
     }
 
 #endif
+
+#if __Enable_Encoder
+    class Peripheral_Encoder;
+
+    namespace Override{
+
+        void ResetCounter(Peripheral_Encoder* Encoder);
+
+        void Encoderx_PreEnable(Peripheral_Encoder* Encoder);
+
+        void Encoderx_PreDisable(Peripheral_Encoder* Encoder);
+    }
+
+#endif

@@ -82,5 +82,13 @@ namespace Resource{
         extern bool Check(uint32_t UARTx);
     }
     #endif
+
+    #if CFG_Encoder_Size
+    namespace Encoder_Resource{
+        extern bool Cover(uint32_t Encoderx,std::string Info);
+        extern bool Uncover(uint32_t Encoderx,std::string Info);
+        extern bool Check(uint32_t Encoderx);
+    }
+    #endif
 }
 

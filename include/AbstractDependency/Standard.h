@@ -11,3 +11,5 @@
 #include<queue>
 #include<stdlib.h>
 #include<stdarg.h>
+
+#define ErrorRange 0.00000001

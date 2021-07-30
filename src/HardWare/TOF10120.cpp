@@ -38,10 +38,10 @@ namespace UART{
 
 
             if(std::strcmp(Data,Size,"ok",2)){
-                Debug::InterruptSend("[TOF10120]ok!");
+                //Debug::InterruptSend("[TOF10120] OK");
                 return;
             }else if(std::strcmp(Data,Size,"fail",4)){
-                Debug::InterruptSend("[TOF10120]fail!");
+                //Debug::InterruptSend("[TOF10120] FAIL");
                 return;
             }
             
@@ -73,6 +73,9 @@ namespace UART{
         });
         SystemClock::Delay(100000);
         this->SetReciveMode(InfoMode::UART);
+
+        SystemClock::Delay(100000);
+        this->SetInterval_ms(10);
     }
 
     void TOF10120::RefDistance_mm(){

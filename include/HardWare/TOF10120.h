@@ -17,13 +17,13 @@ namespace HardWare{
             UART,
             UART_I2C,
         };
-        uint            distance=0;
-        int             offset=0;
-        uint            interval=0;
-        bool            enable=0;
-        uint            maxrange=0;
-        u_char          Address=0;
-        InfoMode        mode=InfoMode::None;
+        volatile uint            distance=2000;
+        volatile int             offset=0;
+        volatile uint            interval=0;
+        volatile bool            enable=0;
+        volatile uint            maxrange=0;
+        volatile u_char          Address=0;
+        volatile InfoMode        mode=InfoMode::None;
         std::function<void(uint)> DistanceCallBack=nullptr;
         virtual void RefDistance_mm();
         virtual void RefReciveMode();
@@ -62,7 +62,7 @@ namespace UART{
     };
 }
 #endif
-
+/*
 #if __Enable_PIN
 
 namespace I2C{
@@ -85,11 +85,14 @@ namespace I2C{
         virtual void SetMaxRange_mm(uint maxrange);
         virtual void RefI2C_Address();
         virtual void SetI2C_Address(u_char Address);
+        virtual bool Wait();
     };
 }
 
 #endif
+*/
 
+/*
 #if __Enable_PIN&&__Enable_Uart
 namespace UART_I2C{
     class TOF10120:public UART::TOF10120,public I2C::TOF10120{
@@ -112,7 +115,9 @@ namespace UART_I2C{
         virtual void SetMaxRange_mm(uint maxrange);
         virtual void RefI2C_Address();
         virtual void SetI2C_Address(u_char Address);
+        virtual bool Wait();
     };
 }
 
 #endif
+*/

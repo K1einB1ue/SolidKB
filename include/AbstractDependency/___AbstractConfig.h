@@ -29,6 +29,8 @@
 
     #define __Enable_PWM 1
 
+    #define __Enable_Encoder 1
+
     
 
 #else

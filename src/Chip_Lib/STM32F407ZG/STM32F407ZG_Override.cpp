@@ -2,8 +2,45 @@
 #include<VirtualHardWare.h>
 
 #ifdef STM32F407ZG 
-    extern "C" void SysTick_Handler(void){
-        HAL_IncTick();
+    extern "C" {
+
+        void SysTick_Handler(void){
+            HAL_IncTick();
+        }
+        
+        void NMI_Handler(void){
+            while (1){}
+        }
+
+        void HardFault_Handler(void){
+            while (1){}
+        }
+
+
+        void MemManage_Handler(void){
+            while (1){}
+        }
+
+        void BusFault_Handler(void){
+            while (1){}
+        }
+
+        void UsageFault_Handler(void){
+            while (1){}
+        }
+
+
+        void SVC_Handler(void){
+            
+        }
+
+        void DebugMon_Handler(void){
+
+        }
+
+        void PendSV_Handler(void){
+
+        }
     }
 
     volatile unsigned long* IN(uint32_t GPIOx,uint32_t PINx){
@@ -167,7 +204,7 @@
         std::map<Clock_Speed,std::function<void(void)>> Override::ClockPrototypes{
             {Clock_Speed::HighSpeed,[](){
                 HAL_Init();
-                Clock_Init(168,8,2,7);
+                Clock_Init(336,8,2,7);
                 Delay_init(168);
             }},//168Mhz
         };
@@ -573,26 +610,10 @@
         }   
              
 
-          
-        //可以用于PWM,支持定位用增量(正交)编码器和霍尔传感器电路
-        extern "C" void TIM2_IRQHandler(void){
-            
-        }
-        //可以用于PWM,支持定位用增量(正交)编码器和霍尔传感器电路
-        extern "C" void TIM3_IRQHandler(void){
-            
-        }
-        //可以用于PWM,支持定位用增量(正交)编码器和霍尔传感器电路
-        extern "C" void TIM4_IRQHandler(void){
-            
-        }
-        //可以用于PWM,支持定位用增量(正交)编码器和霍尔传感器电路
-        extern "C" void TIM5_IRQHandler(void){
-            
-        }
+        
         //此类定时器不仅可用作通用定时器以生成时基,还可以专门用于驱动数模转换器(DAC).实际上,此类定时器内部连接到DAC并能够通过其触发输出驱动 DAC.
         extern "C" void TIM6_DAC_IRQHandler(void){
-
+            
         }
         //此类定时器不仅可用作通用定时器以生成时基,还可以专门用于驱动数模转换器(DAC).实际上,此类定时器内部连接到DAC并能够通过其触发输出驱动 DAC.
         extern "C" void TIM7_IRQHandler(void){
@@ -608,13 +629,13 @@
         TIM_TypeDef* PWM_Mapping[]={
             TIM9, TIM10, TIM11, TIM12, TIM13, TIM14
         };
-        TIM_HandleTypeDef TIM_Handle_Mapping[6];
+        TIM_HandleTypeDef TIM_PWM_Handle_Mapping[6];
 
         void Override::PWMx_PreEnable(PWM* PWM){
             GPIO_InitTypeDef GPIO_Initure;
             u_char Packnum=PWMPack.Unpack(PWM->GetPWM());
 
-            TIM_HandleTypeDef* TIM_Handle=&TIM_Handle_Mapping[Packnum];
+            TIM_HandleTypeDef* TIM_Handle=&TIM_PWM_Handle_Mapping[Packnum];
             TIM_OC_InitTypeDef ConfigOC = {0};
 
             TIM_Handle->Instance=PWM_Mapping[Packnum];
@@ -631,7 +652,8 @@
             ConfigOC.OCFastMode = TIM_OCFAST_ENABLE;
 
             GPIO_Initure.Pull=GPIO_PULLUP;			        
-            GPIO_Initure.Speed=GPIO_SPEED_FAST;    
+            GPIO_Initure.Speed=GPIO_SPEED_FAST;   
+            GPIO_Initure.Mode=GPIO_MODE_AF_PP; 
 
 
             if(PWM->GetPWM()==0||PWM->GetPWM()==1){
@@ -658,8 +680,7 @@
                 Resource::PIN_Resource::Cover(4,5,"PWM");
                 Resource::PWM_Resource::Cover(0,"PWM");
                 PWM->Pulse=&TIM9->CCR1;
-                GPIO_Initure.Pin=GPIO_PIN_5;
-                GPIO_Initure.Mode=GPIO_MODE_AF_PP;	        
+                GPIO_Initure.Pin=GPIO_PIN_5;       
                 GPIO_Initure.Alternate=GPIO_AF3_TIM9;
                 HAL_TIM_PWM_ConfigChannel(TIM_Handle, &ConfigOC, TIM_CHANNEL_1);
                 HAL_TIM_PWM_Start(TIM_Handle,TIM_CHANNEL_1);
@@ -673,8 +694,7 @@
                 Resource::PIN_Resource::Cover(4,6,"PWM");
                 Resource::PWM_Resource::Cover(1,"PWM");
                 PWM->Pulse=&TIM9->CCR2;
-                GPIO_Initure.Pin=GPIO_PIN_6;
-                GPIO_Initure.Mode=GPIO_MODE_AF_PP;	        
+                GPIO_Initure.Pin=GPIO_PIN_6;	        
                 GPIO_Initure.Alternate=GPIO_AF3_TIM9;
                 HAL_TIM_PWM_ConfigChannel(TIM_Handle, &ConfigOC, TIM_CHANNEL_2);
                 HAL_TIM_PWM_Start(TIM_Handle,TIM_CHANNEL_2);
@@ -690,8 +710,7 @@
                 __HAL_RCC_TIM10_CLK_ENABLE();
                 HAL_TIM_PWM_Init(TIM_Handle);
                 PWM->Pulse=&TIM10->CCR1;
-                GPIO_Initure.Pin=GPIO_PIN_6;
-                GPIO_Initure.Mode=GPIO_MODE_AF_PP;	        
+                GPIO_Initure.Pin=GPIO_PIN_6;      
                 GPIO_Initure.Alternate=GPIO_AF3_TIM10;
                 HAL_TIM_PWM_ConfigChannel(TIM_Handle, &ConfigOC, TIM_CHANNEL_1);
                 HAL_TIM_PWM_Start(TIM_Handle,TIM_CHANNEL_1);
@@ -707,8 +726,7 @@
                 __HAL_RCC_TIM11_CLK_ENABLE();
                 HAL_TIM_PWM_Init(TIM_Handle);
                 PWM->Pulse=&TIM11->CCR1;
-                GPIO_Initure.Pin=GPIO_PIN_7;
-                GPIO_Initure.Mode=GPIO_MODE_AF_PP;	        
+                GPIO_Initure.Pin=GPIO_PIN_7;      
                 GPIO_Initure.Alternate=GPIO_AF3_TIM11;
                 HAL_TIM_PWM_ConfigChannel(TIM_Handle, &ConfigOC, TIM_CHANNEL_1);
                 HAL_TIM_PWM_Start(TIM_Handle,TIM_CHANNEL_1);
@@ -724,8 +742,7 @@
                 __HAL_RCC_TIM12_CLK_ENABLE();
                 HAL_TIM_PWM_Init(TIM_Handle);
                 PWM->Pulse=&TIM12->CCR1;
-                GPIO_Initure.Pin=GPIO_PIN_14;
-                GPIO_Initure.Mode=GPIO_MODE_AF_PP;	        
+                GPIO_Initure.Pin=GPIO_PIN_14;   
                 GPIO_Initure.Alternate=GPIO_AF9_TIM12;
                 HAL_TIM_PWM_ConfigChannel(TIM_Handle, &ConfigOC, TIM_CHANNEL_1);
                 HAL_TIM_PWM_Start(TIM_Handle,TIM_CHANNEL_1);
@@ -742,7 +759,6 @@
                 HAL_TIM_PWM_Init(TIM_Handle);
                 PWM->Pulse=&TIM13->CCR1;
                 GPIO_Initure.Pin=GPIO_PIN_8;
-                GPIO_Initure.Mode=GPIO_MODE_AF_PP;	        
                 GPIO_Initure.Alternate=GPIO_AF9_TIM13;
                 HAL_TIM_PWM_ConfigChannel(TIM_Handle, &ConfigOC, TIM_CHANNEL_1);
                 HAL_TIM_PWM_Start(TIM_Handle,TIM_CHANNEL_1);
@@ -759,7 +775,6 @@
                 HAL_TIM_PWM_Init(TIM_Handle);
                 PWM->Pulse=&TIM14->CCR1;
                 GPIO_Initure.Pin=GPIO_PIN_9;
-                GPIO_Initure.Mode=GPIO_MODE_AF_PP;	        
                 GPIO_Initure.Alternate=GPIO_AF9_TIM14;
                 HAL_TIM_PWM_ConfigChannel(TIM_Handle, &ConfigOC, TIM_CHANNEL_1);
                 HAL_TIM_PWM_Start(TIM_Handle,TIM_CHANNEL_1);
@@ -772,6 +787,186 @@
 
         void Override::PWMx_PreDisable(PWM* PWM){
 
+        }
+
+    #endif
+
+
+    #if __Enable_Encoder
+        TIM_TypeDef* Encoder_Mapping[]={
+            TIM2, TIM3, TIM4, TIM5
+        };
+        TIM_HandleTypeDef TIM_Encoder_Handle_Mapping[CFG_Encoder_Size]={0};
+        void Override::Encoderx_PreEnable(Peripheral_Encoder* Encoder){      
+            TIM_HandleTypeDef* TIMx = &TIM_Encoder_Handle_Mapping[Encoder->GetEncoder()];
+            TIM_Encoder_InitTypeDef sConfig = {0};
+            TIM_MasterConfigTypeDef sMasterConfig = {0};
+
+            TIMx->Instance = Encoder_Mapping[Encoder->GetEncoder()];
+            TIMx->Init.Prescaler = 0;
+            TIMx->Init.CounterMode = TIM_COUNTERMODE_UP;
+            TIMx->Init.Period = 0xFFFF;
+            TIMx->Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+            TIMx->Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+            
+            sConfig.EncoderMode = TIM_ENCODERMODE_TI12;
+
+            sConfig.IC1Polarity = TIM_ICPOLARITY_RISING;
+            sConfig.IC1Selection = TIM_ICSELECTION_DIRECTTI;
+            sConfig.IC1Prescaler = TIM_ICPSC_DIV1;
+            sConfig.IC1Filter = 10;
+
+            sConfig.IC2Polarity = TIM_ICPOLARITY_RISING;
+            sConfig.IC2Selection = TIM_ICSELECTION_DIRECTTI;
+            sConfig.IC2Prescaler = TIM_ICPSC_DIV1;
+            sConfig.IC2Filter = 10;
+
+            sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+            sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+
+            switch (Encoder->GetEncoder()){
+            case 0:
+                if(Resource::PIN_Resource::Check(0,5)
+                ||Resource::PIN_Resource::Check(1,3)
+                ||Resource::Encoder_Resource::Check(0)
+                ){return;}break;
+            case 1:
+                if(Resource::PIN_Resource::Check(0,6)
+                ||Resource::PIN_Resource::Check(0,7)
+                ||Resource::Encoder_Resource::Check(1)
+                ){return;}break;
+            case 2:
+                if(Resource::PIN_Resource::Check(3,12)
+                ||Resource::PIN_Resource::Check(3,13)
+                ||Resource::Encoder_Resource::Check(2)
+                ){return;}break;
+            case 3:
+                if(Resource::PIN_Resource::Check(0,0)
+                ||Resource::PIN_Resource::Check(0,1)
+                ||Resource::Encoder_Resource::Check(3)
+                ){return;}break;
+            default:return;
+            }
+            HAL_TIM_Encoder_Init(TIMx, &sConfig);
+            HAL_TIMEx_MasterConfigSynchronization(TIMx, &sMasterConfig);
+            Encoder->Counter=&TIMx->Instance->CNT;  
+            Encoder->Default=0x7FFF;
+            HAL_TIM_Encoder_Start(TIMx,TIM_CHANNEL_ALL);
+        }
+
+
+        void HAL_TIM_Encoder_MspInit(TIM_HandleTypeDef* htim_encoder){
+            GPIO_InitTypeDef GPIO_InitStruct = {0};
+            GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+
+            if(htim_encoder->Instance==TIM2){
+                Resource::Encoder_Resource::Cover(0,"Encoder");  
+                __HAL_RCC_TIM2_CLK_ENABLE();
+
+                Resource::PIN_Resource::Cover(0,5,"TI1");
+                Resource::PIN_Resource::Cover(1,3,"TI2");
+
+                GPIO_InitStruct.Pin = GPIO_PIN_5;
+                GPIO_InitStruct.Pull = GPIO_PULLUP;
+                GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+                GPIO_InitStruct.Alternate = GPIO_AF1_TIM2;
+                HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+                GPIO_InitStruct.Pin = GPIO_PIN_3;
+                GPIO_InitStruct.Pull = GPIO_PULLUP;
+                GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+                GPIO_InitStruct.Alternate = GPIO_AF1_TIM2;
+                HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+            }else if(htim_encoder->Instance==TIM3){
+                Resource::Encoder_Resource::Cover(1,"Encoder");  
+                __HAL_RCC_TIM3_CLK_ENABLE();
+
+                Resource::PIN_Resource::Cover(0,6,"TI1");
+                Resource::PIN_Resource::Cover(0,7,"TI2");
+
+                GPIO_InitStruct.Pin = GPIO_PIN_6;
+                GPIO_InitStruct.Pull = GPIO_PULLUP;
+                GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+                GPIO_InitStruct.Alternate = GPIO_AF2_TIM3;
+                HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+                GPIO_InitStruct.Pin = GPIO_PIN_7;
+                GPIO_InitStruct.Pull = GPIO_PULLUP;
+                GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+                GPIO_InitStruct.Alternate = GPIO_AF2_TIM3;
+                HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+            }else if(htim_encoder->Instance==TIM4){
+                Resource::Encoder_Resource::Cover(2,"Encoder");
+                __HAL_RCC_TIM4_CLK_ENABLE();
+
+                Resource::PIN_Resource::Cover(3,12,"TI1");
+                Resource::PIN_Resource::Cover(3,13,"TI2");
+
+                GPIO_InitStruct.Pin = GPIO_PIN_12;
+                GPIO_InitStruct.Pull = GPIO_PULLUP;
+                GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+                GPIO_InitStruct.Alternate = GPIO_AF2_TIM4;
+                HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
+
+                GPIO_InitStruct.Pin = GPIO_PIN_13;
+                GPIO_InitStruct.Pull = GPIO_PULLUP;
+                GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+                GPIO_InitStruct.Alternate = GPIO_AF2_TIM4;
+                HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
+            }else if(htim_encoder->Instance==TIM5){
+                Resource::Encoder_Resource::Cover(3,"Encoder");  
+                __HAL_RCC_TIM5_CLK_ENABLE();
+
+                Resource::PIN_Resource::Cover(0,0,"TI1");
+                Resource::PIN_Resource::Cover(0,1,"TI2");
+
+                GPIO_InitStruct.Pin = GPIO_PIN_0;
+                GPIO_InitStruct.Pull = GPIO_PULLUP;
+                GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+                GPIO_InitStruct.Alternate = GPIO_AF2_TIM5;
+                HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+                GPIO_InitStruct.Pin = GPIO_PIN_1;
+                GPIO_InitStruct.Pull = GPIO_PULLUP;
+                GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+                GPIO_InitStruct.Alternate = GPIO_AF2_TIM5;
+                HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+            }
+        }
+        
+        void Override::ResetCounter(Peripheral_Encoder* Encoder){
+            *Encoder->Counter=0x7FFF;
+        }
+
+        void Override::Encoderx_PreDisable(Peripheral_Encoder* Encoder){
+
+        }
+
+
+
+        //可以用于PWM,支持定位用增量(正交)编码器和霍尔传感器电路
+        extern "C" void TIM2_IRQHandler(void){
+            if(TIM2->SR & (1<<0)){             
+                TIM2->SR &= ~(1<<0);
+            }
+        }
+        //可以用于PWM,支持定位用增量(正交)编码器和霍尔传感器电路
+        extern "C" void TIM3_IRQHandler(void){
+            if(TIM3->SR & (1<<0)){
+                TIM3->SR &= ~(1<<0);
+            }
+        }
+        //可以用于PWM,支持定位用增量(正交)编码器和霍尔传感器电路
+        extern "C" void TIM4_IRQHandler(void){
+            if(TIM4->SR & (1<<0)){
+                TIM4->SR &= ~(1<<0);
+            }
+        }
+        //可以用于PWM,支持定位用增量(正交)编码器和霍尔传感器电路
+        extern "C" void TIM5_IRQHandler(void){
+            if(TIM5->SR & (1<<0)){
+                TIM5->SR &= ~(1<<0);
+            }
         }
 
     #endif

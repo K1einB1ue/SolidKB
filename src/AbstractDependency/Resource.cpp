@@ -212,4 +212,45 @@ namespace Resource{
         }
     }
     #endif
+
+
+    #if CFG_Encoder_Size
+    bool Encoder_Enable_Map            [CFG_Encoder_Size];
+    bool Encoder_Resource::Cover(uint32_t Encoderx,std::string Info){
+        if(Encoderx<CFG_Encoder_Size){
+            if(Encoder_Enable_Map[Encoderx]){
+                Debug::Warning("Cover Error! Encoderx:"+std::to_string(Encoderx)+"  Info:"+Info);
+                return false;
+            }else{
+                Debug::Info("Cover Encoderx:"+std::to_string(Encoderx)+"  Info:"+Info);
+                Encoder_Enable_Map[Encoderx]=true;
+                return true;
+            }
+        }
+        Debug::Warning("Out of Range! Encoderx:"+std::to_string(Encoderx)+"  Info:"+Info);
+        return false;
+    }
+    bool Encoder_Resource::Uncover(uint32_t Encoderx,std::string Info){
+        if(Encoderx<CFG_Encoder_Size){
+            if(!Encoder_Enable_Map[Encoderx]){
+                Debug::Warning("Uncover Error! Encoderx:"+std::to_string(Encoderx)+"  Info:"+Info);
+                return false;
+            }else{
+                Debug::Info("Uncover Encoderx:"+std::to_string(Encoderx)+"  Info:"+Info);
+                Encoder_Enable_Map[Encoderx]=false;
+                return true;
+            }
+        }
+        Debug::Warning("Out of Range! Encoderx:"+std::to_string(Encoderx)+"  Info:"+Info);
+        return false;
+    }
+    bool Encoder_Resource::Check(uint32_t Encoderx){
+        if(Encoderx<CFG_Encoder_Size){
+            return Encoder_Enable_Map[Encoderx];
+        }else{
+            Debug::Warning("Check Out of Range! Encoderx:"+std::to_string(Encoderx));
+            return true;
+        }
+    }
+    #endif
 }

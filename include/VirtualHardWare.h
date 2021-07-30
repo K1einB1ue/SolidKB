@@ -10,6 +10,10 @@
     #include<HardWare/Peripheral_PWM.h>
 #endif
 
+#if __Enable_PIN&&__Enable_PWM
+    #include<HardWare/TB6612FNG.h>
+#endif
+
 #if __Enable_TIM
     #include<HardWare/Peripheral_TIM.h>
 #endif
@@ -43,5 +47,8 @@
     #include<SoftHardWare/SystemClock.h>
 #endif
 
+#if __Enable_Encoder
+    #include<HardWare/Peripheral_Encoder.h>
+#endif
 
 

@@ -35,8 +35,6 @@ namespace HardWare{
         Debug::Info(std::to_string(this->Read_Reg((u_char)Reg::R_DATAZ0,0x01)));
         Debug::Info(std::to_string(this->Read_Reg((u_char)Reg::R_DATAZ1,0x01)));
 
-        
-
         Debug::EndBlock();
     }
 
