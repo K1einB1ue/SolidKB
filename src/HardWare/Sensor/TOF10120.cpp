@@ -41,10 +41,10 @@ namespace UART{
 
 
             if(std::strcmp(Data,Size,"ok",2)){
-                //Debug::InterruptSend("[TOF10120] OK");
+                //Debug_InterruptSend("[TOF10120] OK");
                 return;
             }else if(std::strcmp(Data,Size,"fail",4)){
-                //Debug::InterruptSend("[TOF10120] FAIL");
+                //Debug_InterruptSend("[TOF10120] FAIL");
                 return;
             }
             
@@ -121,10 +121,10 @@ namespace UART{
     void TOF10120::SetInterval_ms(uint interval){
         if(interval>=10000){
             interval=9999;
-            Debug::Warning("interval Range:10~9999ms!");
+            Debug_Warning("interval Range:10~9999ms!");
         }else if(interval<10){
             interval=10;
-            Debug::Warning("interval Range:10~9999ms!");
+            Debug_Warning("interval Range:10~9999ms!");
         }
         this->Send("s2-"+std::to_string(interval)+"#\r\n");
     }
@@ -144,10 +144,10 @@ namespace UART{
     void TOF10120::SetMaxRange_mm(uint maxrange){
         if(maxrange>2000){
             maxrange=2000;
-            Debug::Warning("maxrange Range:100~2000mm!");
+            Debug_Warning("maxrange Range:100~2000mm!");
         }else if(maxrange<100){
             maxrange=100;
-            Debug::Warning("maxrange Range:100~2000mm!");
+            Debug_Warning("maxrange Range:100~2000mm!");
         }
         this->Send("s4-"+std::to_string(maxrange)+"#\r\n");
     }

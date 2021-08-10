@@ -27,49 +27,49 @@ class Application{
         SystemClock::Clock(Clock_Speed::HighSpeed);//配置为高速的系统时钟(目前也只实现了高速).
 
         COM = new HardWare::Computer(0,115200);
-        Debug::BindCallback([&](std::string Info,unsigned int *InterruptCnt){
+        Debug_BindCallback([&](std::string Info,unsigned int *InterruptCnt){
             COM->Send(Info,InterruptCnt);
         });
         
         
 
-        Debug::StartDebug("SSD1306_M");
+        Debug_StartDebug("SSD1306_M");
         SSD1306_M = new SPI::SSD1306(0,8,0,11,0,12,0,13,0,14);
-        Debug::EndDebug();
+        Debug_EndDebug();
 
-        Debug::StartDebug("MPU6050_M");
+        Debug_StartDebug("MPU6050_M");
         MPU6050_M = new HardWare::MPU6050(0,0,0,1);
-        Debug::EndDebug();
+        Debug_EndDebug();
 
         /*
-        Debug::StartDebug("OV7725_M");
+        Debug_StartDebug("OV7725_M");
         OV7725_M = new HardWare::OV7725(0,0,0,1,0,7,0,5,0,Camera._Image,80*120);
-        Debug::EndDebug();
+        Debug_EndDebug();
         */
         
         /*
-        Debug::StartDebug("AD7705_M");
+        Debug_StartDebug("AD7705_M");
         AD7705_M = new HardWare::AD7705(0,0,0,1,0,4,0,5,0,6,0,7);
-        Debug::EndDebug();
+        Debug_EndDebug();
         */
 
         /*
-        Debug::StartDebug("Encoder_M");
+        Debug_StartDebug("Encoder_M");
         Encoder0_M = new Peripheral_Encoder(0);
         Encoder2_M = new Peripheral_Encoder(2);
-        Debug::EndDebug();
+        Debug_EndDebug();
 
-        Debug::StartDebug("TOF10120_M");
+        Debug_StartDebug("TOF10120_M");
         TOF10120_M = new UART::TOF10120(1);
-        Debug::EndDebug();  
+        Debug_EndDebug();  
 
-        Debug::StartDebug("TB6612FNG_M");
+        Debug_StartDebug("TB6612FNG_M");
         TB6612FNG_M = new HardWare::TB6612FNG(0,7,2,5,0,6,0,4,0,1);
-        Debug::EndDebug();
+        Debug_EndDebug();
         */
 
         /*
-        Debug::StartDebug("ESP8266_M");
+        Debug_StartDebug("ESP8266_M");
         ESP8266_M = new HardWare::ESP8266(1);
         ESP8266_M->Wifi_Reset();
         ESP8266_M->Set_WIFI_Mode(Wifi::Mode::SoftAP_Station);
@@ -87,7 +87,7 @@ class Application{
         };
 
         ESP8266_M->Socket_End();
-        Debug::EndDebug();
+        Debug_EndDebug();
         */
     }
     void Run(){
@@ -101,7 +101,7 @@ class Application{
                 SSD1306_M->DrawString(0,0 ,"gx="+std::to_string(MPU6050_M->Gyroscope_Pack.gx));
                 SSD1306_M->DrawString(0,10,"gy="+std::to_string(MPU6050_M->Gyroscope_Pack.gy));
                 SSD1306_M->DrawString(0,20,"gz="+std::to_string(MPU6050_M->Gyroscope_Pack.gz));
-                SSD1306_M->DrawString(0,30,"QAQ");
+                SSD1306_M->DrawString(0,30,"qwq");
                 //Binary = Camera.Binaryzation([&](u_char R,u_char G,u_char B){return ((R+G+B)<20);},2,Binary);
                 //SSD1306_M->DrawImage(0,0,Binary);
                 SSD1306_M->Refresh();
@@ -122,5 +122,5 @@ void Kernel_Run(){
     DevelopApp.Run();
 }
 
-void Kernel_Exit(){}
+//void Kernel_Exit(){}
 

@@ -73,13 +73,13 @@ namespace HardWare{
      */
     void ESP8266::Wifi_Reset(){
         this->Send("AT+RST\r\n");
-        Debug::StartBlock("Wifi Reset");
+        Debug_StartBlock("Wifi Reset");
         if(this->Wait()){ 
-            Debug::Info("Reset Success");
+            Debug_Info("Reset Success");
             SystemClock::Delay(300000);
-            Debug::EndOK();
+            Debug_EndOK();
         }else{
-            Debug::EndFAIL();
+            Debug_EndFAIL();
         }
     }
 
@@ -94,13 +94,13 @@ namespace HardWare{
         }
         this->Cmd=InterruptCmd::None;
         if(i>=4000){
-            Debug::Warning("TimeOut!");
+            Debug_Warning("TimeOut!");
             return false;
         }else{
             if(this->State==Wifi::State::OK){
                 return true;
             }else{
-                Debug::Warning("ERROR");
+                Debug_Warning("ERROR");
                 return false;
             }
         }
@@ -111,7 +111,7 @@ namespace HardWare{
      * @retval None.
      */
     void ESP8266::Set_WIFI_Mode(Wifi::Mode mode){
-        Debug::StartBlock("Wifi Mode");
+        Debug_StartBlock("Wifi Mode");
         switch (mode){
         case Wifi::Mode::Station:
             this->Send("AT+CWMODE=1\r\n");
@@ -129,11 +129,11 @@ namespace HardWare{
             break;
         }       
         if(this->Wait()){ 
-            Debug::Info("Change to "+std::to_string((u_char)mode));
+            Debug_Info("Change to "+std::to_string((u_char)mode));
             this->Mode=mode;
-            Debug::EndOK();
+            Debug_EndOK();
         }else{
-            Debug::EndFAIL();
+            Debug_EndFAIL();
         }
     }
 
@@ -142,7 +142,7 @@ namespace HardWare{
      * @retval None.
      */
     void ESP8266::Set_WIFI_Connection(Wifi::Connection connection){
-        Debug::StartBlock("Wifi Connection");
+        Debug_StartBlock("Wifi Connection");
         switch (connection){
         case Wifi::Connection::Multi:
             if(this->SendMode!=Wifi::SendMode::Normal){
@@ -157,11 +157,11 @@ namespace HardWare{
             break;
         }
         if(this->Wait()){ 
-            Debug::Info("Change to "+std::to_string((u_char)connection));
+            Debug_Info("Change to "+std::to_string((u_char)connection));
             this->Connection=connection;
-            Debug::EndOK();
+            Debug_EndOK();
         }else{
-            Debug::EndFAIL();
+            Debug_EndFAIL();
         }
     }
 
@@ -170,7 +170,7 @@ namespace HardWare{
      * @retval None.
      */
     void ESP8266::Set_WIFI_SendMode(Wifi::SendMode sendMode){
-        Debug::InterruptSend("Wifi SendMode:"+std::to_string((u_char)SendMode)+" to "+std::to_string((u_char)sendMode));
+        Debug_InterruptSend("Wifi SendMode:"+std::to_string((u_char)SendMode)+" to "+std::to_string((u_char)sendMode));
         switch (sendMode){
         case Wifi::SendMode::Normal:
             switch (this->SendMode){
@@ -189,7 +189,7 @@ namespace HardWare{
             switch (this->SendMode){
             case Wifi::SendMode::Normal:
                 if(this->Connection!=Wifi::Connection::Single){
-                    Debug::Warning("Should be Set_WIFI_Connection(Wifi::Connection::Single)");
+                    Debug_Warning("Should be Set_WIFI_Connection(Wifi::Connection::Single)");
                 }
                 this->Send("AT+CIPMODE=1\r\n");
                 break;
@@ -217,22 +217,22 @@ namespace HardWare{
             break;
         }
         if(this->Wait()){ 
-            Debug::Info("Change to "+std::to_string((u_char)sendMode));
+            Debug_Info("Change to "+std::to_string((u_char)sendMode));
             this->SendMode=sendMode;
         }
     }
 
     void ESP8266::Set_WIFI_Server(bool Enable,int Port_Param,int MaxConn){
-        Debug::StartBlock("Wifi Client MaxNum");
+        Debug_StartBlock("Wifi Client MaxNum");
         this->Send("AT+CIPSERVERMAXCONN="+std::to_string(MaxConn)+"\r\n");
         if(this->Wait()){ 
-            Debug::Info("Change to "+std::to_string(MaxConn));
-            Debug::EndOK();
+            Debug_Info("Change to "+std::to_string(MaxConn));
+            Debug_EndOK();
         }else{           
-            Debug::EndFAIL();
+            Debug_EndFAIL();
             return;
         }
-        Debug::StartBlock("Wifi Server");
+        Debug_StartBlock("Wifi Server");
         if(Enable){
             if(this->Connection!=Wifi::Connection::Multi){
                 this->Set_WIFI_Connection(Wifi::Connection::Multi);
@@ -240,11 +240,11 @@ namespace HardWare{
         }
         this->Send("AT+CIPSERVER="+std::to_string(Enable)+","+std::to_string(Port_Param)+"\r\n");
         if(this->Wait()){ 
-            Debug::Info("Change to "+std::to_string(Enable));
+            Debug_Info("Change to "+std::to_string(Enable));
             this->IsServer=Enable;
-            Debug::EndOK();
+            Debug_EndOK();
         }else{
-            Debug::EndFAIL();
+            Debug_EndFAIL();
         }
     }
 
@@ -252,12 +252,12 @@ namespace HardWare{
         this->Cmd=InterruptCmd::CWLAP;
         this->Wifi_List.clear();
         this->Send("AT+CWLAP\r\n");
-        Debug::StartBlock("Wifi List");
+        Debug_StartBlock("Wifi List");
         if(this->Wait()){        
-            Debug::Info("Refreshed num="+std::to_string(this->Wifi_List.size()));
-            Debug::EndOK();
+            Debug_Info("Refreshed num="+std::to_string(this->Wifi_List.size()));
+            Debug_EndOK();
         }else{
-            Debug::EndFAIL();
+            Debug_EndFAIL();
         }
         SystemClock::Delay(2000000);
     }
@@ -268,7 +268,12 @@ namespace HardWare{
     
 
     void ESP8266::Display_WIFIList(){
-        this->DisplayStart("Wifi List");
+        if(!this->DisplayFunc){
+            return;
+        }
+        if(this->DisplayStart){
+            this->DisplayStart("Wifi List");
+        }
         for(unsigned int i=0; i<this->Wifi_List.size();i++){
             this->DisplayFunc(
                 "ENC="+std::to_string((u_char)this->Wifi_List[i].ECN)+
@@ -278,7 +283,9 @@ namespace HardWare{
                 ",Channel="+std::to_string(this->Wifi_List[i].Channel)
             );
         }
-        this->DisplayEnd();
+        if(this->DisplayEnd){
+            this->DisplayEnd();
+        }
     }
 
     void ESP8266::Ref2Dis_WIFIList(){
@@ -288,23 +295,23 @@ namespace HardWare{
 
     void ESP8266::Connect_LastWIFI(){  
         this->Send("AT+CWJAP\r\n");
-        Debug::StartBlock("Wifi Connect LastWIFI");
+        Debug_StartBlock("Wifi Connect LastWIFI");
         if(this->Wait()){        
-            Debug::Info("Connected");
-            Debug::EndOK();
+            Debug_Info("Connected");
+            Debug_EndOK();
         }else{
-            Debug::EndFAIL();
+            Debug_EndFAIL();
         }
     }
 
     void ESP8266::Connect_WIFI(std::string SSID,std::string Password){
         this->Send("AT+CWJAP=\""+SSID+"\",\""+Password+"\"\r\n");
-        Debug::StartBlock("Wifi Connect "+ SSID);
+        Debug_StartBlock("Wifi Connect "+ SSID);
         if(this->Wait()){
-            Debug::Info("Connected");
-            Debug::EndOK();
+            Debug_Info("Connected");
+            Debug_EndOK();
         }else{
-            Debug::EndFAIL();
+            Debug_EndFAIL();
         }  
     }
 
@@ -312,17 +319,17 @@ namespace HardWare{
         orderinlist++;
         if(orderinlist<=this->Wifi_List.size()){
             this->Send("AT+CWJAP="+this->Wifi_List[orderinlist].SSID+","+Password+","+this->Wifi_List[orderinlist].MAC+"\r\n");
-            Debug::StartBlock("Wifi Connect "+ this->Wifi_List[orderinlist].SSID);
+            Debug_StartBlock("Wifi Connect "+ this->Wifi_List[orderinlist].SSID);
             if(this->Wait()){
-                Debug::Info("Connected");
-                Debug::EndOK();
+                Debug_Info("Connected");
+                Debug_EndOK();
             }else{
-                Debug::EndFAIL();
+                Debug_EndFAIL();
             }
         }else{
-            Debug::StartBlock("Wifi Connect Miss");
-                Debug::Warning("NULL Connection!");
-            Debug::EndFAIL();
+            Debug_StartBlock("Wifi Connect Miss");
+                Debug_Warning("NULL Connection!");
+            Debug_EndFAIL();
         }
     }
     void ESP8266::Connect_WIFI(std::string SSID){
@@ -331,13 +338,13 @@ namespace HardWare{
     unsigned int ESP8266::ping(std::string IP){
         this->Cmd=InterruptCmd::PING;
         this->Send("AT+PING=\""+IP+"\"\r\n");
-        Debug::StartBlock("PING");
+        Debug_StartBlock("PING");
         if(this->Wait()){
-            Debug::Info(std::to_string(this->pingTime)+"ms");
-            Debug::EndOK();
+            Debug_Info(std::to_string(this->pingTime)+"ms");
+            Debug_EndOK();
             return this->pingTime;
         }else{
-            Debug::EndFAIL();
+            Debug_EndFAIL();
             return 0;
         }
     }
@@ -373,12 +380,12 @@ namespace HardWare{
                 break;
             }
         }
-        Debug::StartBlock("Wifi Socket Connection");
+        Debug_StartBlock("Wifi Socket Connection");
         if(this->Wait()){        
-            Debug::Info("Connect To IP:"+RemoteHost+" Port:"+std::to_string(RemotePort));
-            Debug::EndOK();
+            Debug_Info("Connect To IP:"+RemoteHost+" Port:"+std::to_string(RemotePort));
+            Debug_EndOK();
         }else{
-            Debug::EndFAIL();
+            Debug_EndFAIL();
         }
         
     }
@@ -408,27 +415,27 @@ namespace HardWare{
                 break;
             }
         }
-        Debug::StartBlock("Wifi Socket Connection");
+        Debug_StartBlock("Wifi Socket Connection");
         if(this->Wait()){        
-            Debug::Info("Connect To IP:"+RemoteHost+" Port:"+std::to_string(RemotePort));
-            Debug::EndOK();
+            Debug_Info("Connect To IP:"+RemoteHost+" Port:"+std::to_string(RemotePort));
+            Debug_EndOK();
         }else{
-            Debug::EndFAIL();
+            Debug_EndFAIL();
         }
     }
 
     void ESP8266::Socket_End(u_char LinkID){
-        Debug::StartBlock("Wifi Socket Disconnection");
+        Debug_StartBlock("Wifi Socket Disconnection");
         if(this->Connection==Wifi::Connection::Single){
             this->Send("AT+CIPCLOSE\r\n");
         }else if(this->Connection==Wifi::Connection::Multi){
             this->Send("AT+CIPCLOSE="+std::to_string(LinkID)+"\r\n");
         }
         if(this->Wait()){        
-            Debug::Info("Disconnected");
-            Debug::EndOK();
+            Debug_Info("Disconnected");
+            Debug_EndOK();
         }else{
-            Debug::EndFAIL();
+            Debug_EndFAIL();
         }
     }
 
@@ -438,13 +445,13 @@ namespace HardWare{
         }else if(this->Connection==Wifi::Connection::Multi){
             this->Send("AT+CIPSEND="+std::to_string(LinkID)+","+std::to_string(Info.size())+"\r\n");
         }
-        Debug::StartBlock("Wifi Socket Send");
+        Debug_StartBlock("Wifi Socket Send");
         if(this->Wait()){        
-            Debug::Info("Send");
+            Debug_Info("Send");
             this->Send(Info);
-            Debug::EndOK();
+            Debug_EndOK();
         }else{
-            Debug::EndFAIL();
+            Debug_EndFAIL();
         }
         
         

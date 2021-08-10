@@ -350,7 +350,7 @@ OV7725::OV7725(
 	Peripheral_DCMI(DCMIx,Dst,Length),
 	SGM(SGM_GPIOx,SGM_PINx,PIN_Mode::FastPullUp,"SGM"),
 	RST(RST_GPIOx,RST_PINx,PIN_Mode::FastPullUp,"RST"){
-	Debug::StartBlock("Init");	
+	Debug_StartBlock("Init");	
 	bool flag=false;
 	SGM.F_WriteMode();
 	RST.F_WriteMode();
@@ -365,10 +365,10 @@ OV7725::OV7725(
 	SystemClock::Delay(100000);
 
  	if(Send_Reg_WithDefaultAdress(COM7,0x80)){												//软复位OV7725
-		Debug::Warning("RST Error");
+		Debug_Warning("RST Error");
 		flag=true;
 	}else{
-		Debug::Info("RST Correct");
+		Debug_Info("RST Correct");
 	}													
 	SystemClock::Delay(100000); 
 
@@ -376,18 +376,18 @@ OV7725::OV7725(
 	reg	 =(Read_Reg_WithDefaultAdress(MIDH)<<8);
 	reg	|=Read_Reg_WithDefaultAdress(MIDL);	
 	if(reg!=OV7725_MID){
-		Debug::Warning("MID="+std::to_string(reg)+" Normal=32674");
+		Debug_Warning("MID="+std::to_string(reg)+" Normal=32674");
 		flag=true;
 	}else{
-		Debug::Info("MID Read Correct");
+		Debug_Info("MID Read Correct");
 	}
 	reg	 =(Read_Reg_WithDefaultAdress(PID)<<8);
 	reg	|=Read_Reg_WithDefaultAdress(VER);	
 	if(reg!=OV7725_PID){
 		flag=true;
-        Debug::Warning(": PID="+std::to_string(reg)+" Normal=30497");
+        Debug_Warning(": PID="+std::to_string(reg)+" Normal=30497");
 	}else{
-		Debug::Info("PID Read Correct");
+		Debug_Info("PID Read Correct");
 	}		
 		
 	for(uint32_t i=0;i<sizeof(ov7725_init_reg_tb1)/sizeof(ov7725_init_reg_tb1[0]);i++){				//初始化 OV7725,采用QVGA分辨率(320*240)  			
@@ -395,12 +395,12 @@ OV7725::OV7725(
  	} 
 
 	this->Work();
-	Debug::Info("Work");
+	Debug_Info("Work");
 	
 	if(flag){
-		Debug::EndFAIL();
+		Debug_EndFAIL();
 	}else{
-		Debug::EndOK();
+		Debug_EndOK();
 	}
 }
 

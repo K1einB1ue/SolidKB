@@ -65,7 +65,7 @@ namespace Image{
                 Image = new Image_Binary(this->Pixel_Width/Scale,this->Pixel_Height/Scale);
             }else{
                 if(Image->Pixel_Height<this->Pixel_Height/Scale||Image->Pixel_Width<this->Pixel_Width/Scale){
-                    Debug::StaticSend("Image Stack Overflow!");
+                    Debug_StaticSend("Image Stack Overflow!");
                 }
                 Image->Clear();
             }
@@ -82,7 +82,7 @@ namespace Image{
                         Binary_Y_offset=BinaryOuter_Y%8;
                         temp=1<<Binary_Y_offset;
                         Image->_Image[BinaryOuter_X+Binary_Y*Image->Pixel_Width]|=temp;
-                        //Debug::InterruptSend(std::to_string(BinaryOuter_X+Binary_Y*Image->Pixel_Width));
+                        //Debug_InterruptSend(std::to_string(BinaryOuter_X+Binary_Y*Image->Pixel_Width));
                     }
                 }        
             }

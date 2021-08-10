@@ -27,10 +27,15 @@ namespace HardWare{
         public:
         ESP8266(uint32_t Uartx);
         virtual ~ESP8266();
+        #if __Enable_Debug
         std::function<void(std::string)> DisplayStart=Debug::StartBlock;
         std::function<void(std::string)> DisplayFunc=Debug::Info;
         std::function<void(void)> DisplayEnd=Debug::EndBlock;
-
+        #else
+        std::function<void(std::string)> DisplayStart=nullptr;
+        std::function<void(std::string)> DisplayFunc=nullptr;
+        std::function<void(void)> DisplayEnd=nullptr;
+        #endif
         void Wifi_Reset();
         void Set_WIFI_Mode(Wifi::Mode mode);
         void Set_WIFI_Connection(Wifi::Connection connection);

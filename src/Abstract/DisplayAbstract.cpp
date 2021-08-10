@@ -25,10 +25,10 @@ void DisplayBITAbstract::__GraphicInit(unsigned int width, unsigned int height){
     }
     this->Clear();
 
-    Debug::StartBlock("DisplayAbstract");
-        Debug::Info("PixelWidth:"+std::to_string(width));
-        Debug::Info("PixelHeight:"+std::to_string(height));
-    Debug::EndBlock();
+    Debug_StartBlock("DisplayAbstract");
+        Debug_Info("PixelWidth:"+std::to_string(width));
+        Debug_Info("PixelHeight:"+std::to_string(height));
+    Debug_EndBlock();
     
 }
 

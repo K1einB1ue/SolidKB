@@ -14,9 +14,11 @@ class ResourcePack :public std::vector<u_char>
         while (++ptr != v.end()) {
             sum += *ptr;
         }
+        #if __Enable_Debug
         if(sum!=this->Sum){
-            Debug::StaticSend("ResourcePack Size Error!");
+            Debug_StaticSend("ResourcePack Size Error!");
         }
+        #endif
     }
 
 
@@ -30,7 +32,7 @@ class ResourcePack :public std::vector<u_char>
             }
             return ptr;
         }else{
-            Debug::Error("Out of Range!");
+            Debug_Error("Out of Range!")
             return 0;
         }
     }

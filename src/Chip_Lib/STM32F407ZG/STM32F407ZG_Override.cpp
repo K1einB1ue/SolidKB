@@ -631,7 +631,7 @@
         if(Override::DCMICallback[0]){
             Override::DCMICallback[0]();
         }
-        Debug::InterruptSend("Frame");
+        Debug_InterruptSend("Frame");
     }
     
     #endif

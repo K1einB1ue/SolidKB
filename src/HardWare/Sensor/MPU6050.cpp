@@ -76,7 +76,7 @@
 namespace HardWare{
 
     MPU6050::MPU6050(uint32_t SDA_GPIOx,uint32_t SDA_PINx,uint32_t SCL_GPIOx,uint32_t SCL_PINx):I2C_Component(SDA_GPIOx,SDA_PINx,SCL_GPIOx,SCL_PINx){
-        Debug::StartBlock("Init");
+        Debug_StartBlock("Init");
         this->address=MPU_ADDR;
         this->Send_Reg(MPU_PWR_MGMT1_REG,0x80);
         SystemClock::Delay(100000);
@@ -104,9 +104,9 @@ namespace HardWare{
             reg=this->Read_Reg(MPU_GYRO_CFG_REG);
         }while(reg!=(u_char)Fsr&&++timeout<=1000);
         if(timeout>=1000){
-            Debug::Warning("Gyro_Fsr Timeout");
+            Debug_Warning("Gyro_Fsr Timeout");
         }else{
-            Debug::Info("Gyro_Fsr OK!");
+            Debug_Info("Gyro_Fsr OK!");
         }      
     }
     //设置MPU6050加速度传感器满量程范围
@@ -118,9 +118,9 @@ namespace HardWare{
             reg=this->Read_Reg(MPU_ACCEL_CFG_REG);
         }while(reg!=(u_char)Fsr&&++timeout<=1000);
         if(timeout>=1000){
-            Debug::Warning("Accel_Fsr Timeout");
+            Debug_Warning("Accel_Fsr Timeout");
         }else{
-            Debug::Info("Accel_Fsr OK!");
+            Debug_Info("Accel_Fsr OK!");
         } 
     }
     //设置MPU6050的数字低通滤波器
@@ -139,9 +139,9 @@ namespace HardWare{
             reg=this->Read_Reg(MPU_CFG_REG);
         }while(reg!=data&&++timeout<=1000);
         if(timeout>=1000){
-            Debug::Warning("LPF Timeout");
+            Debug_Warning("LPF Timeout");
         }else{
-            Debug::Info("LPF OK!");
+            Debug_Info("LPF OK!");
         }        
     }
 
@@ -158,9 +158,9 @@ namespace HardWare{
             reg=this->Read_Reg(MPU_SAMPLE_RATE_REG);
         }while(reg!=data&&++timeout<=1000);
         if(timeout>=1000){
-            Debug::Warning("Rate Timeout");
+            Debug_Warning("Rate Timeout");
         }else{
-            Debug::Info("Rate OK!");
+            Debug_Info("Rate OK!");
         } 
     }
 
@@ -169,10 +169,10 @@ namespace HardWare{
     void MPU6050::Refresh_Temperature(){
         u_char buf[2]={0}; 
         if(this->Read_Len(MPU_TEMP_OUTH_REG,2,buf)){
-            Debug::Warning("Refresh_Temperature Timeout");
+            Debug_Warning("Refresh_Temperature Timeout");
             return;
         }else{
-            Debug::Info("Refresh_Temperature OK!");
+            Debug_Info("Refresh_Temperature OK!");
         } 
         short raw;
         raw=((uint16_t)buf[0]<<8)|buf[1];  
@@ -182,10 +182,10 @@ namespace HardWare{
     void MPU6050::Refresh_Gyroscope(){
         u_char buf[6]={0};  
         if(this->Read_Len(MPU_GYRO_XOUTH_REG,6,buf)){
-            Debug::Warning("Refresh_Gyroscope Timeout");
+            Debug_Warning("Refresh_Gyroscope Timeout");
             return;
         }else{
-            Debug::Info("Refresh_Gyroscope OK!");
+            Debug_Info("Refresh_Gyroscope OK!");
         }
         this->Gyroscope_Pack.gx=((uint16_t)buf[0]<<8)|buf[1];  
         this->Gyroscope_Pack.gy=((uint16_t)buf[2]<<8)|buf[3];  
@@ -196,10 +196,10 @@ namespace HardWare{
     void MPU6050::Refresh_Accelerometer(){
         u_char buf[6]={0};  
         if(this->Read_Len(MPU_ACCEL_XOUTH_REG,6,buf)){
-            Debug::Warning("Refresh_Accelerometer Timeout");
+            Debug_Warning("Refresh_Accelerometer Timeout");
             return;
         }else{
-            Debug::Info("Refresh_Accelerometer OK!");
+            Debug_Info("Refresh_Accelerometer OK!");
         }
         this->Accelerometer_Pack.ax=((uint16_t)buf[0]<<8)|buf[1];  
         this->Accelerometer_Pack.ay=((uint16_t)buf[2]<<8)|buf[3]; 
@@ -228,9 +228,9 @@ namespace HardWare{
             reg=this->Read_Reg(MPU_PWR_MGMT1_REG);
         }while(reg!=0x00&&++timeout<=1000);
         if(timeout>=1000){
-            Debug::Warning("WeakUp Timeout");
+            Debug_Warning("WeakUp Timeout");
         }else{
-            Debug::Info("WeakUp OK!");
+            Debug_Info("WeakUp OK!");
         }  
         this->Send_Reg(MPU_PWR_MGMT1_REG,0X00);
     }
@@ -238,11 +238,11 @@ namespace HardWare{
     void MPU6050::ID_Check(){
         u_char res=this->Read_Reg(MPU_DEVICE_ID_REG); 
         if(res==this->address){
-            Debug::Info("ID_Check OK!");
-            Debug::EndOK();
+            Debug_Info("ID_Check OK!");
+            Debug_EndOK();
         }else{
-            Debug::Warning("ID="+std::to_string(res)+" Normal=104");
-            Debug::EndFAIL();
+            Debug_Warning("ID="+std::to_string(res)+" Normal=104");
+            Debug_EndFAIL();
         }
     }
 }

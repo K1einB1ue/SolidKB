@@ -2,11 +2,14 @@
 #include<AbstractDependency/___AbstractConfig.h>
 #include<AbstractDependency/Standard.h>
 
+#if __Enable_Debug
+
 __attribute__((optimize("O0"))) void Nullfunc(char index);
 __attribute__((optimize("O0"))) void nop();
 
 //禁止在高循环中StartBlock!
 //中断中只允许使用InterruptSend!
+
 namespace Debug{
     void BindCallback(std::function<void(std::string,unsigned int *ptr)> Callback);
     void InterruptSend(std::string Info);
@@ -25,3 +28,5 @@ namespace Debug{
     void EndOK();
     void EndFAIL();
 };
+
+#endif

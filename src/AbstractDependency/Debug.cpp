@@ -1,5 +1,7 @@
 #include<AbstractDependency/Debug.h>
 
+#if __Enable_Debug
+
 std::function<void(std::string,unsigned int*)> DebugCallback=nullptr;
 std::stack<std::string> IndentStack;
 
@@ -171,3 +173,5 @@ void Debug::BindCallback(std::function<void(std::string,unsigned int *ptr)> Call
         StaticQueue.pop();
     }
 }
+
+#endif

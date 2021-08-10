@@ -57,13 +57,13 @@ namespace HardWare{
                 }
             }
             if(i>=4000){
-                Debug::Warning("TimeOut!");
+                Debug_Warning("TimeOut!");
                 return false;
             }else{
                 if(this->State==HC::State::OK){
                     return true;
                 }else{
-                    Debug::Warning("ERROR");
+                    Debug_Warning("ERROR");
                     return false;
                 }
             }
@@ -73,7 +73,7 @@ namespace HardWare{
             if(!this->ATmode){
                 SET=0;
                 this->ATmode=true;
-                Debug::StartBlock("AT Mode");
+                Debug_StartBlock("AT Mode");
                 SystemClock::Delay(1000000);
             }
         }
@@ -81,7 +81,7 @@ namespace HardWare{
             if(this->ATmode){
                 SET=1;
                 this->ATmode=false;
-                Debug::EndBlock();
+                Debug_EndBlock();
                 SystemClock::Delay(1000000);
             }
             
@@ -91,16 +91,16 @@ namespace HardWare{
             if(!this->ATmode){
                 this->StartAT();
             }
-            Debug::StartBlock("HC FUx");
+            Debug_StartBlock("HC FUx");
             this->State=HC::State::NONE;
 
             this->Send("AT+FU"+std::to_string((u_char)fux));
 
             if(this->Wait()){ 
-                Debug::Info("Change to "+std::to_string((u_char)fux));
-                Debug::EndOK();
+                Debug_Info("Change to "+std::to_string((u_char)fux));
+                Debug_EndOK();
             }else{
-                Debug::EndFAIL();
+                Debug_EndFAIL();
             }
             SystemClock::Delay(1000000);
         }
@@ -109,7 +109,7 @@ namespace HardWare{
             if(!this->ATmode){
                 this->StartAT();
             }
-            Debug::StartBlock("HC Channel");
+            Debug_StartBlock("HC Channel");
             this->State=HC::State::NONE;
             
             channel &= 0b01111111;
@@ -126,10 +126,10 @@ namespace HardWare{
             
 
             if(this->Wait()){ 
-                Debug::Info("Change to "+std::to_string(channel));
-                Debug::EndOK();
+                Debug_Info("Change to "+std::to_string(channel));
+                Debug_EndOK();
             }else{
-                Debug::EndFAIL();
+                Debug_EndFAIL();
             }
             SystemClock::Delay(1000000);
         }
@@ -138,7 +138,7 @@ namespace HardWare{
             if(!this->ATmode){
                 this->StartAT();
             }
-            Debug::StartBlock("HC Power");
+            Debug_StartBlock("HC Power");
             this->State=HC::State::NONE;
             
             power--;
@@ -147,10 +147,10 @@ namespace HardWare{
             this->Send("AT+P"+std::to_string(power));
 
             if(this->Wait()){ 
-                Debug::Info("Change to "+std::to_string(power));
-                Debug::EndOK();
+                Debug_Info("Change to "+std::to_string(power));
+                Debug_EndOK();
             }else{
-                Debug::EndFAIL();
+                Debug_EndFAIL();
             }
             SystemClock::Delay(1000000);
         }

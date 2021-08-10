@@ -318,7 +318,7 @@ u_char    SPI_Component::SOFT_SPI_RW(u_char txd){
     if(this->SOFT_SPI_RW_Func){
         return this->SOFT_SPI_RW_Func(txd);
     }else{
-        Debug::Warning("SPI_Mode Not define! Fallback to mode0!");
+        Debug_Warning("SPI_Mode Not define! Fallback to mode0!");
         __SPI_Mode(0,0);
         return this->SOFT_SPI_RW_Func(txd);
     }
@@ -328,7 +328,7 @@ void      SPI_Component::SOFT_SPI_W(u_char txd){
     if(this->SOFT_SPI_W_Func){
         this->SOFT_SPI_W_Func(txd);
     }else{
-        Debug::Warning("SPI_Mode Not define! Fallback to mode0!");
+        Debug_Warning("SPI_Mode Not define! Fallback to mode0!");
         __SPI_Mode(0,0);
         this->SOFT_SPI_W_Func(txd);
     }
@@ -338,7 +338,7 @@ u_char    SPI_Component::SOFT_SPI_R(){
     if(this->SOFT_SPI_R_Func){
         return this->SOFT_SPI_R_Func();
     }else{
-        Debug::Warning("SPI_Mode Not define! Fallback to mode0!");
+        Debug_Warning("SPI_Mode Not define! Fallback to mode0!");
         __SPI_Mode(0,0);
         return this->SOFT_SPI_R_Func();
     }

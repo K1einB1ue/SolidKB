@@ -124,13 +124,13 @@ namespace HardWare{
         this->WriteByte(REG_CLOCK | WRITE | CH_1);              /* 先写通信寄存器，下一步是写时钟寄存器 */
         //this->WriteByte(CLKDIS_0 | CLK_4_9152M | FS_50HZ);      /* 刷新速率50Hz */
         this->WriteByte(CLKDIS_0 | CLK_4_9152M | FS_500HZ);	/* 刷新速率500Hz */
-        Debug::StartBlock("CH1_CalibSelf");
+        Debug_StartBlock("CH1_CalibSelf");
         this->CalibSelf(Channel::Ch1);
-        Debug::EndBlock();
+        Debug_EndBlock();
         SystemClock::Delay(50000);
-        Debug::StartBlock("CH2_CalibSelf");
+        Debug_StartBlock("CH2_CalibSelf");
         this->CalibSelf(Channel::Ch2);
-        Debug::EndBlock();
+        Debug_EndBlock();
         SystemClock::Delay(50000);
     }
 
@@ -319,12 +319,12 @@ namespace HardWare{
         uint32_t i;
         for(i=0;i<40000000ul;i++){
             if(!DRDY){
-                Debug::Info("OK");
+                Debug_Info("OK");
                 break;
             }
         }
         if(i>=40000000ul){
-            Debug::Warning("WaitDRDY TimeOut!");
+            Debug_Warning("WaitDRDY TimeOut!");
         }
     }
 
