@@ -1,6 +1,7 @@
 #include<HardWare/Peripheral_PIN.h>
 #include<AbstractDependency/_AbstractHardWare.h>
 
+#ifdef __Enable_PIN
 namespace std{
     static string PIN_Mode_Table[]={"Fast","FastPullUp","AF_DCMI"};
     string& to_string(PIN_Mode mode){
@@ -36,3 +37,4 @@ PIN::~PIN(){
 
 
 
+#endif

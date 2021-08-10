@@ -1,5 +1,6 @@
 #include<SoftHardWare/SPI_Component.h>
 
+#if __Enable_PIN
 //https://www.cnblogs.com/chenshuyi/p/3605427.html
      
 SPI_Component::SPI_Component(
@@ -370,3 +371,5 @@ u_char   SPI_Component::ConRead_Reg(u_char reg){
 u_char   SPI_Component::EndRead_Reg(){
     return this->SOFT_SPI_R();
 }
+
+#endif

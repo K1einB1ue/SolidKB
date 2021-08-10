@@ -11,6 +11,7 @@ namespace Debug{
     void BindCallback(std::function<void(std::string,unsigned int *ptr)> Callback);
     void InterruptSend(std::string Info);
     void InterruptSend(char Info);
+    void InterruptSend(char* str,uint32_t size);
     //用于输出一些在绑定回调函数之前执行的代码,如构造函数.
     void StaticSend(std::string Info);
     void Error(std::string Info);

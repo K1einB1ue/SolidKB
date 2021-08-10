@@ -16,8 +16,15 @@ class Peripheral_Encoder{
 
 
     int GetSpeed(uint32_t Div){
-        
+        if(Cnt++==Div){
+            Cnt=0;
+            int ReturnValue = *this->Counter-this->Default;
+            this->ResetCounter();
+            Previous = ReturnValue;
+        }
+        return Previous;
     }
+
     operator int() {
         int ReturnValue = *this->Counter-this->Default;
         this->ResetCounter();

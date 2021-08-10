@@ -2,8 +2,9 @@
 #include<SoftHardWare/SystemClock.h>
 #include<AbstractDependency/_AbstractHardWare.h>
 
+#if __Enable_PIN&&__Enable_SystemClock
 
-SCCB_Component::SCCB_Component(uint32_t SDA_GPIOx,uint32_t SDA_PINx,uint32_t SCL_GPIOx,uint32_t SCL_PINx):SDA(SDA_GPIOx,SDA_PINx,PIN_Mode::FastPullUp),SCL(SCL_GPIOx,SCL_PINx,PIN_Mode::FastPullUp){
+SCCB_Component::SCCB_Component(uint32_t SDA_GPIOx,uint32_t SDA_PINx,uint32_t SCL_GPIOx,uint32_t SCL_PINx):SDA(SDA_GPIOx,SDA_PINx,PIN_Mode::FastPullUp,"SDA"),SCL(SCL_GPIOx,SCL_PINx,PIN_Mode::FastPullUp,"SCL"){
     SDA.F_WriteMode();
     SCL.F_WriteMode();
     SDA=1;
@@ -105,3 +106,5 @@ u_char  SCCB_Component::Read_Reg(u_char add,u_char reg){
   	Stop();
   	return val;
 }
+
+#endif

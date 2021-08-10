@@ -63,11 +63,15 @@
 
     namespace Override{
 
-        void DCMI_Init();
+        extern std::vector<std::function<void(void)>> DCMICallback;
 
-        void DCMI_Enable();
+        void DCMIx_Wrok(Peripheral_DCMI* Peripheral_DCMI);
 
-        void DCMI_Disable();
+        void DCMIx_Stop(Peripheral_DCMI* Peripheral_DCMI);
+
+        void DCMIx_PreEnable(Peripheral_DCMI* Peripheral_DCMI);
+
+        void DCMIx_PreDisable(Peripheral_DCMI* Peripheral_DCMI);
     }
 
 #endif
@@ -92,6 +96,7 @@
     class PWM;
 
     namespace Override{
+        
         extern ResourcePack<CFG_PWM_Size> PWMPack;
 
         void PWMx_PreEnable(PWM* PWM);

@@ -31,6 +31,7 @@ class ResourcePack :public std::vector<u_char>
             return ptr;
         }else{
             Debug::Error("Out of Range!");
+            return 0;
         }
     }
 

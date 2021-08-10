@@ -24,6 +24,48 @@ bool std::strcmp(const char* INstr,unsigned int IN_size,unsigned int StartPos,co
     return true;
 }
 
+unsigned int std::FindFirst(const char* INstr,unsigned int IN_size,char Find,unsigned int *ptr){
+    while(INstr[*ptr]!=Find&&((*ptr)<=IN_size)){
+        (*ptr)++;
+    }
+    return *ptr;
+}
+
+unsigned int std::FindFirst(const char* INstr,unsigned int IN_size,char Find,unsigned int StartPos){
+    while(INstr[StartPos]!=Find&&StartPos<=IN_size){
+        StartPos++;
+    }
+    return StartPos;
+}
+
+unsigned int std::Find(const char* INstr,unsigned int IN_size,char Find,unsigned int StartPos,unsigned int Depth){
+    bool flag = false;
+    while(StartPos<=IN_size&&Depth!=0){
+        if(flag){
+            StartPos++;
+        }else{
+            flag=true;
+        }
+        FindFirst(INstr,IN_size,Find,&StartPos);
+        Depth--;
+    }
+    return StartPos;
+}
+
+unsigned int std::Find(const char* INstr,unsigned int IN_size,char Find,unsigned int *ptr,unsigned int Depth){
+    bool flag = false;
+    while((*ptr)<=IN_size&&Depth!=0){
+        if(flag){
+            (*ptr)++;
+        }else{
+            flag=true;
+        }
+        FindFirst(INstr,IN_size,Find,ptr);
+        Depth--;
+    }
+    return *ptr;
+}
+
 int std::Getint(const char* INstr,unsigned int *ptr){
     std::string temp;
     while(!(INstr[*ptr]>='0'&&INstr[*ptr]<='9')){

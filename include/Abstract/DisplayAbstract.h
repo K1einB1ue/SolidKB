@@ -1,5 +1,6 @@
 #pragma once
 #include<AbstractDependency/__AbstractDependency.h>
+#include<ImageProcessing/Image.h>
 
 enum class CMD{
     ToClose,
@@ -29,6 +30,7 @@ class DisplayBITAbstract
         void DrawChar(unsigned int x, unsigned int y,const char chr, u_char fontSize=12);
         void DrawString(unsigned int x, unsigned int y,const std::string &str, u_char fontSize=12);
         void DrawMemory(unsigned int x, unsigned int y, u_char* Memory, unsigned int height, unsigned int width);
+        void DrawImage(unsigned int x,unsigned int y, Image::Image_Binary* Image);
         virtual void Refresh();
         void Clear();
         

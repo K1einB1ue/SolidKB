@@ -1,7 +1,7 @@
 #pragma once
 #include<HardWare/Peripheral_PIN.h>
 
-
+#if __Enable_PIN
 class SPI_Component{
     private:
         std::function<u_char(u_char)>   SOFT_SPI_RW_Func=nullptr;
@@ -71,3 +71,5 @@ class SPI_Component{
     
         
 };  //class SPI_Component
+
+#endif

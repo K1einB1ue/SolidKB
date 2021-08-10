@@ -1,5 +1,5 @@
 #include<AbstractDependency/_AbstractHardWare.h>
-#include<VirtualHardWare.h>
+#include<SolidKernel.h>
 
 #ifdef STM32F407ZG 
     extern "C" {
@@ -41,6 +41,7 @@
         void PendSV_Handler(void){
 
         }
+        
     }
 
     volatile unsigned long* IN(uint32_t GPIOx,uint32_t PINx){
@@ -481,52 +482,157 @@
 
     #ifdef __Enable_DCMI
 
-    void Override::DCMI_Init(){
-        __HAL_RCC_DCMI_CLK_ENABLE();
 
-        DCMI->CR=0x0;	
-        DCMI->IER=0x0;
-        DCMI->ICR=0x1F;
-        DCMI->ESCR=0x0;
-        DCMI->ESUR=0x0;
-        DCMI->CWSTRTR=0x0;
-        DCMI->CWSIZER=0x0;
+    std::vector<std::function<void(void)>> Override::DCMICallback(CFG_DCMI_Size);
+    DCMI_TypeDef* DCMI_Mapping[]={DCMI};
+    DCMI_HandleTypeDef DCMI_Handle_Mapping[CFG_DCMI_Size];
+    DMA_HandleTypeDef DMA_Handle_Mapping[CFG_DCMI_Size];
+    void Override::DCMIx_PreEnable(Peripheral_DCMI* Peripheral_DCMI){
         
-        DCMI->CR|=0<<1;		//连续模式
-        DCMI->CR|=0<<2;		//全帧捕获
-        DCMI->CR|=0<<4;		//硬件同步HSYNC,VSYNC
-        DCMI->CR|=1<<5;		//PCLK 上升沿有效
-        DCMI->CR|=0<<6;		//HSYNC 低电平有效
-        DCMI->CR|=0<<7;		//VSYNC 低电平有效
-        DCMI->CR|=0<<8;		//捕获所有的帧
-        DCMI->CR|=0<<10; 	//8位数据格式  
-        DCMI->IER|=1<<0; 	//开启帧中断 
-        DCMI->CR|=1<<14; 	//DCMI使能
+        DCMI_HandleTypeDef* DCMIx = &DCMI_Handle_Mapping[Peripheral_DCMI->GetDCMI()];
+        DCMIx->Instance=DCMI_Mapping[Peripheral_DCMI->GetDCMI()];
+        DCMIx->Init.SynchroMode = DCMI_SYNCHRO_HARDWARE;
+        DCMIx->Init.PCKPolarity = DCMI_PCKPOLARITY_RISING;
+        DCMIx->Init.VSPolarity = DCMI_VSPOLARITY_LOW;
+        DCMIx->Init.HSPolarity = DCMI_HSPOLARITY_LOW;
+        DCMIx->Init.CaptureRate = DCMI_CR_ALTERNATE_2_FRAME;
+        DCMIx->Init.ExtendedDataMode = DCMI_EXTEND_DATA_8B;
+        DCMIx->Init.JPEGMode = DCMI_JPEG_DISABLE;
+        switch (Peripheral_DCMI->GetDCMI()){
+        case 0:
+            if(Resource::DCMI_Resource::Check(0)
+            ||Resource::PIN_Resource::Check(2,6)//D0
+            ||Resource::PIN_Resource::Check(2,7)//D1
+            ||Resource::PIN_Resource::Check(2,8)//D2
+            ||Resource::PIN_Resource::Check(2,9)//D3
+            ||Resource::PIN_Resource::Check(4,4)//D4
+            ||Resource::PIN_Resource::Check(1,6)//D5
+            ||Resource::PIN_Resource::Check(4,5)//D6
+            ||Resource::PIN_Resource::Check(4,6)//D7
+            ||Resource::PIN_Resource::Check(1,7)//VSYNC
+            ||Resource::PIN_Resource::Check(0,4)//HSYNC
+            ||Resource::PIN_Resource::Check(0,6)//PIXCLK
+            )return;
+            HAL_DCMI_Init(DCMIx);
+            break;
+        default:return;
+        }
+        
 
-
-        HAL_NVIC_EnableIRQ(DCMI_IRQn);				//使能USART2中断通道
-        HAL_NVIC_SetPriority(DCMI_IRQn,2,2);			//抢占优先级3，子优先级3
     }
 
-    void Override::DCMI_Enable(){
-        DMA2_Stream1->CR|=1<<0;		//开启DMA2,Stream1 
-	    DCMI->CR|=1<<0; 			//DCMI捕获使能  
+    extern "C" void HAL_DCMI_MspInit(DCMI_HandleTypeDef* hdcmi){
+        GPIO_InitTypeDef GPIO_Initure={0};
+        DMA_HandleTypeDef* DMA_Handle_Type;
+        if(hdcmi->Instance==DCMI){ 
+            __HAL_RCC_DCMI_CLK_ENABLE();
+            __HAL_RCC_DMA2_CLK_ENABLE();
+            
+
+            Resource::PIN_Resource::Cover(2,6,"D0");        //D0
+            Resource::PIN_Resource::Cover(2,7,"D1");        //D1
+            Resource::PIN_Resource::Cover(2,8,"D2");        //D2
+            Resource::PIN_Resource::Cover(2,9,"D3");        //D3
+            Resource::PIN_Resource::Cover(4,4,"D4");        //D4
+            Resource::PIN_Resource::Cover(1,6,"D5");        //D5
+            Resource::PIN_Resource::Cover(4,5,"D6");        //D6
+            Resource::PIN_Resource::Cover(4,6,"D7");        //D7
+            Resource::PIN_Resource::Cover(1,7,"VSYNC");     //VSYNC
+            Resource::PIN_Resource::Cover(0,4,"HSYNC");     //HSYNC
+            Resource::PIN_Resource::Cover(0,6,"PIXCLK");    //PIXCLK
+
+            GPIO_Initure.Pin = GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6;
+            GPIO_Initure.Mode = GPIO_MODE_AF_PP;
+            GPIO_Initure.Pull = GPIO_PULLUP;
+            GPIO_Initure.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+            GPIO_Initure.Alternate = GPIO_AF13_DCMI;
+            HAL_GPIO_Init(GPIOE, &GPIO_Initure);
+
+            GPIO_Initure.Pin = GPIO_PIN_4|GPIO_PIN_6;
+            GPIO_Initure.Mode = GPIO_MODE_AF_PP;
+            GPIO_Initure.Pull = GPIO_PULLUP;
+            GPIO_Initure.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+            GPIO_Initure.Alternate = GPIO_AF13_DCMI;
+            HAL_GPIO_Init(GPIOA, &GPIO_Initure);
+
+            GPIO_Initure.Pin = GPIO_PIN_6|GPIO_PIN_7|GPIO_PIN_8|GPIO_PIN_9;
+            GPIO_Initure.Mode = GPIO_MODE_AF_PP;
+            GPIO_Initure.Pull = GPIO_PULLUP;
+            GPIO_Initure.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+            GPIO_Initure.Alternate = GPIO_AF13_DCMI;
+            HAL_GPIO_Init(GPIOC, &GPIO_Initure);
+
+            GPIO_Initure.Pin = GPIO_PIN_6|GPIO_PIN_7;
+            GPIO_Initure.Mode = GPIO_MODE_AF_PP;
+            GPIO_Initure.Pull = GPIO_PULLUP;
+            GPIO_Initure.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+            GPIO_Initure.Alternate = GPIO_AF13_DCMI;
+            HAL_GPIO_Init(GPIOB, &GPIO_Initure);
+
+            DMA_Handle_Type=&DMA_Handle_Mapping[0];
+            DMA_Handle_Type->Instance=DMA2_Stream1;
+            DMA_Handle_Type->Init.Channel = DMA_CHANNEL_1;
+            DMA_Handle_Type->Init.Direction = DMA_PERIPH_TO_MEMORY;
+            DMA_Handle_Type->Init.PeriphInc = DMA_PINC_DISABLE;
+            DMA_Handle_Type->Init.MemInc = DMA_MINC_ENABLE;
+            DMA_Handle_Type->Init.PeriphDataAlignment = DMA_PDATAALIGN_WORD;
+            DMA_Handle_Type->Init.MemDataAlignment = DMA_MDATAALIGN_WORD;
+            DMA_Handle_Type->Init.Mode = DMA_CIRCULAR;
+            DMA_Handle_Type->Init.Priority = DMA_PRIORITY_LOW;
+            DMA_Handle_Type->Init.FIFOMode = DMA_FIFOMODE_ENABLE;
+            DMA_Handle_Type->Init.FIFOThreshold = DMA_FIFO_THRESHOLD_HALFFULL;
+            DMA_Handle_Type->Init.MemBurst = DMA_MBURST_SINGLE; 
+            DMA_Handle_Type->Init.PeriphBurst = DMA_PBURST_SINGLE;
+
+            HAL_DMA_Init(DMA_Handle_Type);
+
+            __HAL_LINKDMA(hdcmi,DMA_Handle,*DMA_Handle_Type);       //脑残语法...
+
+            HAL_NVIC_SetPriority(DCMI_IRQn, 3, 3);
+            HAL_NVIC_EnableIRQ(DCMI_IRQn);
+
+            HAL_NVIC_SetPriority(DMA2_Stream7_IRQn, 3, 3);
+		    HAL_NVIC_EnableIRQ(DMA2_Stream7_IRQn);
+        }
     }
 
-    void Override::DCMI_Disable(){
-        DCMI->CR&=~(1<<0); 			//DCMI捕获关闭   
-        while(DCMI->CR&0X01);		//等待传输结束 
-        DMA2_Stream1->CR&=~(1<<0);	//关闭DMA2,Stream1 
+    void Override::DCMIx_Wrok(Peripheral_DCMI* Peripheral_DCMI){
+        switch (Peripheral_DCMI->GetDCMI()){
+        case 0:
+            __HAL_DCMI_ENABLE_IT(&DCMI_Handle_Mapping[0],DCMI_IT_FRAME);
+            HAL_DCMI_Start_DMA(&DCMI_Handle_Mapping[0],DCMI_MODE_CONTINUOUS,(uint32_t)Peripheral_DCMI->GetDst(),Peripheral_DCMI->GetLength());
+            break;
+        default:return;
+        }
     }
 
-    extern "C" void DCMI_IRQHandler(void){  
-        if(DCMI->MISR&0X01){
-            if(HardWare::Peripheral_DCMI::DCMI_Callback){
-                HardWare::Peripheral_DCMI::DCMI_Callback();
-            }
-            DCMI->ICR|=1<<0;	//清除帧中断
-        }										 
-    } 
+    void Override::DCMIx_Stop(Peripheral_DCMI* Peripheral_DCMI){
+        switch (Peripheral_DCMI->GetDCMI()){
+        case 0:
+            __HAL_DCMI_DISABLE_IT(&DCMI_Handle_Mapping[0],DCMI_IT_FRAME);
+            break;
+        default:return;
+        }
+    }
+
+    void Override::DCMIx_PreDisable(Peripheral_DCMI* Peripheral_DCMI){
+
+    }
+
+    extern "C" void DMA2_Stream1_IRQHandler(void){
+        HAL_DMA_IRQHandler(&DMA_Handle_Mapping[0]);
+    }
+
+    extern "C" void DCMI_IRQHandler(void){
+        HAL_DCMI_IRQHandler(&DCMI_Handle_Mapping[0]);
+    }
+
+    extern "C" void HAL_DCMI_FrameEventCallback(DCMI_HandleTypeDef *hdcmi){
+        if(Override::DCMICallback[0]){
+            Override::DCMICallback[0]();
+        }
+        Debug::InterruptSend("Frame");
+    }
     
     #endif
     
@@ -538,36 +644,7 @@
         };
 
         void Override::TIMx_PreEnable(Peripheral_TIM* TIM){
-            TIM_TypeDef* tim=TIM_Mapping[TIM->GetTIM()];
-            switch (TIM->GetTIM())
-            {
-            case 0:
-                break;
-            case 1:
-                break;
-            case 2:
-                __HAL_RCC_TIM3_CLK_ENABLE();
-                tim->ARR=TIM->GetAutoReload();  	//设定计数器自动重装值 
-                tim->PSC=TIM->GetPrescale();  	    //预分频器	  
-                tim->DIER|=1<<0;                    //允许更新中断	  
-                tim->CR1|=0x01;                     //使能定时器3
-                tim->CR1|=1<<7;                     //自动装填
-                HAL_NVIC_EnableIRQ(TIM3_IRQn);
-                HAL_NVIC_SetPriority(TIM3_IRQn,3,3);
-                break;
-            case 3:
-                break;
-            case 4:
-                break;
-            case 5:
-                break;
-            case 6:
-                break;
-            case 7:
-                break;
-            default:
-                break;
-            }
+            
         }
 
         void Override::TIMx_PreDisable(Peripheral_TIM* TIM){
@@ -765,7 +842,7 @@
                 HAL_GPIO_Init(GPIOF,&GPIO_Initure);        
                 break;
             case 6:
-            //PF9f
+            //PF9
                 if(Resource::PIN_Resource::Check(5,9)
                 ||Resource::PWM_Resource::Check(6)
                 )return;
@@ -780,8 +857,7 @@
                 HAL_TIM_PWM_Start(TIM_Handle,TIM_CHANNEL_1);
                 HAL_GPIO_Init(GPIOF,&GPIO_Initure);
                 break;      
-            default:
-                break;
+            default:return;
             }            
         }
 

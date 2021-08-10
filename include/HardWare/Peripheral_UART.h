@@ -29,12 +29,12 @@ class Peripheral_UART{
     
 };
 
-template<typename DataType, unsigned int Capacity=20>
+template<typename DataType>
 class DecoderContainer{
     private:
     DataType* Data=nullptr;
     unsigned int Size = 0;
-    const unsigned int capacity = Capacity;
+    const unsigned int capacity = 0;
     bool clear_on_end_enable = true;
     std::function<void( DataType*, unsigned int)> decoder_Func = nullptr;
 
@@ -42,9 +42,7 @@ class DecoderContainer{
     const DataType* match_data; unsigned int match_size;
     public:
 
-    DecoderContainer(){
-        Data=new DataType[Capacity];
-    }
+    DecoderContainer(){}
 
     virtual ~DecoderContainer(){
         delete[] Data;

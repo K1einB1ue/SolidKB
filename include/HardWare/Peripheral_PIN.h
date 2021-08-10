@@ -1,6 +1,10 @@
 #pragma once
 #include<AbstractDependency/__AbstractDependency.h>
 
+
+#ifdef __Enable_PIN
+
+
 enum class PIN_Status{
     PIN_NULL,
     IDLE,
@@ -53,3 +57,4 @@ public:
 
 };
 
+#endif

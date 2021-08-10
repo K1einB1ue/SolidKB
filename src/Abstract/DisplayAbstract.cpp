@@ -4,6 +4,7 @@
 
 
 
+
 DisplayBITAbstract::DisplayBITAbstract(){}
 
 DisplayBITAbstract::~DisplayBITAbstract(){
@@ -188,4 +189,35 @@ void DisplayBITAbstract::DrawMemory(unsigned int x, unsigned int y, u_char* Memo
         }
     }
 
+}
+
+void DisplayBITAbstract::DrawImage(unsigned int x,unsigned int y, Image::Image_Binary* Image){
+   unsigned int i, m, n;
+    i = y / 8;
+    m = y % 8;
+    if (m != 0) {
+        for (unsigned int i_x = 0; i_x < Image->Pixel_Width; i_x++) {
+            for (unsigned int i_y = 0; i_y <= Image->Pixel_Height/8; i_y++) {
+                if((x+i_x>=0)&&(x+i_x<this->width)&&(i+i_y>=0)&&(i+i_y<this->height)){
+                    n=GRAM[x + i_x][i + i_y];
+                    if(i_y>0){
+                        n |= Image->_Image[i_x+(i_y-1)*Image->Pixel_Width]>>(8-m);
+                    }
+                    if(i_y!=height){        
+                        n |= Image->_Image[i_x+i_y*Image->Pixel_Width]<<m;  
+                    }
+                    GRAM[x + i_x][i + i_y] |= n;
+                }
+            }
+        }
+    }
+    else {
+        for (unsigned int i_x = 0; i_x < Image->Pixel_Width; i_x++) {
+            for (unsigned int i_y = 0; i_y < Image->Pixel_Height/8; i_y++) {
+                if((x+i_x>=0)&&(x+i_x<this->width)&&(i+i_y>=0)&&(i+i_y<this->height)){
+                    GRAM[x + i_x][i + i_y] = Image->_Image[i_x + i_y * Image->Pixel_Width];
+                }
+            }
+        }
+    } 
 }

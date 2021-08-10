@@ -1,6 +1,8 @@
 #include<HardWare/Peripheral_PWM.h>
 #include<AbstractDependency/_AbstractHardWare.h>
 
+#if __Enable_PWM
+
 PWM::PWM(uint32_t PWMx,uint32_t Period,uint32_t Prescaler){
     this->Period=Period;
     this->Prescaler=Prescaler;
@@ -26,3 +28,5 @@ uint32_t PWM::GetPeriod(){
 uint32_t PWM::GetPrescaler(){
     return this->Prescaler;
 }
+
+#endif

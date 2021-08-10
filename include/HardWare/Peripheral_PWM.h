@@ -3,7 +3,7 @@
 #include<HardWare/Peripheral_PIN.h>
 
 
-
+#if __Enable_PWM
 class PWM
 {
 private:
@@ -36,4 +36,4 @@ public:
 	}
 
 };
-
+#endif

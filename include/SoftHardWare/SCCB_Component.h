@@ -2,6 +2,7 @@
 #include<HardWare/Peripheral_PIN.h>
 
 
+#if __Enable_PIN&&__Enable_SystemClock
 
 class SCCB_Component{
     public:
@@ -17,3 +18,5 @@ class SCCB_Component{
         bool    Send_Reg(u_char add,u_char reg,u_char txd);
         u_char  Read_Reg(u_char add,u_char reg);
 };
+
+#endif

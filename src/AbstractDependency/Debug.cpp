@@ -128,6 +128,14 @@ void Debug::InterruptSend(std::string Info){
     }
 }
 
+void Debug::InterruptSend(char* str,uint32_t size){
+    std::string Info(str,size);
+    if(DebugCallback){
+        DebugQueue.push("\n-"+InterruptIndentStr+"<Interrupt>"+Info);
+        DebugCall();
+    }
+}
+
 void Debug::InterruptSend(char Info){
     static std::string temp;
     temp.clear();

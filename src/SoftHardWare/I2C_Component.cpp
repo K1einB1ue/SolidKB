@@ -2,7 +2,7 @@
 #include<SoftHardWare/SystemClock.h>
 #include<AbstractDependency/_AbstractHardWare.h>
 
-
+#if __Enable_PIN&&__Enable_SystemClock
 I2C_Component::I2C_Component(
 	uint32_t SDA_GPIOx,uint32_t SDA_PINx,
 	uint32_t SCL_GPIOx,uint32_t SCL_PINx
@@ -187,3 +187,5 @@ void    I2C_Component::Fast_Ack(){
 }
 
 I2C_Component::~I2C_Component(){}
+
+#endif
