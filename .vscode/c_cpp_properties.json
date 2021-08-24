@@ -10,6 +10,8 @@
             "includePath": [
                 "F:/PlatformIO/SolidKB/include",
                 "F:/PlatformIO/SolidKB/src",
+                "F:/PlatformIO/SolidKB/include/Kernel",
+                "F:/PlatformIO/SolidKB/include/Application",
                 "C:/Users/Klein_Blue/.platformio/packages/framework-stm32cubef4/Drivers/CMSIS/DSP/Include",
                 "C:/Users/Klein_Blue/.platformio/packages/framework-stm32cubef4/Drivers/CMSIS/Include",
                 "C:/Users/Klein_Blue/.platformio/packages/framework-stm32cubef4/Drivers/CMSIS/Device/ST/STM32F4xx/Include",
@@ -86,6 +88,8 @@
                 "path": [
                     "F:/PlatformIO/SolidKB/include",
                     "F:/PlatformIO/SolidKB/src",
+                    "F:/PlatformIO/SolidKB/include/Kernel",
+                    "F:/PlatformIO/SolidKB/include/Application",
                     "C:/Users/Klein_Blue/.platformio/packages/framework-stm32cubef4/Drivers/CMSIS/DSP/Include",
                     "C:/Users/Klein_Blue/.platformio/packages/framework-stm32cubef4/Drivers/CMSIS/Include",
                     "C:/Users/Klein_Blue/.platformio/packages/framework-stm32cubef4/Drivers/CMSIS/Device/ST/STM32F4xx/Include",
