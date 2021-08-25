@@ -14,13 +14,13 @@ namespace SolidGL{
         public:
         using Pen = typename T::Pen;
         using Color = typename T::Color;
-        using RenderTarget = typename SolidGL::Components::RenderTarget<T>;
-        void Render(RenderTarget &renderTarget){
-            if(renderTarget.Refresh()){
-                this->RecRender(renderTarget);
-                if(renderTarget.Callback){
-                    renderTarget.Callback();
-                    renderTarget.Callback=nullptr;
+        using RenderInterface = typename SolidGL::Components::RenderInterface<T>;
+        void Render(RenderInterface &renderInterface){
+            if(renderInterface.Refresh()){
+                this->RecRender(renderInterface);
+                if(renderInterface.Callback){
+                    renderInterface.Callback();
+                    renderInterface.Callback=nullptr;
                 }
             }
         }
@@ -30,6 +30,6 @@ namespace SolidGL{
         }
         void __UseGUI(Grlib grlib);
         protected:
-        virtual void RecRender(RenderTarget &renderTarget){}
+        virtual void RecRender(RenderInterface &renderInterface){}
     };
 }

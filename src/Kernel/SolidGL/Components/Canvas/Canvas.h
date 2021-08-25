@@ -7,23 +7,23 @@ namespace SolidGL{
     namespace Components{
         using namespace Render2D;
         template<typename T>
-        class Canvas:public Render_Interface<T,Render2D::RecTexture<T>>{
+        class Canvas:public RenderInterface<T>{
             public: 
             using Pen = typename T::Pen;
             using Color = typename T::Color;
-            Color                       recBackgroundColor=RecRender<T>::BackgroundColor;       
-            RecTransform                recTransform;
+            std::shared_ptr<Color>      recTexture = nullptr;
+            Color                       recBackgroundColor;
             Canvas(uint width,uint height,std::shared_ptr<Color> textureRam=nullptr){
                 Debug_StartBlock("Canvas");
                     Debug_Info("PixelWidth:"+std::to_string(width));
                     Debug_Info("PixelHeight:"+std::to_string(height));
-                this->recRender.recSize.x=width;
-                this->recRender.recSize.y=height;
+                this->recSize.x=width;
+                this->recSize.y=height;
                 if(!textureRam){
-                    this->recRender.Texture=std::shared_ptr<Color>(new Color[width*height]);
+                    this->recTexture=std::shared_ptr<Color>(new Color[width*height]);
                     Debug_Info("UniqueMemory");
                 }else{
-                    this->recRender.Texture=textureRam;
+                    this->recTexture=textureRam;
                     Debug_Info("SharedMemory");  
                 }
                 Debug_EndBlock();
@@ -33,7 +33,10 @@ namespace SolidGL{
             void DrawPixel(unsigned int x, unsigned int y,const Color& color);
             void DrawLine(unsigned int x1, unsigned int y1, unsigned int x2, unsigned int y2,const Pen& pen){
                 unsigned int i,k,k1,k2;
-                if((x1<0)||(x2>this->recRender.recSize.x)||(y1<0)||(y2>this->recRender.recSize.y)||(x1>x2)||(y1>y2))return;
+                if((x1<0)||(x2>this->recSize.x)||(y1<0)||(y2>this->recSize.y)||(x1>x2)||(y1>y2)){
+                    Debug_InterruptSend("DrawLine Out Of Range");   
+                    return;
+                }
                 if(x1==x2) {
                     for(i=0;i<(y2-y1);i++) {
                         DrawPixel(x1,y1+i,pen);
@@ -106,6 +109,9 @@ namespace SolidGL{
 
             void Clear();
             virtual bool Refresh(){return true;}
+            virtual Color GetRenderColor(uint x,uint y){
+                return this->recTexture.get()[x+y*this->recSize.x];;
+            }
         };
     }
 }

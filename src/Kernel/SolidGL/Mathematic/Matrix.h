@@ -11,6 +11,18 @@ public:
     DataType &operator[](unsigned int i){
         return this->Data[i];
     }
+    Vector& operator *=(const Vector<Size,DataType> &Vec){
+        for(u_int i=0;i<Size;i++){
+            this->Data[i]*=Vec[i];
+        }
+        return *this;
+    }
+    Vector& operator +=(const Vector<Size,DataType> &Vec){
+        for(u_int i=0;i<Size;i++){
+            this->Data[i]+=Vec[i];
+        }
+        return *this;
+    }
 };
 
 template<typename DataType>

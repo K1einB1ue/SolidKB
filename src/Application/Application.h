@@ -26,7 +26,7 @@ class Application{
     //Image::Image_Binary* Binary;
 
     SolidGL::Draw::RGB565::Pen ImagePen;
-    SolidGL::Components::RenderTarget<SolidGL::Draw::RGB565> *TFTImage;
+    SolidGL::Components::Canvas<SolidGL::Draw::RGB565>* Canvas0;
     //SolidGL::Components::TextField<SolidGL::Draw::RGB565> TextField0;
     public:
     Application()=default;
@@ -53,10 +53,13 @@ class Application{
         Debug_StartDebug("RenderTarget");
         //TextField0.recBackgroundColor.Bytes=0x0000;
         //TextField0.pen.color.Bytes=0xFFFF;
-        TFTImage = new SolidGL::Components::RenderTarget<SolidGL::Draw::RGB565>(120,120);
-        TFTImage->recBackgroundColor.Bytes=0xFFFF;
-        TFTImage->recTransform.Position.x=120;
-        TFTImage->recTransform.Position.y=120;
+        Canvas0 = new SolidGL::Components::Canvas<SolidGL::Draw::RGB565>(4,5);
+        Canvas0->recBackgroundColor.Bytes=0xFFFF;
+        Canvas0->recBackgroundColor.R(0b11111);
+        Canvas0->recBackgroundColor.G(0b000000);
+        Canvas0->recBackgroundColor.B(0b00000);
+        Canvas0->recTransform.Position.x=0;
+        Canvas0->recTransform.Position.y=0;
         ImagePen.color.Bytes=0x0000;
         Debug_EndDebug();
 
@@ -64,6 +67,7 @@ class Application{
         TFTScreen_M = new HardWare::TFTScreen(0,0,0,1,0,4,0,5,0,6);
         TFTScreen_M->__GraphicInit(240,240);
         Debug_EndDebug();
+
 
         //TextField0.pen.color.Bytes=0xFFFF;
 
@@ -73,7 +77,7 @@ class Application{
         Debug_EndDebug();
         */
         /*
-        Debug_StartDebug("OV7725_M");
+        Debug_StartDebug("OV7725_M");`
         OV7725_M = new HardWare::OV7725(0,0,0,1,0,7,0,5,0,Camera._Image,80*120);
         Debug_EndDebug();
         */
@@ -146,21 +150,25 @@ class Application{
             //TFTScreen_M->DrawString(0,0,"qwq",*TFTpen);
             Debug_InterruptSend("RenderIn");
 
-            if(TFTImage->recTransform.Position.x++==120){
-                TFTImage->recTransform.Position.x=0;00.
-
-                
+            Canvas0->Clear();
+            //Canvas0->DrawString(0,0,"QAQ",ImagePen,24);
+            //TFTImage->DrawPixel(0,0,ImagePen);
+            //Canvas0->DrawLine(0,0,119,0,ImagePen);
+            Canvas0->recTransform.Position.x+=12; 
+            if(Canvas0->recTransform.Position.x>=240){
+                Canvas0->recTransform.Position.x%=240;
+                Canvas0->recTransform.Position.y+=12;
+                if(Canvas0->recTransform.Position.y>=240){
+                    Canvas0->recTransform.Position.y%=240;
+                }
             }
-            TFTImage->Clear();
-            TFTImage->DrawString(10,0,"QAQ",ImagePen,24);
-            TFTImage->DrawPixel(0,0,ImagePen);
-            TFTImage->DrawLine(0,0,240,0,ImagePen);
-            TFTScreen_M->Render(*TFTImage);
+            //Canvas0->DrawLine(0,0,12,12,ImagePen);
+            TFTScreen_M->Render(*Canvas0);
 
 
 
             // *TextField0="QAQ";
-            // TextField0->recTransform.Position.x=240;
+            // TextField0->recTransform.Position.x=240;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
             // TextField0->recTransform.Position.y=240;
                 
             // TFTScreen_M->Render(*TextField0);

@@ -19,7 +19,7 @@ namespace HardWare{
             uint32_t BLK_GPIOx,uint32_t BLK_PINx
         );
         virtual ~TFTScreen()=default;
-        virtual void RecRender(RenderTarget &renderTarget);
+        virtual void RecRender(RenderInterface &renderInterface);
     };
 }
 

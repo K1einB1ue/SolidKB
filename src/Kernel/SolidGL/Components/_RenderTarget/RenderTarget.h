@@ -58,12 +58,36 @@ namespace SolidGL{
             Source            recRender;
         };
 
-
+        template<typename T>
+        class RenderInterface{
+            public:
+            using Color = typename T::Color;
+            Vector2<uint>     recSize;
+            RecTransform      recTransform;
+            RenderInterface*  Root=nullptr;
+            virtual Color GetRenderColor(uint x,uint y){
+                return Color(0);
+            }
+            RecTransform&     GetAbsoluteTransform(){           
+                if(Root){
+                    RecTransform  temp;
+                    temp=this->recTransform;
+                    temp.Position+=Root->GetAbsoluteTransform().Position;
+                    temp.Scale*=Root->GetAbsoluteTransform().Scale;
+                    temp.Z=this->recTransform.Z;
+                    return temp;
+                }else{
+                    return this->recTransform;
+                }
+            }
+            virtual bool Refresh(){return true;}
+            std::function<void(void)> Callback=nullptr;
+        };
 
 
 
         template<typename T>
-        class RenderTarget:public Render_Interface<T,Render2D::RecTexture<T>>{     
+        class RenderTarget:public Render_Interface<T,Render2D::RecTexture<T>>{
             public:
             using Pen = typename T::Pen;
             using Color = typename T::Color;
@@ -92,7 +116,10 @@ namespace SolidGL{
             void DrawPixel(unsigned int x, unsigned int y,const Color& color);
             void DrawLine(unsigned int x1, unsigned int y1, unsigned int x2, unsigned int y2,const Pen& pen){
                 unsigned int i,k,k1,k2;
-                if((x1<0)||(x2>this->recRender.recSize.x)||(y1<0)||(y2>this->recRender.recSize.y)||(x1>x2)||(y1>y2))return;
+                if((x1<0)||(x2>=this->recRender.recSize.x)||(y1<0)||(y2>=this->recRender.recSize.y)||(x1>x2)||(y1>y2)){
+                    Debug_InterruptSend("DrawLine Out Of Range");    
+                    return;
+                }
                 if(x1==x2) {
                     for(i=0;i<(y2-y1);i++) {
                         DrawPixel(x1,y1+i,pen);
@@ -122,12 +149,9 @@ namespace SolidGL{
                 u_char Width;
                 const u_char* FontTable;
                 switch(fontSize){
-                    case 12:FontTable=(u_char*)asc2_1206;Width=12;
-                    break;
-                    case 16:FontTable=(u_char*)asc2_1608;Width=16;
-                    break;
-                    case 24:FontTable=(u_char*)asc2_2412;Width=36;
-                    break;
+                    case 12:FontTable=(u_char*)asc2_1206;Width=12;break;
+                    case 16:FontTable=(u_char*)asc2_1608;Width=16;break;
+                    case 24:FontTable=(u_char*)asc2_2412;Width=36;break;
                     default:return;
                 }   
                 

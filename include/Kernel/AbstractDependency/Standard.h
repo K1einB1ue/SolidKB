@@ -12,5 +12,6 @@
 #include<stdlib.h>
 #include<stdarg.h>
 #include<type_traits>
+#include"../Datastructure/StringPiece.h"
 
 #define ErrorRange 0.00000001

@@ -163,27 +163,27 @@ namespace HardWare{
         TFTScreen_Cmd(0x29); 
     }
 
-    void TFTScreen::RecRender(RenderTarget &renderTarget){    
-        DC=0;                                                                                           //CASET
-        Fast_Send_Byte(USECOM::CASET);                                                                           
+    void TFTScreen::RecRender(RenderInterface &renderInterface){    
+        DC=0;                                                                                                   //CASET
+        Fast_Send_Byte(USECOM::CASET);                                                                                   
+        DC=1;       
+        Fast_Send_Byte((u_char)renderInterface.recTransform.Position.x>>8);                                     //x起始高位
+        Fast_Send_Byte((u_char)renderInterface.recTransform.Position.x);                                        //x起始低位
+        Fast_Send_Byte((u_char)(renderInterface.recTransform.Position.x+renderInterface.recSize.x)>>8);         //x结束高位
+        Fast_Send_Byte((u_char)renderInterface.recTransform.Position.x+renderInterface.recSize.x);              //x结束低位
+        DC=0;       
+        Fast_Send_Byte(USECOM::RASET);                                                                          //RASET
+        DC=1;       
+        Fast_Send_Byte((u_char)renderInterface.recTransform.Position.y>>8);                                     //y起始高位
+        Fast_Send_Byte((u_char)renderInterface.recTransform.Position.y);                                        //y起始低位
+        Fast_Send_Byte((u_char)(renderInterface.recTransform.Position.y+renderInterface.recSize.y)>>8);         //y结束高位
+        Fast_Send_Byte((u_char)renderInterface.recTransform.Position.y+renderInterface.recSize.y);	            //y结束低位
+        DC=0;       
+        Fast_Send_Byte(USECOM::RAMWR);                                                                          //RAMWR
         DC=1;
-        Fast_Send_Byte(renderTarget.recTransform.Position.x>>8);                                        //x起始高位
-        Fast_Send_Byte(renderTarget.recTransform.Position.x);                                           //x起始低位
-        Fast_Send_Byte((renderTarget.recTransform.Position.x+renderTarget.recRender.recSize.x)>>8);     //x结束高位
-        Fast_Send_Byte(renderTarget.recTransform.Position.x+renderTarget.recRender.recSize.x);          //x结束低位
-        DC=0;
-        Fast_Send_Byte(USECOM::RASET);                                                                  //RASET
-        DC=1;
-        Fast_Send_Byte(renderTarget.recTransform.Position.y>>8);                                        //y起始高位
-        Fast_Send_Byte(renderTarget.recTransform.Position.y);                                           //y起始低位
-        Fast_Send_Byte((renderTarget.recTransform.Position.y+renderTarget.recRender.recSize.y)>>8);     //y结束高位
-        Fast_Send_Byte(renderTarget.recTransform.Position.y+renderTarget.recRender.recSize.y);	        //y结束低位
-        DC=0;
-        Fast_Send_Byte(USECOM::RAMWR);                                                                  //RAMWR
-        DC=1;
-        for(uint i=0;i<renderTarget.recRender.recSize.x;i++){
-            for(uint j=0;j<renderTarget.recRender.recSize.y;j++){
-                uint16_t temp = renderTarget.recRender.GetRenderColor(j,i).Bytes;
+        for(uint i=0;i<renderInterface.recSize.x;i++){
+            for(uint j=0;j<renderInterface.recSize.y;j++){
+                uint16_t temp = renderInterface.GetRenderColor(j,i).Bytes;
                 Fast_Send_Byte(temp>>8);
                 Fast_Send_Byte(temp);
             }

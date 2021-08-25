@@ -1,4 +1,4 @@
-#include<AbstractDependency/Debug.h>
+#include<Kernel/AbstractDependency/Debug.h>
 
 #if __Enable_Debug
 

@@ -1,4 +1,4 @@
-#include<AbstractDependency/Expand.h>
+#include<Kernel/AbstractDependency/Expand.h>
 
 bool std::strcmp(const char* INstr,unsigned int IN_size,const char* Match,unsigned int Match_size){
     if(IN_size<Match_size){
