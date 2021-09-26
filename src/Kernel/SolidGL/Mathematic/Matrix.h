@@ -8,18 +8,25 @@ protected:
 public:
     Vector()=default;
     ~Vector()=default;
-    DataType &operator[](unsigned int i){
+    DataType& operator[](unsigned int i){
         return this->Data[i];
     }
-    Vector& operator *=(const Vector<Size,DataType> &Vec){
+    Vector& operator *=(Vector Vec){
         for(u_int i=0;i<Size;i++){
             this->Data[i]*=Vec[i];
         }
         return *this;
     }
-    Vector& operator +=(const Vector<Size,DataType> &Vec){
+    Vector& operator +=(Vector Vec){
         for(u_int i=0;i<Size;i++){
             this->Data[i]+=Vec[i];
+        }
+        return *this;
+    }
+
+    Vector& operator =(Vector Vec){
+        for(u_int i=0;i<Size;i++){
+            this->Data[i]=Vec[i];
         }
         return *this;
     }
@@ -30,6 +37,13 @@ class Vector2:public Vector<2,DataType>{
 public:
     Vector2():x(this->Data[0]),y(this->Data[1]){this->x=0;this->y=0;}
     DataType &x,&y;
+    
+    Vector2& operator =(Vector2 Vec2){
+        this->x=Vec2.x;
+        this->y=Vec2.y;
+        return *this;
+    }
+    
 };
 
 template<typename DataType>

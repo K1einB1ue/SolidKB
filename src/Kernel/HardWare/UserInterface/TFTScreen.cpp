@@ -4,7 +4,7 @@
 
 #if __Enable_PIN&&__Enable_SystemClock
 
-DEFCOM{
+DEFCMD{
     /*[空指令]<0><0>*/
     NOP                 =0x00,
     /*[软件复位]<0><0>需要等待5ms(在非休眠模式下,否则需要在120ms前发送退出休眠命令),并加载所有出场寄存器设置,帧内存不受影响.*/
@@ -164,22 +164,22 @@ namespace HardWare{
     }
 
     void TFTScreen::RecRender(RenderInterface &renderInterface){    
-        DC=0;                                                                                                   //CASET
-        Fast_Send_Byte(USECOM::CASET);                                                                                   
+        DC=0;                                                                                                               //CASET
+        Fast_Send_Byte(USECMD::CASET);                                                                                   
         DC=1;       
-        Fast_Send_Byte((u_char)renderInterface.recTransform.Position.x>>8);                                     //x起始高位
-        Fast_Send_Byte((u_char)renderInterface.recTransform.Position.x);                                        //x起始低位
-        Fast_Send_Byte((u_char)(renderInterface.recTransform.Position.x+renderInterface.recSize.x)>>8);         //x结束高位
-        Fast_Send_Byte((u_char)renderInterface.recTransform.Position.x+renderInterface.recSize.x);              //x结束低位
+        Fast_Send_Byte((u_char)renderInterface.GetAbsoluteTransform().Position.x>>8);                                       //x起始高位
+        Fast_Send_Byte((u_char)renderInterface.GetAbsoluteTransform().Position.x&0xFF);                                     //x起始低位
+        Fast_Send_Byte((u_char)(renderInterface.GetAbsoluteTransform().Position.x+renderInterface.recSize.x)>>8);           //x结束高位
+        Fast_Send_Byte((u_char)(renderInterface.GetAbsoluteTransform().Position.x+renderInterface.recSize.x)&0xFF);         //x结束低位
         DC=0;       
-        Fast_Send_Byte(USECOM::RASET);                                                                          //RASET
+        Fast_Send_Byte(USECMD::RASET);                                                                                      //RASET
         DC=1;       
-        Fast_Send_Byte((u_char)renderInterface.recTransform.Position.y>>8);                                     //y起始高位
-        Fast_Send_Byte((u_char)renderInterface.recTransform.Position.y);                                        //y起始低位
-        Fast_Send_Byte((u_char)(renderInterface.recTransform.Position.y+renderInterface.recSize.y)>>8);         //y结束高位
-        Fast_Send_Byte((u_char)renderInterface.recTransform.Position.y+renderInterface.recSize.y);	            //y结束低位
+        Fast_Send_Byte((u_char)renderInterface.GetAbsoluteTransform().Position.y>>8);                                       //y起始高位
+        Fast_Send_Byte((u_char)renderInterface.GetAbsoluteTransform().Position.y&0xFF);                                     //y起始低位
+        Fast_Send_Byte((u_char)(renderInterface.GetAbsoluteTransform().Position.y+renderInterface.recSize.y+1)>>8);           //y结束高位
+        Fast_Send_Byte((u_char)(renderInterface.GetAbsoluteTransform().Position.y+renderInterface.recSize.y+1)&0xFF);	        //y结束低位
         DC=0;       
-        Fast_Send_Byte(USECOM::RAMWR);                                                                          //RAMWR
+        Fast_Send_Byte(USECMD::RAMWR);                                                                          //RAMWR
         DC=1;
         for(uint i=0;i<renderInterface.recSize.x;i++){
             for(uint j=0;j<renderInterface.recSize.y;j++){

@@ -18,7 +18,7 @@ namespace HardWare{
         __SPI_CS_Active(0);
         __SPI_Mode(1,1);
         Debug_StartBlock("Init");
-        if(this->Read_Reg((u_char)Reg::R_DEVID,0x01)==0b11100101){
+        if(this->Read_Reg((u_char)Reg::R_DEVID)==0b11100101){
             Debug_Info("Ok");
         }else{
             Debug_Warning("Fail");
@@ -30,12 +30,12 @@ namespace HardWare{
         this->Send_Reg((u_char)Reg::RW_OFSX         ,0x00);   //X 偏移量 根据测试传感器的状态写入pdf29页
         this->Send_Reg((u_char)Reg::RW_OFSY         ,0x00);   //Y 偏移量 根据测试传感器的状态写入pdf29页
         this->Send_Reg((u_char)Reg::RW_OFSZ         ,0x05);   //Z 偏移量 根据测试传感器的状态写入pdf29
-        Debug_Info(std::to_string(this->Read_Reg((u_char)Reg::R_DATAX0,0x01)));
-        Debug_Info(std::to_string(this->Read_Reg((u_char)Reg::R_DATAX1,0x01)));
-        Debug_Info(std::to_string(this->Read_Reg((u_char)Reg::R_DATAY0,0x01)));
-        Debug_Info(std::to_string(this->Read_Reg((u_char)Reg::R_DATAY1,0x01)));
-        Debug_Info(std::to_string(this->Read_Reg((u_char)Reg::R_DATAZ0,0x01)));
-        Debug_Info(std::to_string(this->Read_Reg((u_char)Reg::R_DATAZ1,0x01)));
+        Debug_Info(std::to_string(this->Read_Reg((u_char)Reg::R_DATAX0)));
+        Debug_Info(std::to_string(this->Read_Reg((u_char)Reg::R_DATAX1)));
+        Debug_Info(std::to_string(this->Read_Reg((u_char)Reg::R_DATAY0)));
+        Debug_Info(std::to_string(this->Read_Reg((u_char)Reg::R_DATAY1)));
+        Debug_Info(std::to_string(this->Read_Reg((u_char)Reg::R_DATAZ0)));
+        Debug_Info(std::to_string(this->Read_Reg((u_char)Reg::R_DATAZ1)));
 
         Debug_EndBlock();
     }

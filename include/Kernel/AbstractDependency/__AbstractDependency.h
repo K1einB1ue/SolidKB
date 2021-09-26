@@ -1,7 +1,7 @@
 #pragma once
-#include<AbstractDependency/AbstractConfig.h>
-#include<AbstractDependency/Standard.h>
-#include<AbstractDependency/Debug.h>
-#include<AbstractDependency/Expand.h>
+#include"./Marco.h"
+#include"./Standard.h"
+#include"./Debug.h"
+#include"./Expand.h"
 
 

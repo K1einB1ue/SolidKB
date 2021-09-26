@@ -1,5 +1,5 @@
 #pragma once
-#include<AbstractDependency/__AbstractDependency.h>
+#include"./__AbstractDependency.h"
 
 template<int Size>
 class ResourcePack :public std::vector<u_char>

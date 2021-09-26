@@ -28,9 +28,13 @@ class Application{
     SolidGL::Draw::RGB565::Pen ImagePen;
     SolidGL::Components::Canvas<SolidGL::Draw::RGB565>* Canvas0;
     //SolidGL::Components::TextField<SolidGL::Draw::RGB565> TextField0;
+    
+    uint16_t colorR=0b00001;
+    uint Size=5;
     public:
     Application()=default;
     ~Application()=default;
+
 
     void Init(){
        
@@ -53,11 +57,11 @@ class Application{
         Debug_StartDebug("RenderTarget");
         //TextField0.recBackgroundColor.Bytes=0x0000;
         //TextField0.pen.color.Bytes=0xFFFF;
-        Canvas0 = new SolidGL::Components::Canvas<SolidGL::Draw::RGB565>(4,5);
+        Canvas0 = new SolidGL::Components::Canvas<SolidGL::Draw::RGB565>(12,12);
         Canvas0->recBackgroundColor.Bytes=0xFFFF;
-        Canvas0->recBackgroundColor.R(0b11111);
+        Canvas0->recBackgroundColor.R(colorR);
         Canvas0->recBackgroundColor.G(0b000000);
-        Canvas0->recBackgroundColor.B(0b00000);
+        Canvas0->recBackgroundColor.B(0b11111);
         Canvas0->recTransform.Position.x=0;
         Canvas0->recTransform.Position.y=0;
         ImagePen.color.Bytes=0x0000;
@@ -160,6 +164,18 @@ class Application{
                 Canvas0->recTransform.Position.y+=12;
                 if(Canvas0->recTransform.Position.y>=240){
                     Canvas0->recTransform.Position.y%=240;
+                    if(Size++==12){
+                        Size=5;
+                    }
+                    Canvas0->recSize.x=Size;
+                    Canvas0->recSize.y=Size;
+                    colorR<<=1;
+                    if(colorR==(0b1<<6)){
+                        colorR=0b1;
+                    }
+                    Canvas0->recBackgroundColor.R(colorR);
+                    Canvas0->recBackgroundColor.G(colorR<<1);
+                    Canvas0->recBackgroundColor.B(colorR);
                 }
             }
             //Canvas0->DrawLine(0,0,12,12,ImagePen);

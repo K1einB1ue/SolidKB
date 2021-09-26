@@ -3,6 +3,10 @@
 #include<AbstractDependency/_AbstractHardWare.h>
 
 #if __Enable_PIN&&__Enable_SystemClock
+
+
+
+
 I2C_Component::I2C_Component(
 	uint32_t SDA_GPIOx,uint32_t SDA_PINx,
 	uint32_t SCL_GPIOx,uint32_t SCL_PINx
@@ -14,35 +18,57 @@ I2C_Component::I2C_Component(
     SCL=1;
 }
 
+I2C_Component::I2C_Component(
+	uint32_t SDA_GPIOx,uint32_t SDA_PINx,
+	uint32_t SCL_GPIOx,uint32_t SCL_PINx,
+	bool __NoNeedPullUp__
+	):SDA(SDA_GPIOx,SDA_PINx,PIN_Mode::Fast,"SDA"),
+	SCL(SCL_GPIOx,SCL_PINx,PIN_Mode::Fast,"SCL"){
+	SDA.F_WriteMode();
+    SCL.F_WriteMode();
+    SDA=1;
+    SCL=1;
+	}
+
 
 void    I2C_Component::Start(){
     SDA.F_WriteMode();
-    SDA=1;SystemClock::Delay(1);  
-    SCL=1;SystemClock::Delay(1);
-    SDA=0;SystemClock::Delay(1);
-    SCL=0;SystemClock::Delay(1);
+    SDA=1;SystemClock::Delay(this->TimeWait);  
+    SCL=1;SystemClock::Delay(this->TimeWait);
+    SDA=0;SystemClock::Delay(this->TimeWait);
+    SCL=0;SystemClock::Delay(this->TimeWait);
 }
 
 void    I2C_Component::Stop(){
     SDA.F_WriteMode();
-    SCL=1;SystemClock::Delay(1);   
-    SDA=0;SystemClock::Delay(1); 
-    SDA=1;SystemClock::Delay(1);  
+    // SCL=1;SystemClock::Delay(this->TimeWait);   
+    // SDA=0;SystemClock::Delay(this->TimeWait); 
+    // SDA=1;SystemClock::Delay(this->TimeWait);  
+	SCL=0;
+	SDA=0;
+	SystemClock::Delay(this->TimeWait); 
+	SCL=1;
+	SDA=1;
+	SystemClock::Delay(this->TimeWait);
 }
 
 void    I2C_Component::Send_Byte(u_char txd){ 
 	SDA.F_WriteMode();     
     for(u_char t=0;t<8;t++) {  
-        SCL=0;SystemClock::Delay(1);
+        SCL=0;SystemClock::Delay(this->TimeWait);
         if(txd&0x80){
-            SDA=1;SystemClock::Delay(1);
+            SDA=1;
         }else{
-            SDA=0;SystemClock::Delay(1);
+            SDA=0;
         }     
-		SCL=1;SystemClock::Delay(1);      
-		SCL=0;SystemClock::Delay(1);
+		SCL=1;SystemClock::Delay(this->TimeWait);      
+		SCL=0;SystemClock::Delay(this->TimeWait);
         txd<<=1;
     }	
+}
+
+void 	I2C_Component::__FrequencyInit(uint frequency){
+	this->TimeWait=frequency;
 }
 
 u_char  I2C_Component::Read_Byte(bool ack){
@@ -50,11 +76,11 @@ u_char  I2C_Component::Read_Byte(bool ack){
 	SDA.F_ReadMode();
     for(u_char i=0;i<8;i++) {
         SCL=0; 
-        SystemClock::Delay(2);
+        SystemClock::Delay(this->TimeWait);
 		SCL=1;
         receive<<=1;
         if(SDA)receive++;   
-		SystemClock::Delay(1);
+		SystemClock::Delay(this->TimeWait);
     }					 
     if (!ack)
         NAck();
@@ -69,13 +95,13 @@ u_char  I2C_Component::Read_Byte(){
 	for (u_char i = 0; i < 8; i++)
 	{
 		SCL=0;
-		SystemClock::Delay(1);		
+		SystemClock::Delay(this->TimeWait);		
 		receive<<=1;
 		if (SDA){
 			receive++;
 		}
 		SCL=1;		
-		SystemClock::Delay(1);
+		SystemClock::Delay(this->TimeWait);
 	}
 	return receive;
 }
@@ -130,8 +156,8 @@ u_char  I2C_Component::Fast_Read_Byte(){
 bool    I2C_Component::Wait_Ack(){
     u_char ucErrTime=0;
 	SDA.F_ReadMode(); 
-	SDA=1;SystemClock::Delay(1);	   
-	SCL=1;SystemClock::Delay(1);
+	SDA=1;	   
+	SCL=1;SystemClock::Delay(this->TimeWait);
 	while(SDA) {
 		ucErrTime++;
 		if(ucErrTime>250)
@@ -150,22 +176,20 @@ bool    I2C_Component::Wait_Ack(){
 void    I2C_Component::Ack(){  
     SCL=0;
 	SDA.F_WriteMode(); 
-	SystemClock::Delay(2); 
 	SDA=0;
-	SystemClock::Delay(2);
+	SystemClock::Delay(this->TimeWait);
 	SCL=1;
-	SystemClock::Delay(2);
+	SystemClock::Delay(this->TimeWait);
 	SCL=0;
 }
 
 void    I2C_Component::NAck(){
     SCL=0;
 	SDA.F_WriteMode();  
-	SystemClock::Delay(2);
 	SDA=1;
-	SystemClock::Delay(2);
+	SystemClock::Delay(this->TimeWait);
 	SCL=1;
-	SystemClock::Delay(2);
+	SystemClock::Delay(this->TimeWait);
 	SCL=0;
 }
 
@@ -176,13 +200,19 @@ bool    I2C_Component::Send_Reg(u_char reg,u_char txd){
 	this->Send_Byte(this->address<<1|0);  //发送器件地址+写命令	
 	if(this->Wait_Ack()){
 		this->Stop();
+		Debug_InterruptSend("I2C Error 1");
         return false;	 	
 	}
     this->Send_Byte(reg);
-    this->Wait_Ack(); 
+    if(this->Wait_Ack()){
+		this->Stop();
+		Debug_InterruptSend("I2C Error 2");
+		return false;	
+	}
 	this->Send_Byte(txd);
 	if(this->Wait_Ack()){
 		this->Stop();
+		Debug_InterruptSend("I2C Error 3");
 		return true;		 
 	}		 
     this->Stop();
@@ -231,8 +261,8 @@ u_char  I2C_Component::Read_Reg(u_char reg){
 
 
 void    I2C_Component::Fast_Ack(){
-    SCL=1;SystemClock::Delay(1);
-    SCL=0;SystemClock::Delay(1);
+    SCL=1;SystemClock::Delay(this->TimeWait);
+    SCL=0;SystemClock::Delay(this->TimeWait);
 }
 
 I2C_Component::~I2C_Component(){}

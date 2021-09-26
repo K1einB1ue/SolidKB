@@ -1,6 +1,6 @@
 #pragma once
-#include<AbstractDependency/AbstractConfig.h>
-#include<AbstractDependency/Standard.h>
+#include"./Marco.h"
+#include"./Standard.h"
 
 #if __Enable_Debug
 

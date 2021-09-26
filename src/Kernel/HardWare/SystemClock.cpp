@@ -12,5 +12,6 @@ void SystemClock::Clock(Clock_Speed speed){
 }
 
 void SystemClock::Delay(uint32_t us){
+    if(us==0) return;
     Override::Delay_Prototype(us);
 }

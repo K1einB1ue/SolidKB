@@ -91,3 +91,17 @@ std::string std::Getstring(const char* INstr,char formatchar,unsigned int *ptr){
     }
     return temp;
 }
+
+//TODO:对于多线程支持不友好.且不同架构可能会有不同的表现,取决于GCC的sprintf实现!!!
+std::string std::fto_string(float value){
+    static char buffer[100];
+    int temp1, temp2;
+    temp1 = (int)(value*1000)%1000;
+    temp2 = (int)(value);
+    if (value < 0){
+        sprintf(buffer, "-%d.%03d",-temp2,-temp1);
+    }else{
+        sprintf(buffer, "%d.%03d",temp2,temp1);
+    }
+    return buffer;
+};

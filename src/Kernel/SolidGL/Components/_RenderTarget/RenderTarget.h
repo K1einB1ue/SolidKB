@@ -16,11 +16,18 @@ namespace SolidGL{
             virtual Color GetRenderColor(Vector2<uint> &Position){return BackgroundColor;} 
         };
 
-        struct RecTransform{
+        class RecTransform{
             public:
             Vector2<uint> Position;
             Vector2<double> Scale;
             int Z=0;
+
+            RecTransform& operator=(RecTransform& Rec){
+                this->Position=Rec.Position;
+                this->Scale=Rec.Scale;
+                this->Z=Rec.Z;
+                return *this;
+            }
         };
 
         template<typename T>
@@ -68,7 +75,7 @@ namespace SolidGL{
             virtual Color GetRenderColor(uint x,uint y){
                 return Color(0);
             }
-            RecTransform&     GetAbsoluteTransform(){           
+            RecTransform GetAbsoluteTransform(){           
                 if(Root){
                     RecTransform  temp;
                     temp=this->recTransform;

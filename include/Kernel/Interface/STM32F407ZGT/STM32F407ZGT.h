@@ -4,9 +4,6 @@
 #include<stm32f4xx_hal_uart.h>
 #include<stm32f4xx_hal_usart.h>
 
-
-
-
 #define STM32F407ZG
 #define CHIP_SELECT
 
