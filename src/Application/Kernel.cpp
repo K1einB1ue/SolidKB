@@ -1,19 +1,18 @@
 #include"./Application.h"
+#include"./SampleApplication.h"
 #include"./MPU6050_TestApp.h"
 
-Application DevelopApp;
-TestProgram::MPU6050 MPU6050_App;
+Application DevelopApp;         //开发用程序 未启用
+SampleApplication Sample;
 
 //硬件Entry
 void Kernel_Init(){
-    //DevelopApp.Init();
-    MPU6050_App.Init();
+    Sample.Init();
 }
 
 //程序Entry
 void Kernel_Run(){
-    //DevelopApp.Run();
-    MPU6050_App.Run();
+    Sample.Run();
 }
 
 void Kernel_Exit(){
