@@ -12,22 +12,22 @@
             "type": "platformio-debug",
             "request": "launch",
             "name": "PIO Debug",
-            "executable": "F:/PlatformIO/SolidKB/.pio/build/black_f407zg/firmware.elf",
-            "projectEnvName": "black_f407zg",
+            "executable": "F:/PlatformIO/SolidKB/.pio/build/Serial/firmware.elf",
+            "projectEnvName": "Serial",
             "toolchainBinDir": "C:/Users/Klein_Blue/.platformio/packages/toolchain-gccarmnoneeabi@1.70201.0/bin",
             "internalConsoleOptions": "openOnSessionStart",
             "svdPath": "C:/Users/Klein_Blue/.platformio/platforms/ststm32/misc/svd/STM32F40x.svd",
             "preLaunchTask": {
                 "type": "PlatformIO",
-                "task": "Pre-Debug"
+                "task": "Pre-Debug (Serial)"
             }
         },
         {
             "type": "platformio-debug",
             "request": "launch",
             "name": "PIO Debug (skip Pre-Debug)",
-            "executable": "F:/PlatformIO/SolidKB/.pio/build/black_f407zg/firmware.elf",
-            "projectEnvName": "black_f407zg",
+            "executable": "F:/PlatformIO/SolidKB/.pio/build/Serial/firmware.elf",
+            "projectEnvName": "Serial",
             "toolchainBinDir": "C:/Users/Klein_Blue/.platformio/packages/toolchain-gccarmnoneeabi@1.70201.0/bin",
             "internalConsoleOptions": "openOnSessionStart",
             "svdPath": "C:/Users/Klein_Blue/.platformio/platforms/ststm32/misc/svd/STM32F40x.svd"
@@ -36,8 +36,8 @@
             "type": "platformio-debug",
             "request": "launch",
             "name": "PIO Debug (without uploading)",
-            "executable": "F:/PlatformIO/SolidKB/.pio/build/black_f407zg/firmware.elf",
-            "projectEnvName": "black_f407zg",
+            "executable": "F:/PlatformIO/SolidKB/.pio/build/Serial/firmware.elf",
+            "projectEnvName": "Serial",
             "toolchainBinDir": "C:/Users/Klein_Blue/.platformio/packages/toolchain-gccarmnoneeabi@1.70201.0/bin",
             "internalConsoleOptions": "openOnSessionStart",
             "svdPath": "C:/Users/Klein_Blue/.platformio/platforms/ststm32/misc/svd/STM32F40x.svd",
