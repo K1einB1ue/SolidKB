@@ -43,9 +43,9 @@ namespace TestProgram{
                     SSD1306_M->DrawString(0,0 ,"ax="+std::fto_string(MPU9250_M->Accel_x));
                     SSD1306_M->DrawString(0,10,"ay="+std::fto_string(MPU9250_M->Accel_y));
                     SSD1306_M->DrawString(0,20,"az="+std::fto_string(MPU9250_M->Accel_z));
-                    SSD1306_M->DrawString(64,0 ,"gx="+std::fto_string(MPU9250_M->Gyro_x));
-                    SSD1306_M->DrawString(64,10,"gy="+std::fto_string(MPU9250_M->Gyro_y));
-                    SSD1306_M->DrawString(64,20,"gz="+std::fto_string(MPU9250_M->Gyro_z));
+                    SSD1306_M->DrawString(54,0 ,"gx="+std::fto_string(MPU9250_M->Gyro_x));
+                    SSD1306_M->DrawString(54,10,"gy="+std::fto_string(MPU9250_M->Gyro_y));
+                    SSD1306_M->DrawString(54,20,"gz="+std::fto_string(MPU9250_M->Gyro_z));
                     SSD1306_M->DrawString(0,30,"Roll="+std::fto_string(MPU9250_M->Roll_temp));
                     SSD1306_M->DrawString(0,40,"Pitch="+std::fto_string(MPU9250_M->Pitch_temp));
                     SSD1306_M->Refresh();

@@ -1,4 +1,4 @@
-#include<AbstractDependency/Resource.h>
+#include"./Resource.h"
 
 
 

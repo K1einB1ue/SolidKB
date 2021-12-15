@@ -1,6 +1,6 @@
-#include<Kernel/HardWare/WireProtocol/I2C_Component.h>
-#include<Kernel/HardWare/SystemClock.h>
-#include<AbstractDependency/_AbstractHardWare.h>
+#include"./I2C_Component.h"
+#include"../Peripheral/SystemClock.h"
+#include"../../AbstractDependency/_AbstractHardWare.h"
 
 #if __Enable_PIN&&__Enable_SystemClock
 
@@ -28,8 +28,12 @@ I2C_Component::I2C_Component(
     SCL.F_WriteMode();
     SDA=1;
     SCL=1;
-	}
+}
 
+
+void I2C_Component::setAddress(u_char address){
+	this->address=address;
+}
 
 void    I2C_Component::Start(){
     SDA.F_WriteMode();
@@ -41,9 +45,6 @@ void    I2C_Component::Start(){
 
 void    I2C_Component::Stop(){
     SDA.F_WriteMode();
-    // SCL=1;SystemClock::Delay(this->TimeWait);   
-    // SDA=0;SystemClock::Delay(this->TimeWait); 
-    // SDA=1;SystemClock::Delay(this->TimeWait);  
 	SCL=0;
 	SDA=0;
 	SystemClock::Delay(this->TimeWait); 
@@ -193,7 +194,20 @@ void    I2C_Component::NAck(){
 	SCL=0;
 }
 
-
+bool    I2C_Component::Send_Len(u_char len,const u_char *buf){
+	this->Start(); 
+	this->Send_Byte(this->address<<1|0);  //发送器件地址+写命令	
+	if(this->Wait_Ack()){
+		Debug_InterruptSend("I2C Error 4");
+	}
+	for(u_char i=0;i<len;i++){
+		this->Send_Byte(buf[i]);
+		if(this->Wait_Ack()){
+			Debug_InterruptSend("I2C Error 5");
+		}
+	}
+	this->Stop();
+}
 
 bool    I2C_Component::Send_Reg(u_char reg,u_char txd){
     this->Start(); 

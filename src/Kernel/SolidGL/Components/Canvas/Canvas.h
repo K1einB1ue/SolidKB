@@ -31,6 +31,7 @@ namespace SolidGL{
             virtual ~Canvas(){} 
             void DrawPixel(unsigned int x, unsigned int y,const Pen& pen);
             void DrawPixel(unsigned int x, unsigned int y,const Color& color);
+
             void DrawLine(unsigned int x1, unsigned int y1, unsigned int x2, unsigned int y2,const Pen& pen){
                 unsigned int i,k,k1,k2;
                 if((x1<0)||(x2>this->recSize.x)||(y1<0)||(y2>this->recSize.y)||(x1>x2)||(y1>y2)){
@@ -57,55 +58,55 @@ namespace SolidGL{
                 }
             }
 
-            // void DrawChar(unsigned int x, unsigned int y,const char chr,const Pen& pen,u_char fontSize=12){
-            //     unsigned int i,m,temp,size2,chr1;
-            //     unsigned int y0=y;
-            //     size2=(fontSize/8+((fontSize%8)?1:0))*(fontSize/2);     //得到字体一个字符对应点阵集所占的字节数
-            //     chr1=chr-' ';                                           //计算偏移后的值
+            void DrawChar(unsigned int x, unsigned int y,const char chr,const Pen& pen,u_char fontSize=12){
+                unsigned int i,m,temp,size2,chr1;
+                unsigned int y0=y;
+                size2=(fontSize/8+((fontSize%8)?1:0))*(fontSize/2);     //得到字体一个字符对应点阵集所占的字节数
+                chr1=chr-' ';                                           //计算偏移后的值
 
-            //     u_char Width;
-            //     const u_char* FontTable;
-            //     switch(fontSize){
-            //         case 12:FontTable=(u_char*)asc2_1206;Width=12;
-            //         break;
-            //         case 16:FontTable=(u_char*)asc2_1608;Width=16;
-            //         break;
-            //         case 24:FontTable=(u_char*)asc2_2412;Width=36;
-            //         break;
-            //         default:return;
-            //     }   
+                u_char Width;
+                const u_char* FontTable;
+                switch(fontSize){
+                    case 12:FontTable=(u_char*)asc2_1206;Width=12;
+                    break;
+                    case 16:FontTable=(u_char*)asc2_1608;Width=16;
+                    break;
+                    case 24:FontTable=(u_char*)asc2_2412;Width=36;
+                    break;
+                    default:return;
+                }   
                 
-            //     for(i=0;i<size2;i++){
-            //         temp=FontTable[chr1*Width+i];
-            //         for(m=0;m<8;m++){
-            //             if(temp&0x80){ 
-            //                 this->DrawPixel(x,y,pen);
-            //             }else{
-            //                 this->DrawPixel(x,y,recBackgroundColor);
-            //             }
-            //             temp<<=1;
-            //             y++;
-            //             if((y-y0)==fontSize){
-            //                 y=y0;
-            //                 x++;
-            //                 break;
-            //             }
-            //         }
-            //     }
-            // }
+                for(i=0;i<size2;i++){
+                    temp=FontTable[chr1*Width+i];
+                    for(m=0;m<8;m++){
+                        if(temp&0x80){ 
+                            this->DrawPixel(x,y,pen);
+                        }else{
+                            this->DrawPixel(x,y,recBackgroundColor);
+                        }
+                        temp<<=1;
+                        y++;
+                        if((y-y0)==fontSize){
+                            y=y0;
+                            x++;
+                            break;
+                        }
+                    }
+                }
+            }
 
-            // void DrawString(unsigned int x, unsigned int y,const std::string &str,const Pen& pen,u_char fontSize=12){
-            //     for(unsigned int i=0;i<str.size();i++) {
-            //         if((str[i]>=' ')&&(str[i]<='~')) {
-            //             this->DrawChar(x,y,str[i],pen,fontSize);
-            //             x+=fontSize/2;
-            //             if(x>this->recRender.recSize.x-fontSize) {
-            //                 x=0;
-            //                 y+=2;
-            //             }
-            //         }
-            //     }
-            // }
+            void DrawString(unsigned int x, unsigned int y,const std::string &str,const Pen& pen,u_char fontSize=12){
+                for(unsigned int i=0;i<str.size();i++) {
+                    if((str[i]>=' ')&&(str[i]<='~')) {
+                        this->DrawChar(x,y,str[i],pen,fontSize);
+                        x+=fontSize/2;
+                        if(x>this->recSize.x-fontSize) {
+                            x=0;
+                            y+=2;
+                        }
+                    }
+                }
+            }
 
             void Clear();
             virtual bool Refresh(){return true;}

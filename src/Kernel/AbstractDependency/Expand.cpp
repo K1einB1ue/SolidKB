@@ -1,4 +1,4 @@
-#include<Kernel/AbstractDependency/Expand.h>
+#include"./Expand.h"
 
 bool std::strcmp(const char* INstr,unsigned int IN_size,const char* Match,unsigned int Match_size){
     if(IN_size<Match_size){
@@ -83,6 +83,7 @@ int std::Getint(const char* INstr,unsigned int *ptr){
     return std::stoi(temp);
 }
 
+
 std::string std::Getstring(const char* INstr,char formatchar,unsigned int *ptr){
     std::string temp;
     while(INstr[(*ptr)++]!=formatchar);
@@ -105,3 +106,27 @@ std::string std::fto_string(float value){
     }
     return buffer;
 };
+
+char HexTable[16]={'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
+std::string std::Hexlize(const std::string& str){
+    std::string ret;
+    for(unsigned int i=0;i<str.size();i++){
+        if(i!=0){
+            ret+=' ';
+        }
+        ret+=HexTable[str[i]/16];
+        ret+=HexTable[str[i]%16];
+        if(i%10==0){
+            ret+='\n';
+        }
+    }
+    return ret;
+}
+
+std::string std::Hexlize(const char chr){
+    std::string ret;
+    ret+=' ';
+    ret+=HexTable[chr/16];
+    ret+=HexTable[chr%16];
+    return ret;
+}

@@ -1,5 +1,5 @@
 #pragma once
-#include<initializer_list>
+#include"../../AbstractDependency/__AbstractDependency.h"
 
 template<unsigned int Size,typename DataType>
 class Vector{

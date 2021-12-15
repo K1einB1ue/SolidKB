@@ -1,5 +1,5 @@
-#include<AbstractDependency/_AbstractHardWare.h>
-#include<SolidKernel.h>
+#include"../../AbstractDependency/_AbstractHardWare.h"
+#include"../../SolidKernel.h"
 
 #ifdef STM32F407ZG 
     extern "C" {

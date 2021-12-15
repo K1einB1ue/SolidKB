@@ -1,5 +1,5 @@
 #pragma once
-#include<Kernel/SolidGL/SolidGL_Standard.h>
+#include"./SolidGL_Standard.h"
 #include"./Components/GL_Components.h"
 enum class Grlib{
     SolidGL,            //使用Solid图形库
@@ -9,9 +9,8 @@ enum class Grlib{
 namespace SolidGL{
     template<typename T>
     class Interface{
-        private: 
-        uint Screen_Pixel_Width=0,Screen_Pixel_Height=0;
         public:
+        uint Screen_Pixel_Width=0,Screen_Pixel_Height=0;
         using Pen = typename T::Pen;
         using Color = typename T::Color;
         using RenderInterface = typename SolidGL::Components::RenderInterface<T>;
@@ -28,6 +27,8 @@ namespace SolidGL{
             this->Screen_Pixel_Width=width;
             this->Screen_Pixel_Height=height;
         }
+        
+        //暂时弃置的
         void __UseGUI(Grlib grlib);
         protected:
         virtual void RecRender(RenderInterface &renderInterface){}

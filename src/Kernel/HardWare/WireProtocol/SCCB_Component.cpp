@@ -1,6 +1,6 @@
-#include<Kernel/HardWare/WireProtocol/SCCB_Component.h>
-#include<Kernel/HardWare/SystemClock.h>
-#include<AbstractDependency/_AbstractHardWare.h>
+#include"./SCCB_Component.h"
+#include"../Peripheral/SystemClock.h"
+#include"../../AbstractDependency/_AbstractHardWare.h"
 
 #if __Enable_PIN&&__Enable_SystemClock
 
