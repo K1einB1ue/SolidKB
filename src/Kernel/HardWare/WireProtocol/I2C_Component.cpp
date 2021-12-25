@@ -62,6 +62,7 @@ void    I2C_Component::Send_Byte(u_char txd){
         }else{
             SDA=0;
         }     
+		SystemClock::Delay(this->TimeWait);    
 		SCL=1;SystemClock::Delay(this->TimeWait);      
 		SCL=0;SystemClock::Delay(this->TimeWait);
         txd<<=1;
@@ -79,6 +80,7 @@ u_char  I2C_Component::Read_Byte(bool ack){
         SCL=0; 
         SystemClock::Delay(this->TimeWait);
 		SCL=1;
+		SystemClock::Delay(this->TimeWait);    
         receive<<=1;
         if(SDA)receive++;   
 		SystemClock::Delay(this->TimeWait);
@@ -244,6 +246,21 @@ bool    I2C_Component::Read_Len(u_char reg,u_char len,u_char *buf){
     this->Send_Byte(reg);	//写寄存器地址
     this->Wait_Ack();		//等待应答
     this->Start(); 
+	this->Send_Byte(this->address<<1|1);//发送器件地址+读命令	
+    this->Wait_Ack();		//等待应答 
+	while(len)
+	{
+		if(len==1)*buf=this->Read_Byte(false);//读数据,发送nACK 
+		else *buf=this->Read_Byte(true);		//读数据,发送ACK  
+		len--;
+		buf++; 
+	}    
+    this->Stop();	//产生一个停止条件 
+	return false;	
+}
+
+bool    I2C_Component::Read_Len_Directly(u_char len,u_char *buf){
+	this->Start(); 
 	this->Send_Byte(this->address<<1|1);//发送器件地址+读命令	
     this->Wait_Ack();		//等待应答 
 	while(len)

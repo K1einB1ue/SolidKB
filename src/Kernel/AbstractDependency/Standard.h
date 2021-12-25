@@ -13,6 +13,7 @@
 #include<stdarg.h>
 #include<set>
 #include<type_traits>
+#include<algorithm>
 #include"../Datastructure/DataStructure.h"
 #include"../DesignPatterns/DesignPatterns.h"
 

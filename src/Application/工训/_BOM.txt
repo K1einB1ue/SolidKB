@@ -1,0 +1,7 @@
+ATK-IMU901  1*Uart
+Debug       1*Uart
+OpenMV      1*Uart
+HC05        1*Uart
+Server      4*Encoder
+TB6612FNG   4*PWM
+PCA9685     1*I2C

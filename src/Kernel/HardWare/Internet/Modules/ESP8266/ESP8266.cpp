@@ -474,7 +474,7 @@ namespace HardWare{
             this->Send("AT+CIPSEND="+std::to_string(LinkID)+","+std::to_string(Info.size())+"\r\n");
         }else if(this->SendMode==Wifi::SendMode::Passthrough){
             this->Send(Info);
-            Debug_InterruptSend("Wifi Passthrough Send!");
+            //Debug_InterruptSend("Wifi Passthrough Send!");
             return;
         }
         Debug_StartBlock("Wifi Socket Send");

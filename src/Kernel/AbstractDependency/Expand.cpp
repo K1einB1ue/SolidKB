@@ -116,17 +116,35 @@ std::string std::Hexlize(const std::string& str){
         }
         ret+=HexTable[str[i]/16];
         ret+=HexTable[str[i]%16];
-        if(i%10==0){
-            ret+='\n';
-        }
     }
     return ret;
 }
 
 std::string std::Hexlize(const char chr){
     std::string ret;
-    ret+=' ';
     ret+=HexTable[chr/16];
     ret+=HexTable[chr%16];
     return ret;
+}
+
+std::string std::Streamlize(u_int32_t value,u_char format_size){
+    std::string ret;
+    while(value&&format_size--){
+        ret+=value%0xFF;
+        value/=0xFF;
+    }
+    while(format_size--){
+        ret+=(char)0;
+    }
+    std::reverse(ret.begin(),ret.end());
+    return ret;
+}
+
+u_int32_t std::Valuelize(const std::string& str,u_int32_t start,u_int32_t end){
+    u_int32_t value=0;
+    for(;start<end;start++){
+        value<<=8;
+        value|=str[start];
+    }
+    return value;
 }

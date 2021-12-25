@@ -91,21 +91,16 @@
             HAL_GPIO_Init(GPIO_Mapping[GPIOx],&FastNoPull_Type);
         }
         void PIN_Default(PIN* PIN){
-
             PIN->IN= IN(PIN->GetGPIO(),PIN->GetPIN());
             PIN->OUT= OUT(PIN->GetGPIO(),PIN->GetPIN());
-
             GPIO_TypeDef* GPIO_Type=GPIO_Mapping[PIN->GetGPIO()];    
-
             PIN->F_ReadMode=[=](){
                 GPIO_Type->MODER&=~(3<<(PIN->GetPIN()*2));     
             };   
-
             PIN->F_WriteMode=[=](){
                 GPIO_Type->MODER&=~(3<<(PIN->GetPIN()*2));
                 GPIO_Type->MODER|=(1<<(PIN->GetPIN()*2));
             };  
-
         }
 
         std::map<PIN_Mode,std::function<void(PIN*)>> Override::PINPrototypes{

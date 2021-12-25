@@ -41,6 +41,7 @@ class I2C_Component{
         bool    Send_Len(u_char len,const u_char *buf);
         bool    Send_Reg(u_char reg,u_char txd);
         bool    Read_Len(u_char reg,u_char len,u_char *buf);
+        bool    Read_Len_Directly(u_char len,u_char *buf);
         u_char  Read_Reg(u_char reg);
 };
 

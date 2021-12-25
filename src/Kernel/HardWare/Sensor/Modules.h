@@ -5,3 +5,4 @@
 #include"./Modules/MPU9250/MPU9250.h"
 #include"./Modules/OV7725/OV7725.h"
 #include"./Modules/TOF10120/TOF10120.h"
+#include"./Modules/LM75/LM75.h"
